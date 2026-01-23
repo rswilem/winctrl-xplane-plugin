@@ -46,19 +46,13 @@ void removeOldPlugin() { // remove <filesystem> when removing this function
         rootDirectory = rootDirectory.substr(0, rootDirectory.length() - 1); // Remove trailing slash
     }
 
-    std::string pluginsDirectory = rootDirectory + ALL_PLUGINS_DIRECTORY;
-
-    std::string oldPluginDirectory = pluginsDirectory + "winwing/";
-    std::string newPluginDirectory = pluginsDirectory + "winctrl/";
+    std::string pluginDirectory = rootDirectory + ALL_PLUGINS_DIRECTORY + "winctrl/";
 
     try {
         std::vector<std::string> oldPluginPaths = {
-            pluginsDirectory + "winwing/mac_x64/winwing.xpl",
-            pluginsDirectory + "winwing/lin_x64/winwing.xpl",
-            pluginsDirectory + "winwing/win_x64/winwing.xpl",
-            newPluginDirectory + "winctrl/mac_x64/winwing.xpl",
-            newPluginDirectory + "winctrl/lin_x64/winwing.xpl",
-            newPluginDirectory + "winctrl/win_x64/winwing.xpl",
+            pluginDirectory + "mac_x64/winwing.xpl",
+            pluginDirectory + "lin_x64/winwing.xpl",
+            pluginDirectory + "win_x64/winwing.xpl",
         };
 
         // Attempt to delete any old versions of the plugin
@@ -75,31 +69,6 @@ void removeOldPlugin() { // remove <filesystem> when removing this function
                     debug_force("Failed to remove old plugin at path: %s\n", path.c_str());
                 }
             }
-        }
-
-        // Check if new directory already exists
-        if (std::filesystem::exists(newPluginDirectory)) {
-            return;
-        }
-
-        // Rename the whole directory if winctrl/ does not exist
-        if (!std::filesystem::exists(newPluginDirectory)) {
-            debug_force("Renaming old plugin directory from %s to %s\n", oldPluginDirectory.c_str(), newPluginDirectory.c_str());
-            std::filesystem::rename(oldPluginDirectory, newPluginDirectory);
-            debug_force("Successfully renamed old plugin directory.\n");
-            changes++;
-        }
-
-        if (changes > 0) {
-            // Deliberately crash X-Plane
-            debug_force("Crashing X-Plane deliberately so the user restarts with the new plugin version... Sorry!\n");
-            debug_force("Just try restarting X-Plane after this crash to complete the update.\n");
-
-            // mini sleep to allow debug messages to flush
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-            int *crash = nullptr;
-            *crash = 42;
         }
     } catch (const std::filesystem::filesystem_error &e) {
         debug_force("Error during plugin migration: %s\n", e.what());

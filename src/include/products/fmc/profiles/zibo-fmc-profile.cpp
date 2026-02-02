@@ -332,6 +332,10 @@ void ZiboFMCProfile::updatePage(std::vector<std::vector<char>> &page) {
 }
 
 void ZiboFMCProfile::buttonPressed(const FMCButtonDef *button, XPLMCommandPhase phase) {
+    if (!button || button->dataref.empty() || phase == xplm_CommandContinue) {
+        return;
+    }
+
     if (std::fabs(button->value) > std::numeric_limits<double>::epsilon()) {
         if (phase != xplm_CommandBegin) {
             return;
@@ -352,6 +356,35 @@ void ZiboFMCProfile::buttonPressed(const FMCButtonDef *button, XPLMCommandPhase 
         } else {
             Dataref::getInstance()->set<float>(ref.c_str(), button->value);
         }
+    } else if (Dataref::getInstance()->get<int>("laminar/B738/fmc_type") == 1) {
+        std::vector<std::pair<FMCKey, FMCKey>> fansMapping = {
+            {FMCKey::PFP_DEP_ARR, FMCKey::PFP3_CLB},
+            {FMCKey::PFP4_ATC, FMCKey::PFP3_CRZ},
+            {FMCKey::PFP4_VNAV, FMCKey::PFP3_DES},
+            {FMCKey::PFP7_VNAV, FMCKey::PFP3_DES},
+            {FMCKey::PFP_FIX, FMCKey::MENU},
+            {FMCKey::PFP_HOLD, FMCKey::PFP_DEP_ARR},
+            {FMCKey::PFP4_FMC_COMM, FMCKey::PFP_HOLD},
+            {FMCKey::PFP7_FMC_COMM, FMCKey::PFP_HOLD},
+            {FMCKey::MENU, FMCKey::PFP3_N1_LIMIT},
+            {FMCKey::PFP3_N1_LIMIT, FMCKey::PFP_FIX},
+        };
+
+        // We should read the pressed key, and then "convert" the key to the mapped one, if needed. After conversion, execute the button command dataref. Else, just execute
+        FMCKey pressedKey = button->key.index() == 0 ? std::get<FMCKey>(button->key) : std::get<std::vector<FMCKey>>(button->key)[0];
+
+        for (const auto &mapping : fansMapping) {
+            if (pressedKey == mapping.first) {
+                // Find the mapped button
+                auto it = buttonKeyMap().find(mapping.second);
+                if (it != buttonKeyMap().end()) {
+                    Dataref::getInstance()->executeCommand(it->second->dataref.c_str(), phase);
+                    return;
+                }
+            }
+        }
+
+        Dataref::getInstance()->executeCommand(button->dataref.c_str(), phase);
     } else {
         Dataref::getInstance()->executeCommand(button->dataref.c_str(), phase);
     }

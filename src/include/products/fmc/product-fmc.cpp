@@ -81,6 +81,9 @@ void ProductFMC::setProfileForCurrentAircraft() {
         clearDisplay();
         profile = new IXEG733FMCProfile(this);
         profileReady = true;
+    } else {
+        profile = nullptr;
+        profileReady = false;
     }
 }
 
@@ -248,6 +251,10 @@ void ProductFMC::didReceiveData(int reportId, uint8_t *report, int reportLength)
 void ProductFMC::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, uint8_t count) {
     USBDevice::didReceiveButton(hardwareButtonIndex, pressed, count);
 
+    if (!connected || !profile) {
+        return;
+    }
+
     bool pressedButtonIndexExists = pressedButtonIndices.find(hardwareButtonIndex) != pressedButtonIndices.end();
     XPLMCommandPhase command = -1;
     if (pressed && !pressedButtonIndexExists) {
@@ -285,6 +292,10 @@ void ProductFMC::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, ui
 }
 
 void ProductFMC::updatePage(bool forceUpdate) {
+    if (!connected || !profile) {
+        return;
+    }
+
     auto datarefManager = Dataref::getInstance();
     bool shouldUpdate = forceUpdate;
 
@@ -303,6 +314,10 @@ void ProductFMC::updatePage(bool forceUpdate) {
 }
 
 void ProductFMC::draw(const std::vector<std::vector<char>> *pagePtr) {
+    if (!connected || !profile) {
+        return;
+    }
+
     const auto &p = pagePtr ? *pagePtr : page;
     std::vector<uint8_t> buf;
 

@@ -7,10 +7,10 @@
 #include "profiles/ff350-fcu-efis-profile.h"
 #include "profiles/ff767-fcu-efis-profile.h"
 #include "profiles/ff777-fcu-efis-profile.h"
+#include "profiles/jf146-fcu-efis-profile.h"
 #include "profiles/laminar-fcu-efis-profile.h"
 #include "profiles/laminar737-fcu-efis-profile.h"
 #include "profiles/toliss-fcu-efis-profile.h"
-#include "profiles/jf146-fcu-efis-profile.h"
 #include "segment-display.h"
 
 #include <algorithm>
@@ -64,6 +64,9 @@ void ProductFCUEfis::setProfileForCurrentAircraft() {
     } else if (JF146FCUEfisProfile::IsEligible()) {
         profile = new JF146FCUEfisProfile(this);
         profileReady = true;
+    } else {
+        profile = nullptr;
+        profileReady = false;
     }
 }
 
@@ -153,6 +156,10 @@ void ProductFCUEfis::update() {
 }
 
 void ProductFCUEfis::updateDisplays(bool force) {
+    if (!connected || !profile) {
+        return;
+    }
+
     bool shouldUpdate = force;
     auto datarefManager = Dataref::getInstance();
     for (const std::string &dataref : profile->displayDatarefs()) {
@@ -375,8 +382,7 @@ void ProductFCUEfis::sendEfisDisplayWithFlags(EfisDisplayValue *data, bool isRig
         packet.push_back(0x00);
         packet.push_back(0x00);
         packet.push_back(0x00);
-    }
-    else if (data->displayTest) {
+    } else if (data->displayTest) {
         packet.push_back(SegmentDisplay::getSegmentMask('8'));
         packet.push_back(SegmentDisplay::getSegmentMask('8') | 0x80);
         packet.push_back(SegmentDisplay::getSegmentMask('8'));
@@ -516,6 +522,10 @@ void ProductFCUEfis::didReceiveData(int reportId, uint8_t *report, int reportLen
 
 void ProductFCUEfis::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, uint8_t count) {
     USBDevice::didReceiveButton(hardwareButtonIndex, pressed, count);
+
+    if (!connected || !profile) {
+        return;
+    }
 
     auto &buttons = profile->buttonDefs();
     auto it = buttons.find(hardwareButtonIndex);

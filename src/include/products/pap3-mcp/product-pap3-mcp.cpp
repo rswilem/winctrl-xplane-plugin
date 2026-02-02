@@ -56,6 +56,9 @@ void ProductPAP3MCP::setProfileForCurrentAircraft() {
     } else if (LaminarPAP3MCPProfile::IsEligible()) {
         profile = new LaminarPAP3MCPProfile(this);
         profileReady = true;
+    } else {
+        profile = nullptr;
+        profileReady = false;
     }
 }
 
@@ -128,6 +131,10 @@ void ProductPAP3MCP::update() {
 }
 
 void ProductPAP3MCP::updateDisplays(bool force) {
+    if (!connected || !profile) {
+        return;
+    }
+
     bool shouldUpdate = force;
     auto datarefManager = Dataref::getInstance();
     for (const std::string &dataref : profile->displayDatarefs()) {
@@ -664,11 +671,19 @@ void ProductPAP3MCP::didReceiveData(int reportId, uint8_t *report, int reportLen
 void ProductPAP3MCP::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, uint8_t count) {
     USBDevice::didReceiveButton(hardwareButtonIndex, pressed, count);
 
+    if (!connected || !profile) {
+        return;
+    }
+
     auto &buttons = profile->buttonDefs();
     auto it = buttons.find(hardwareButtonIndex);
-    const PAP3MCPButtonDef *buttonDef = (it != buttons.end()) ? &it->second : nullptr;
+    if (it == buttons.end()) {
+        return;
+    }
 
-    if (!buttonDef || buttonDef->dataref.empty()) {
+    const PAP3MCPButtonDef *buttonDef = &it->second;
+
+    if (buttonDef->dataref.empty()) {
         return;
     }
 

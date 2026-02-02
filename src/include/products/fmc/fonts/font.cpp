@@ -15,13 +15,12 @@
 #include <XPLMUtilities.h>
 
 const std::vector<std::vector<unsigned char>> Font::GlyphData(std::string filename, unsigned char hardwareIdentifier, FMCHardwareType hardwareType) {
-    std::string pluginDir = AppState::getInstance()->getPluginDirectory();
-    if (pluginDir.empty()) {
-        debug_force("Plugin directory is empty\n");
+    std::string pluginDirectory = AppState::getInstance()->getPluginDirectory();
+    if (pluginDirectory.empty()) {
         return {};
     }
 
-    std::filesystem::path fontFile = std::filesystem::path(pluginDir) / "fonts" / filename;
+    std::filesystem::path fontFile = std::filesystem::path(pluginDirectory) / "fonts" / filename;
     std::ifstream file(fontFile, std::ios::binary);
     if (!file) {
         debug_force("Could not open custom font file: %s\n", fontFile.c_str());
@@ -88,13 +87,12 @@ const std::vector<std::vector<unsigned char>> Font::GlyphData(FontVariant varian
 const std::vector<std::string> Font::ReadCustomFontFiles() {
     std::vector<std::string> fontFiles;
 
-    std::string pluginDir = AppState::getInstance()->getPluginDirectory();
-    if (pluginDir.empty()) {
-        debug_force("Plugin directory is empty\n");
+    std::string pluginDirectory = AppState::getInstance()->getPluginDirectory();
+    if (pluginDirectory.empty()) {
         return fontFiles;
     }
 
-    std::filesystem::path fontsDirectory = std::filesystem::path(pluginDir) / "fonts";
+    std::filesystem::path fontsDirectory = std::filesystem::path(pluginDirectory) / "fonts";
 
     try {
         if (std::filesystem::exists(fontsDirectory)) {

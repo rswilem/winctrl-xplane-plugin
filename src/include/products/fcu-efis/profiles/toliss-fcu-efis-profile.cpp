@@ -91,8 +91,11 @@ TolissFCUEfisProfile::TolissFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAir
     });
 
     Dataref::getInstance()->monitorExistingDataref<int>("AirbusFBW/APVerticalMode", [this, product](int vsMode) {
-        bool expedEnabled = vsMode >= 0 && vsMode & 0b00010000;
-        product->setLedBrightness(FCUEfisLed::EXPED_GREEN, expedEnabled || isAnnunTest() ? 1 : 0);
+        /*0=SRS, 1=CLB, 2=DES, 3=ALT CST*, 4=ALT CST, 6=G/S*, 7=G/S, 8=FINAL, 10=FLARE, 11=LAND; 101=OP CLB, 102=OP DES, 103=ALT*, 104=ALT, 105: ALT CRZ, 107=V/S or FPA, 112: EXP CLB, 113: EXP DES*/
+        bool isExpedMode = vsMode == 112 || vsMode == 113;
+        bool isAltMode = vsMode == 104;
+        bool illuminated = isExpedMode || isAltMode;
+        product->setLedBrightness(FCUEfisLed::EXPED_GREEN, illuminated || isAnnunTest() ? 1 : 0);
     });
 
     // Monitor EFIS Right (Captain) LED states

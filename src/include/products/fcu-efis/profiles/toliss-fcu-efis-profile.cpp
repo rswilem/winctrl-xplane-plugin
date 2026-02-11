@@ -92,8 +92,12 @@ TolissFCUEfisProfile::TolissFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAir
 
     Dataref::getInstance()->monitorExistingDataref<int>("AirbusFBW/APVerticalMode", [this, product](int vsMode) {
         /*0=SRS, 1=CLB, 2=DES, 3=ALT CST*, 4=ALT CST, 6=G/S*, 7=G/S, 8=FINAL, 10=FLARE, 11=LAND; 101=OP CLB, 102=OP DES, 103=ALT*, 104=ALT, 105: ALT CRZ, 107=V/S or FPA, 112: EXP CLB, 113: EXP DES*/
-        bool isExpedMode = vsMode == 112 || vsMode == 113;
-        bool isAltMode = vsMode == 104;
+        static const std::string icao = Dataref::getInstance()->get<std::string>("sim/aircraft/view/acf_ICAO");
+        static const std::set<std::string> expedButtonIcaos = {"A318", "A319", "A320", "A321", "A19N", "A20N",
+            "A21N"};
+        bool expedButtonAvailable = expedButtonIcaos.count(icao) > 0;
+        bool isExpedMode = expedButtonAvailable && (vsMode == 112 || vsMode == 113);
+        bool isAltMode = !expedButtonAvailable && (vsMode == 104 || vsMode == 105);
         bool illuminated = isExpedMode || isAltMode;
         product->setLedBrightness(FCUEfisLed::EXPED_GREEN, illuminated || isAnnunTest() ? 1 : 0);
     });

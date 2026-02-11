@@ -8,7 +8,7 @@
 #include <cmath>
 
 FF777UrsaMinorThrottleProfile::FF777UrsaMinorThrottleProfile(ProductUrsaMinorThrottle *product) : UrsaMinorThrottleAircraftProfile(product) {
-    Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lights/glareshield", [this, product](float brightness) {
+    Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lights/aisle", [this, product](float brightness) {
         bool hasPower = Dataref::getInstance()->getCached<bool>("1-sim/output/mcp/ok");
         uint8_t backlightBrightness = hasPower ? brightness * 255 : 0;
 

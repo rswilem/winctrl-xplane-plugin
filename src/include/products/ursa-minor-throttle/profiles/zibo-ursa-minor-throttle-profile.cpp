@@ -9,13 +9,13 @@
 
 ZiboUrsaMinorThrottleProfile::ZiboUrsaMinorThrottleProfile(ProductUrsaMinorThrottle *product) : UrsaMinorThrottleAircraftProfile(product) {
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("laminar/B738/electric/panel_brightness", [this, product](std::vector<float> panelBrightness) {
-        if (panelBrightness.size() < 1) {
+        if (panelBrightness.size() < 4) {
             return;
         }
 
         bool hasPower = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on");
         bool hasMainBus = Dataref::getInstance()->get<bool>("laminar/B738/electric/main_bus");
-        float ratio = std::clamp(hasMainBus ? panelBrightness[0] : 0.5f, 0.0f, 1.0f);
+        float ratio = std::clamp(hasMainBus ? panelBrightness[3] : 0.5f, 0.0f, 1.0f);
         uint8_t backlightBrightness = hasPower ? ratio * 255 : 0;
 
         product->setLedBrightness(UrsaMinorThrottleLed::BACKLIGHT, backlightBrightness);

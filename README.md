@@ -73,7 +73,7 @@ The matrix below shows device and aircraft compatibility. Devices are listed ver
 - [@verres1](https://github.com/verres1) for enriching the FF777 profile.
 - [@teropa](https://forums.x-plane.org/profile/1028374-teropa/) for data capture and testing of multiple devices.
 - [@SoarByWire](https://forums.x-plane.org/profile/411164-soarbywire/) for the testing of multiple devices.
-- [@MortyMars](https://github.com/MortyMars) for the FCU/EFIS FF777 and FF767 profile.
+- [@MortyMars](https://github.com/MortyMars) for the FCU/EFIS FF777, FF767, and FFA350 v1 profiles.
 - [@loftwing](https://github.com/loftwing) for the JF146 profile and testing.
 
 ### Linux udev rules

@@ -14,7 +14,7 @@ class UrsaMinorJoystickAircraftProfile {
         UrsaMinorJoystickAircraftProfile(ProductUrsaMinorJoystick *product) : product(product) {};
         virtual ~UrsaMinorJoystickAircraftProfile() = default;
 
-        virtual void update() = 0;
+        virtual void update() {};
 };
 
 #endif

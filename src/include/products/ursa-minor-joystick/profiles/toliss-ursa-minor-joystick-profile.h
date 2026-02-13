@@ -6,17 +6,11 @@
 #include <string>
 
 class TolissUrsaMinorJoystickProfile : public UrsaMinorJoystickAircraftProfile {
-    private:
-        int lastVibration = 0;
-        float lastGForce = 0.0f;
-
     public:
         TolissUrsaMinorJoystickProfile(ProductUrsaMinorJoystick *product);
         ~TolissUrsaMinorJoystickProfile();
 
         static bool IsEligible();
-
-        void update() override;
 };
 
 #endif

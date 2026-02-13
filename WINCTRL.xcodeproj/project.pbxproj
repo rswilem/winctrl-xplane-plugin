@@ -122,6 +122,8 @@
 		F6F77AB22E278F300060AFC0 /* product-ursa-minor-joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6F77AAD2E278F300060AFC0 /* product-ursa-minor-joystick.cpp */; };
 		F6F77AB52E278F530060AFC0 /* product-ursa-minor-joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6F77AAD2E278F300060AFC0 /* product-ursa-minor-joystick.cpp */; };
 		F6FBC55F2E3A3E15004E5F42 /* FCUEfisControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6FBC55E2E3A3E15004E5F42 /* FCUEfisControlView.swift */; };
+		F6FDC3D02F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6FDC3CF2F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.cpp */; };
+		F6FDC3D12F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6FDC3CF2F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.cpp */; };
 		F6FF5F202E4B5CC5002508F6 /* XPWidgets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6FF5F1F2E4B5CC5002508F6 /* XPWidgets.framework */; };
 		F6FF5F212E4B5CC5002508F6 /* XPLM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6FF5F1E2E4B5CC5002508F6 /* XPLM.framework */; };
 /* End PBXBuildFile section */
@@ -258,6 +260,8 @@
 		F6F77AAC2E278F300060AFC0 /* product-ursa-minor-joystick.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "product-ursa-minor-joystick.h"; sourceTree = "<group>"; };
 		F6F77AAD2E278F300060AFC0 /* product-ursa-minor-joystick.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "product-ursa-minor-joystick.cpp"; sourceTree = "<group>"; };
 		F6FBC55E2E3A3E15004E5F42 /* FCUEfisControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCUEfisControlView.swift; sourceTree = "<group>"; };
+		F6FDC3CE2F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ff777-ursa-minor-joystick-profile.h"; sourceTree = "<group>"; };
+		F6FDC3CF2F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "ff777-ursa-minor-joystick-profile.cpp"; sourceTree = "<group>"; };
 		F6FF5F1E2E4B5CC5002508F6 /* XPLM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XPLM.framework; path = SDK/Libraries/Mac/XPLM.framework; sourceTree = "<group>"; };
 		F6FF5F1F2E4B5CC5002508F6 /* XPWidgets.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XPWidgets.framework; path = SDK/Libraries/Mac/XPWidgets.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -384,6 +388,8 @@
 				F684285E2EC6389D0027756D /* toliss-ursa-minor-joystick-profile.cpp */,
 				F68428632EC63F070027756D /* zibo-ursa-minor-joystick-profile.h */,
 				F68428642EC63F070027756D /* zibo-ursa-minor-joystick-profile.cpp */,
+				F6FDC3CE2F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.h */,
+				F6FDC3CF2F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.cpp */,
 			);
 			path = profiles;
 			sourceTree = "<group>";
@@ -728,6 +734,7 @@
 				F6C248462EBE498500617E89 /* plugins-menu.cpp in Sources */,
 				F68428662EC63F070027756D /* zibo-ursa-minor-joystick-profile.cpp in Sources */,
 				F6A77E722ED3514600061D03 /* toliss-agp-profile.cpp in Sources */,
+				F6FDC3D12F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.cpp in Sources */,
 				F6A77E732ED3514600061D03 /* product-agp.cpp in Sources */,
 				F6D8E6C92ED059390041C4FB /* product-ecam32.cpp in Sources */,
 				F6D8E6CA2ED059390041C4FB /* toliss-ecam32-profile.cpp in Sources */,
@@ -812,6 +819,7 @@
 				F6E73EE22ED9CCA7000A8B6A /* toliss-ursa-minor-throttle-profile.cpp in Sources */,
 				F6BBFF082ED741B900FE9D7F /* rotatemd11-pap3-mcp-profile.cpp in Sources */,
 				F6BBFF092ED741B900FE9D7F /* ff777-pap3-mcp-profile.cpp in Sources */,
+				F6FDC3D02F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.cpp in Sources */,
 				F6C6E0302E8D5DAA00558F46 /* product-pap3-mcp.cpp in Sources */,
 				F6C6E0312E8D5DAA00558F46 /* laminar-pap3-mcp-profile.cpp in Sources */,
 				F6C6E0322E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp in Sources */,

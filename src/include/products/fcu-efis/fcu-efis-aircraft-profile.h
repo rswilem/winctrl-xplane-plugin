@@ -52,9 +52,7 @@ enum class FCUEfisDatarefType : unsigned char {
     EXECUTE_CMD_ONCE,
     BAROMETER_PILOT,
     BAROMETER_FO,
-    PUSH_BUTTON,   // for ff767-fcu-efis-profile
-    SET_DUAL_VALUE // for ff767-fcu-efis-profile
-
+    PUSH_BUTTON,
 };
 
 struct FCUEfisButtonDef {
@@ -62,7 +60,6 @@ struct FCUEfisButtonDef {
         std::string dataref;
         FCUEfisDatarefType datarefType = FCUEfisDatarefType::EXECUTE_CMD_ONCE;
         double value = 0.0;
-        std::string secondaryDataref = ""; // for ff767-fcu-efis-profile (optional)
 };
 
 enum class FCUEfisLed : int {

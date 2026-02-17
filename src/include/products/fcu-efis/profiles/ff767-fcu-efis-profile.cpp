@@ -373,21 +373,12 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &FF767FCUEfisProfile::butto
         {55, {"L_RANGE 320", "1-sim/ckpt/cptHsiRangeSwitch/anim", FCUEfisDatarefType::SET_VALUE, 5}},
 
         // VOR/ADF selectors
-        {56, {"L_VORL VOR", "1-sim/ckpt/cptHsiVorLSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, -1.0,
-                 "1-sim/ckpt/cptHsiVorLSwitch/anim"}},
-        {57, {"L_VORL OFF", "1-sim/ckpt/cptHsiVorLSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, 0.0,
-                 "1-sim/ckpt/cptHsiVorLSwitch/anim"}},
-        {58, {"L_VORL ADF", "1-sim/ckpt/cptHsiVorLSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, 1.0,
-                 "1-sim/ckpt/cptHsiVorLSwitch/anim"}},
-
-        {59, {"L_VORR VOR", "1-sim/ckpt/cptHsiVorRSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, -1.0,
-                 "1-sim/ckpt/cptHsiVorRSwitch/anim"}},
-        {60, {"L_VORR OFF", "1-sim/ckpt/cptHsiVorRSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, 0.0,
-                 "1-sim/ckpt/cptHsiVorRSwitch/anim"}},
-        {61, {"L_VORR ADF", "1-sim/ckpt/cptHsiVorRSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, 1.0,
-                 "1-sim/ckpt/cptHsiVorRSwitch/anim"}},
-        //{62, },
-        //{63, },
+        {56, {"L_VORL VOR", "1-sim/ckpt/cptHsiVorLSwitch/anim/anim,1-sim/ckpt/cptHsiVorLSwitch/anim", FCUEfisDatarefType::SET_VALUE, -1.0}},
+        {57, {"L_VORL OFF", "1-sim/ckpt/cptHsiVorLSwitch/anim/anim,1-sim/ckpt/cptHsiVorLSwitch/anim", FCUEfisDatarefType::SET_VALUE, 0.0}},
+        {58, {"L_VORL ADF", "1-sim/ckpt/cptHsiVorLSwitch/anim/anim,1-sim/ckpt/cptHsiVorLSwitch/anim", FCUEfisDatarefType::SET_VALUE, 1.0}},
+        {59, {"L_VORR VOR", "1-sim/ckpt/cptHsiVorRSwitch/anim/anim,1-sim/ckpt/cptHsiVorRSwitch/anim", FCUEfisDatarefType::SET_VALUE, -1.0}},
+        {60, {"L_VORR OFF", "1-sim/ckpt/cptHsiVorRSwitch/anim/anim,1-sim/ckpt/cptHsiVorRSwitch/anim", FCUEfisDatarefType::SET_VALUE, 0.0}},
+        {61, {"L_VORR ADF", "1-sim/ckpt/cptHsiVorRSwitch/anim/anim,1-sim/ckpt/cptHsiVorRSwitch/anim", FCUEfisDatarefType::SET_VALUE, 1.0}},
 
         // EFIS FO ----------------------------------------------------------------------
         // Buttons
@@ -427,19 +418,12 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &FF767FCUEfisProfile::butto
         {87, {"R_RANGE 320", "1-sim/ckpt/foHsiRangeSwitch/anim", FCUEfisDatarefType::SET_VALUE, 5}},
 
         // VOR/ADF selectors
-        {88, {"R_VORL VOR", "1-sim/ckpt/foHsiVorLSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, -1.0,
-                 "1-sim/ckpt/foHsiVorLSwitch/anim"}},
-        {89, {"R_VORL OFF", "1-sim/ckpt/foHsiVorLSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, 0.0,
-                 "1-sim/ckpt/foHsiVorLSwitch/anim"}},
-        {90, {"R_VORL ADF", "1-sim/ckpt/foHsiVorLSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, 1.0,
-                 "1-sim/ckpt/foHsiVorLSwitch/anim"}},
-
-        {91, {"R_VORR VOR", "1-sim/ckpt/foHsiVorRSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, -1.0,
-                 "1-sim/ckpt/foHsiVorRSwitch/anim"}},
-        {92, {"R_VORR OFF", "1-sim/ckpt/foHsiVorRSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, 0.0,
-                 "1-sim/ckpt/foHsiVorRSwitch/anim"}},
-        {93, {"R_VORR ADF", "1-sim/ckpt/foHsiVorRSwitch/anim/anim", FCUEfisDatarefType::SET_DUAL_VALUE, 1.0,
-                 "1-sim/ckpt/foHsiVorRSwitch/anim"}},
+        {88, {"R_VORL VOR", "1-sim/ckpt/foHsiVorLSwitch/anim/anim,1-sim/ckpt/foHsiVorLSwitch/anim", FCUEfisDatarefType::SET_VALUE, -1.0}},
+        {89, {"R_VORL OFF", "1-sim/ckpt/foHsiVorLSwitch/anim/anim,1-sim/ckpt/foHsiVorLSwitch/anim", FCUEfisDatarefType::SET_VALUE, 0.0}},
+        {90, {"R_VORL ADF", "1-sim/ckpt/foHsiVorLSwitch/anim/anim,1-sim/ckpt/foHsiVorLSwitch/anim", FCUEfisDatarefType::SET_VALUE, 1.0}},
+        {91, {"R_VORR VOR", "1-sim/ckpt/foHsiVorRSwitch/anim/anim,1-sim/ckpt/foHsiVorRSwitch/anim", FCUEfisDatarefType::SET_VALUE, -1.0}},
+        {92, {"R_VORR OFF", "1-sim/ckpt/foHsiVorRSwitch/anim/anim,1-sim/ckpt/foHsiVorRSwitch/anim", FCUEfisDatarefType::SET_VALUE, 0.0}},
+        {93, {"R_VORR ADF", "1-sim/ckpt/foHsiVorRSwitch/anim/anim,1-sim/ckpt/foHsiVorRSwitch/anim", FCUEfisDatarefType::SET_VALUE, 1.0}},
 
     };
     return buttons;
@@ -451,7 +435,6 @@ void FF767FCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.displayEnabled = datarefManager->getCached<bool>("sim/cockpit2/autopilot/autopilot_has_power");
     data.displayTest = isTestMode();
 
-    // SPD ------------------------------------------------------------------------------
     data.spdMach = datarefManager->getCached<bool>("1-sim/AP/iasmach");
     float speed = datarefManager->getCached<float>("1-sim/AP/dig3/spdSetting");
 
@@ -565,31 +548,9 @@ void FF767FCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMComm
 
     auto datarefManager = Dataref::getInstance();
 
-    if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::SET_DUAL_VALUE) {
-        datarefManager->set<float>(button->dataref.c_str(), button->value);
-
-        if (!button->secondaryDataref.empty()) {
-            datarefManager->set<float>(button->secondaryDataref.c_str(), button->value);
-        }
-        return;
-    }
-
     if (button->datarefType == FCUEfisDatarefType::PUSH_BUTTON) {
-        if (phase == xplm_CommandBegin) {
-            datarefManager->set<float>(button->dataref.c_str(), 1.0f);
-        } else if (phase == xplm_CommandEnd) {
-            datarefManager->set<float>(button->dataref.c_str(), 0.0f);
-        }
-        return;
-    }
-
-    if (phase == xplm_CommandContinue) {
-        return;
-    }
-
-    if (phase == xplm_CommandBegin &&
-        (button->datarefType == FCUEfisDatarefType::BAROMETER_PILOT ||
-            button->datarefType == FCUEfisDatarefType::BAROMETER_FO)) {
+        datarefManager->set<float>(button->dataref.c_str(), phase == xplm_CommandBegin ? 1.0f : 0.0f);
+    } else if (phase == xplm_CommandBegin && (button->datarefType == FCUEfisDatarefType::BAROMETER_PILOT || button->datarefType == FCUEfisDatarefType::BAROMETER_FO)) {
         bool isCaptain = button->datarefType == FCUEfisDatarefType::BAROMETER_PILOT;
 
         // Datarefs
@@ -605,19 +566,25 @@ void FF767FCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMComm
         float newAnim = currentAnim + (increase ? step : -step);
 
         datarefManager->set<float>(animDataref, newAnim);
-    }
+    } else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::SET_VALUE) {
+        // Split dataref by comma and set each one
+        std::string datarefStr = button->dataref;
+        size_t pos = 0;
+        while ((pos = datarefStr.find(',')) != std::string::npos) {
+            std::string dataref = datarefStr.substr(0, pos);
+            datarefManager->set<float>(dataref.c_str(), button->value);
+            datarefStr.erase(0, pos + 1);
+        }
 
-        else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::SET_VALUE) {
-        datarefManager->set<float>(button->dataref.c_str(), button->value);
-    }
-
-    else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::TOGGLE_VALUE) {
+        // Set the last dataref
+        if (!datarefStr.empty()) {
+            datarefManager->set<float>(datarefStr.c_str(), button->value);
+        }
+    } else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::TOGGLE_VALUE) {
         int currentValue = datarefManager->get<int>(button->dataref.c_str());
         int newValue = currentValue ? 0 : 1;
         datarefManager->set<int>(button->dataref.c_str(), newValue);
-    }
-
-    else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::EXECUTE_CMD_ONCE) {
+    } else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::EXECUTE_CMD_ONCE) {
         datarefManager->executeCommand(button->dataref.c_str());
     }
 }

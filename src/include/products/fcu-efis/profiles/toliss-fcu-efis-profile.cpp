@@ -520,8 +520,6 @@ void TolissFCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMCom
         } else {
             datarefManager->set<float>(button->dataref.c_str(), button->value);
         }
-
-        return;
     } else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::EXECUTE_CMD_ONCE) {
         datarefManager->executeCommand(button->dataref.c_str());
     }

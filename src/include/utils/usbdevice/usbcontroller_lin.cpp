@@ -225,7 +225,7 @@ void USBController::DeviceRemovedCallback(void *context, struct udev_device *dev
     // Second pass: deferred erase
     AppState::getInstance()->executeAfter(0, [self, devicePath = std::string(devicePath)]() {
         for (auto it = self->devices.begin(); it != self->devices.end();) {
-            if (!(*it) || !(*it)->profileReady || !(*it)->connected) {
+            if (!(*it) || !(*it)->connected) {
                 delete *it;
                 it = self->devices.erase(it);
             } else {

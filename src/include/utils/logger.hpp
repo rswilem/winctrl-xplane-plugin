@@ -15,7 +15,7 @@ enum class LogLevel {
     VERBOSE = 0,
     INFO = 1,
     WARN = 2,
-    ERROR = 3,
+    CRITICAL = 3,
 };
 
 class Logger {
@@ -58,14 +58,14 @@ class Logger {
         void error(const char *format, ...) {
             va_list args;
             va_start(args, format);
-            log(LogLevel::ERROR, format, args);
+            log(LogLevel::CRITICAL, format, args);
             va_end(args);
         }
 
         void logForce(const char *format, ...) {
             va_list args;
             va_start(args, format);
-            logInternal(LogLevel::ERROR, format, args, true);
+            logInternal(LogLevel::CRITICAL, format, args, true);
             va_end(args);
         }
 
@@ -98,7 +98,7 @@ class Logger {
                 case LogLevel::WARN:
                     levelStr = "Warning";
                     break;
-                case LogLevel::ERROR:
+                case LogLevel::CRITICAL:
                     levelStr = "Error";
                     break;
             }

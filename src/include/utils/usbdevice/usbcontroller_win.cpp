@@ -240,7 +240,7 @@ void USBController::checkForDeviceChanges() {
         for (auto it = devices.begin(); it != devices.end();) {
             auto pathIt = devicePaths.find(*it);
             bool remove = false;
-            if (!(*it)->profileReady || (*it)->hidDevice == INVALID_HANDLE_VALUE || !(*it)->connected) {
+            if ((*it)->hidDevice == INVALID_HANDLE_VALUE || !(*it)->connected) {
                 remove = true;
             }
             if (pathIt != devicePaths.end() &&

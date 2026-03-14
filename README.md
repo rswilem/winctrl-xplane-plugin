@@ -68,7 +68,7 @@ The matrix below shows device and aircraft compatibility. Devices are listed ver
 - [@claaslange](https://github.com/claaslange) for the FCU-EFIS integration.
 - [@shred86](https://github.com/shred86) for identifying the Ursa Minor Joystick R.
 - [@Belnadifia](https://github.com/Belnadifia) for the complete PAP3 HID protocol and Zibo profile.
-- [@ColinM9991](https://github.com/ColinM9991) for the FF777 profile.
+- [@ColinM9991](https://github.com/ColinM9991) for the FF777 profile and parts of the FMC protocol.
 - [@tukan68](https://github.com/tukan68) for FF767 profile.
 - [@verres1](https://github.com/verres1) for enriching the FF777 profile.
 - [@teropa](https://forums.x-plane.org/profile/1028374-teropa/) for data capture and testing of multiple devices.

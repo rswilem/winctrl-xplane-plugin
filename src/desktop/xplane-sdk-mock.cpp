@@ -577,3 +577,7 @@ void XPLMSetMenuItemName(XPLMMenuID inMenu, int inIndex, const char *inItemName,
 void XPLMAppendMenuSeparator(XPLMMenuID inMenu) {
     // noop
 }
+
+float XPLMGetElapsedTime() {
+    return 1.0f;
+}

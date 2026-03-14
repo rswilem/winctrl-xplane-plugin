@@ -115,6 +115,26 @@ void ProductUrsaMinorThrottle::update() {
 
     USBDevice::update();
 
+    if (Dataref::getInstance()->getCached<bool>("sim/cockpit/electrical/avionics_on")) {
+        float gForce = Dataref::getInstance()->get<float>("sim/flightmodel/forces/g_nrml");
+        float delta = fabs(gForce - lastGForce);
+        lastGForce = gForce;
+
+        bool onGround = Dataref::getInstance()->getCached<bool>("sim/flightmodel/failures/onground_any");
+        uint8_t vibration = (uint8_t) std::min(255.0f, delta * vibrationMultiplier / (onGround ? 1.0f : 2.0f));
+        if (vibration < 6) {
+            vibration = 0;
+        }
+
+        if (lastVibration != vibration) {
+            setVibration(vibration, true, true);
+            lastVibration = vibration;
+        }
+    } else if (lastVibration > 0) {
+        lastVibration = 0;
+        setVibration(lastVibration, true, true);
+    }
+
     if (profile) {
         profile->update();
 

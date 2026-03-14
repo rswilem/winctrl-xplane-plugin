@@ -57,28 +57,6 @@ bool TolissUrsaMinorThrottleProfile::IsEligible() {
     return Dataref::getInstance()->exists("AirbusFBW/PanelBrightnessLevel");
 }
 
-void TolissUrsaMinorThrottleProfile::update() {
-    if (Dataref::getInstance()->getCached<bool>("sim/cockpit/electrical/avionics_on")) {
-        float gForce = Dataref::getInstance()->get<float>("sim/flightmodel/forces/g_nrml");
-        float delta = fabs(gForce - lastGForce);
-        lastGForce = gForce;
-
-        bool onGround = Dataref::getInstance()->getCached<bool>("sim/flightmodel/failures/onground_any");
-        uint8_t vibration = (uint8_t) std::min(255.0f, delta * (onGround ? product->vibrationMultiplier : product->vibrationMultiplier / 2.0f));
-        if (vibration < 6) {
-            vibration = 0;
-        }
-
-        if (lastVibration != vibration) {
-            product->setVibration(vibration);
-            lastVibration = vibration;
-        }
-    } else if (lastVibration > 0) {
-        lastVibration = 0;
-        product->setVibration(lastVibration);
-    }
-}
-
 const std::unordered_map<uint16_t, UrsaMinorThrottleButtonDef> &TolissUrsaMinorThrottleProfile::buttonDefs() const {
     static const std::unordered_map<uint16_t, UrsaMinorThrottleButtonDef> buttons = {
         {0, {"ENG L master ON", "AirbusFBW/ENG1MasterSwitch", UrsaMinorThrottleDatarefType::SET_VALUE, 1}},

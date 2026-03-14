@@ -27,6 +27,9 @@ class ProductUrsaMinorThrottle : public USBDevice {
         std::set<int> pressedButtonIndices;
         uint8_t packetNumber = 1;
 
+        int lastVibration = 0;
+        float lastGForce = 1.0f;
+
         void setProfileForCurrentAircraft();
         void loadVibrationSetting(const std::string &preference);
 

@@ -10,7 +10,7 @@ class ProductUrsaMinorJoystick : public USBDevice {
         int menuItemId;
 
         int lastVibration = 0;
-        float lastGForce = 0.0f;
+        float lastGForce = 1.0f;
 
         void setProfileForCurrentAircraft();
         void loadVibrationSetting(const std::string &preference);

@@ -49,7 +49,9 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
         handle,
         value,
         {[changeCallback](DataRefValueType newValue) -> bool {
-            if constexpr (std::is_same_v<T, std::string>) {
+            if (!changeCallback) {
+                return true;
+            } else if constexpr (std::is_same_v<T, std::string>) {
                 if (std::holds_alternative<std::string>(newValue)) {
                     return changeCallback(std::get<std::string>(newValue));
                 }
@@ -67,12 +69,17 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
                 }
             }
             return false;
-        }}};
+        }},
+    };
 
     if constexpr ((std::is_same_v<T, int>) || (std::is_same_v<T, bool>) ) {
-        handle = XPLMRegisterDataAccessor(ref, xplmType_Int, writable ? 1 : 0, [](void *inRefcon) -> int {
-            return *static_cast<T *>(inRefcon);
-        },
+        handle = XPLMRegisterDataAccessor(
+            ref,
+            xplmType_Int,
+            writable ? 1 : 0,
+            [](void *inRefcon) -> int {
+                return *static_cast<T *>(inRefcon);
+            },
             [](void *inRefcon, int inValue) {
                 BoundRef *info = static_cast<BoundRef *>(inRefcon);
                 T *valuePtr = static_cast<T *>(info->valuePointer);
@@ -98,7 +105,12 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
             value,            // Read refcon
             &boundRefs[ref]); // Write refcon
     } else if constexpr (std::is_same_v<T, float>) {
-        handle = XPLMRegisterDataAccessor(ref, xplmType_Float, writable ? 1 : 0, nullptr, nullptr, // Int
+        handle = XPLMRegisterDataAccessor(
+            ref,
+            xplmType_Float,
+            writable ? 1 : 0,
+            nullptr,
+            nullptr, // Int
             [](void *inRefcon) -> T {
                 return *static_cast<T *>(inRefcon);
             },
@@ -125,7 +137,12 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
             value,            // Read refcon
             &boundRefs[ref]); // Write refcon
     } else if constexpr (std::is_same_v<T, double>) {
-        handle = XPLMRegisterDataAccessor(ref, xplmType_Double, writable ? 1 : 0, nullptr, nullptr, // Int
+        handle = XPLMRegisterDataAccessor(
+            ref,
+            xplmType_Double,
+            writable ? 1 : 0,
+            nullptr,
+            nullptr, // Int
             nullptr,
             nullptr, // Float
             [](void *inRefcon) -> T {
@@ -152,7 +169,12 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
             value,            // Read refcon
             &boundRefs[ref]); // Write refcon
     } else if constexpr (std::is_same_v<T, std::string>) {
-        handle = XPLMRegisterDataAccessor(ref, xplmType_Data, writable ? 1 : 0, nullptr, nullptr, // Int
+        handle = XPLMRegisterDataAccessor(
+            ref,
+            xplmType_Data,
+            writable ? 1 : 0,
+            nullptr,
+            nullptr, // Int
             nullptr,
             nullptr, // Float
             nullptr,
@@ -229,10 +251,7 @@ void Dataref::monitorExistingDataref(const char *ref, DatarefMonitorChangedCallb
     if (boundRefs.find(ref) != boundRefs.end()) {
         boundRefs[ref].changeCallbacks.push_back(callback);
     } else {
-        boundRefs[ref] = {
-            0,
-            nullptr,
-            {callback}};
+        boundRefs[ref] = {0, nullptr, {callback}};
     }
 }
 
@@ -275,23 +294,25 @@ void Dataref::update() {
     std::vector<std::pair<std::string, CachedValue>> updates;
 
     for (auto &[key, data] : cachedValues) {
-        std::visit([&](auto &&value) {
-            using T = std::decay_t<decltype(value)>;
-            T newValue = get<T>(key.c_str());
-            bool didChange = false;
-            if constexpr (std::is_floating_point_v<T>) {
-                didChange = std::fabs(value - newValue) > std::numeric_limits<T>::epsilon();
-            } else {
-                didChange = value != newValue;
-            }
+        std::visit(
+            [&](auto &&value) {
+                using T = std::decay_t<decltype(value)>;
+                T newValue = get<T>(key.c_str());
+                bool didChange = false;
+                if constexpr (std::is_floating_point_v<T>) {
+                    didChange = std::fabs(value - newValue) > std::numeric_limits<T>::epsilon();
+                } else {
+                    didChange = value != newValue;
+                }
 
-            if (didChange) {
-                updates.emplace_back(key, CachedValue{
-                                              .value = newValue,
-                                              .lastUpdateCycleNumber = XPLMGetCycleNumber(),
-                                          });
-            }
-        },
+                if (didChange) {
+                    updates.emplace_back(key,
+                        CachedValue{
+                            .value = newValue,
+                            .lastUpdateCycleNumber = XPLMGetCycleNumber(),
+                        });
+                }
+            },
             data.value);
     }
 
@@ -351,9 +372,7 @@ T Dataref::getCached(const char *ref) {
     auto it = cachedValues.find(ref);
     if (it == cachedValues.end()) {
         auto val = get<T>(ref);
-        cachedValues[ref] = {
-            .value = val,
-            .lastUpdateCycleNumber = XPLMGetCycleNumber()};
+        cachedValues[ref] = {.value = val, .lastUpdateCycleNumber = XPLMGetCycleNumber()};
         return val;
     }
 
@@ -370,7 +389,8 @@ T Dataref::getCached(const char *ref) {
             return false;
         } else if constexpr (std::is_same_v<T, std::string>) {
             return "";
-        } else if constexpr (std::is_same_v<T, std::vector<int>> || std::is_same_v<T, std::vector<float>> || std::is_same_v<T, std::vector<unsigned char>>) {
+        } else if constexpr (std::is_same_v<T, std::vector<int>> || std::is_same_v<T, std::vector<float>> ||
+                             std::is_same_v<T, std::vector<unsigned char>>) {
             return {};
         } else {
             return 0;
@@ -395,7 +415,8 @@ T Dataref::get(const char *ref) {
     if (!handle) {
         if constexpr (std::is_same_v<T, std::string>) {
             return "";
-        } else if constexpr (std::is_same_v<T, std::vector<int>> || std::is_same_v<T, std::vector<float>> || std::is_same_v<T, std::vector<unsigned char>>) {
+        } else if constexpr (std::is_same_v<T, std::vector<int>> || std::is_same_v<T, std::vector<float>> ||
+                             std::is_same_v<T, std::vector<unsigned char>>) {
             return {};
         } else {
             return 0;
@@ -446,7 +467,8 @@ T Dataref::get(const char *ref) {
 
     if constexpr (std::is_same_v<T, std::string>) {
         return "";
-    } else if constexpr (std::is_same_v<T, std::vector<int>> || std::is_same_v<T, std::vector<float>> || std::is_same_v<T, std::vector<unsigned char>>) {
+    } else if constexpr (std::is_same_v<T, std::vector<int>> || std::is_same_v<T, std::vector<float>> ||
+                         std::is_same_v<T, std::vector<unsigned char>>) {
         return {};
     } else {
         return 0;
@@ -459,7 +481,8 @@ template void Dataref::set<int>(const char *ref, int value, bool setCacheOnly);
 template void Dataref::set<bool>(const char *ref, bool value, bool setCacheOnly);
 template void Dataref::set<std::vector<int>>(const char *ref, std::vector<int> value, bool setCacheOnly);
 template void Dataref::set<std::vector<float>>(const char *ref, std::vector<float> value, bool setCacheOnly);
-template void Dataref::set<std::vector<unsigned char>>(const char *ref, std::vector<unsigned char> value, bool setCacheOnly);
+template void Dataref::set<std::vector<unsigned char>>(
+    const char *ref, std::vector<unsigned char> value, bool setCacheOnly);
 template void Dataref::set<std::string>(const char *ref, std::string value, bool setCacheOnly);
 
 template<typename T>
@@ -469,9 +492,7 @@ void Dataref::set(const char *ref, T value, bool setCacheOnly) {
         return;
     }
 
-    cachedValues[ref] = {
-        .value = value,
-        .lastUpdateCycleNumber = XPLMGetCycleNumber()};
+    cachedValues[ref] = {.value = value, .lastUpdateCycleNumber = XPLMGetCycleNumber()};
 
     executeChangedCallbacksForDataref(ref);
 
@@ -479,7 +500,8 @@ void Dataref::set(const char *ref, T value, bool setCacheOnly) {
         return;
     }
 
-    if constexpr (std::is_same_v<T, bool> || std::is_same_v<T, int> || std::is_same_v<T, float> || std::is_same_v<T, double>) {
+    if constexpr (std::is_same_v<T, bool> || std::is_same_v<T, int> || std::is_same_v<T, float> ||
+                  std::is_same_v<T, double>) {
         XPLMDataTypeID refType = XPLMGetDataRefTypes(handle);
         if ((refType & xplmType_Float) == xplmType_Float) {
             XPLMSetDataf(handle, value);
@@ -502,7 +524,7 @@ void Dataref::set(const char *ref, T value, bool setCacheOnly) {
 void Dataref::executeCommand(const char *command, XPLMCommandPhase phase) {
     XPLMCommandRef handle = XPLMFindCommand(command);
     if (!handle) {
-        Logger::getInstance()->debug("Command not found: %s\n", command);
+        Logger::getInstance()->info("Command not found: %s\n", command);
         return;
     }
 
@@ -521,9 +543,7 @@ void Dataref::bindExistingCommand(const char *command, CommandExecutedCallback c
         return;
     }
 
-    boundCommands[command] = {
-        handle,
-        callback};
+    boundCommands[command] = {handle, callback};
 
     XPLMRegisterCommandHandler(handle, handleCommandCallback, 1, nullptr);
 }

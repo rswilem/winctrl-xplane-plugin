@@ -31,13 +31,10 @@ const char *ProductUrsaMinorJoystick::classIdentifier() {
 void ProductUrsaMinorJoystick::setProfileForCurrentAircraft() {
     if (TolissUrsaMinorJoystickProfile::IsEligible()) {
         profile = new TolissUrsaMinorJoystickProfile(this);
-        profileReady = true;
     } else if (ZiboUrsaMinorJoystickProfile::IsEligible()) {
         profile = new ZiboUrsaMinorJoystickProfile(this);
-        profileReady = true;
     } else {
         profile = nullptr;
-        profileReady = false;
     }
 }
 
@@ -50,6 +47,10 @@ bool ProductUrsaMinorJoystick::connect() {
     setVibration(0);
 
     setProfileForCurrentAircraft();
+
+    // Even if no specific profile was found, we consider the device ready to use.
+    // This will enable the plugin to wake up and update - the vibration needs this.
+    profileReady = true;
 
     std::string vibrationSetting = AppState::getInstance()->readPreference("JoystickVibration", "normal");
     loadVibrationSetting(vibrationSetting);

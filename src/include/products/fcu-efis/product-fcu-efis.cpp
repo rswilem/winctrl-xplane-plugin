@@ -79,15 +79,15 @@ bool ProductFCUEfis::connect() {
         initializeDisplays();
 
         // Set initial LED brightness
-        setLedBrightness(FCUEfisLed::BACKLIGHT, 180);
-        setLedBrightness(FCUEfisLed::SCREEN_BACKLIGHT, 180);
-        setLedBrightness(FCUEfisLed::EFISL_BACKLIGHT, 180);
-        setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, 180);
-        setLedBrightness(FCUEfisLed::EFISR_BACKLIGHT, 180);
-        setLedBrightness(FCUEfisLed::EFISR_SCREEN_BACKLIGHT, 180);
+        setLedBrightness(FCUEfisLed::BACKLIGHT, 0);
+        setLedBrightness(FCUEfisLed::SCREEN_BACKLIGHT, 0);
+        setLedBrightness(FCUEfisLed::EFISL_BACKLIGHT, 0);
+        setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, 0);
+        setLedBrightness(FCUEfisLed::EFISR_BACKLIGHT, 0);
+        setLedBrightness(FCUEfisLed::EFISR_SCREEN_BACKLIGHT, 0);
 
         setLedBrightness(FCUEfisLed::EXPED_GREEN, 0);
-        setLedBrightness(FCUEfisLed::EXPED_BACKLIGHT, 255);
+        setLedBrightness(FCUEfisLed::EXPED_BACKLIGHT, 0);
 
         if (!profile) {
             setProfileForCurrentAircraft();

@@ -33,7 +33,7 @@ class UrsaMinorThrottleAircraftProfile {
         UrsaMinorThrottleAircraftProfile(ProductUrsaMinorThrottle *product) : product(product) {};
         virtual ~UrsaMinorThrottleAircraftProfile() = default;
 
-        virtual void update() = 0;
+        virtual void update() {}
 
         virtual const std::unordered_map<uint16_t, UrsaMinorThrottleButtonDef> &buttonDefs() const = 0;
         virtual void buttonPressed(const UrsaMinorThrottleButtonDef *button, XPLMCommandPhase phase) = 0;

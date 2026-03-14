@@ -7,8 +7,6 @@
 
 class TolissUrsaMinorThrottleProfile : public UrsaMinorThrottleAircraftProfile {
     private:
-        int lastVibration = 0;
-        float lastGForce = 0.0f;
         bool isAnnunTest();
         std::string trimText;
 
@@ -17,8 +15,6 @@ class TolissUrsaMinorThrottleProfile : public UrsaMinorThrottleAircraftProfile {
         ~TolissUrsaMinorThrottleProfile();
 
         static bool IsEligible();
-
-        void update() override;
 
         const std::unordered_map<uint16_t, UrsaMinorThrottleButtonDef> &buttonDefs() const override;
         void buttonPressed(const UrsaMinorThrottleButtonDef *button, XPLMCommandPhase phase) override;

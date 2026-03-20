@@ -15,6 +15,8 @@
 		F61F8B1E2D0456D700E63C3F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F66F91662D0332F600F84283 /* main.cpp */; };
 		F621F80C2F1C264A00DDB31E /* jf146-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F621F80B2F1C264A00DDB31E /* jf146-fcu-efis-profile.cpp */; };
 		F621F80D2F1C264A00DDB31E /* jf146-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F621F80B2F1C264A00DDB31E /* jf146-fcu-efis-profile.cpp */; };
+		F62C0A9D2F6D308900A66B1E /* c172-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F62C0A9C2F6D308900A66B1E /* c172-fcu-efis-profile.cpp */; };
+		F62C0A9E2F6D308900A66B1E /* c172-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F62C0A9C2F6D308900A66B1E /* c172-fcu-efis-profile.cpp */; };
 		F635AD422E05697B005D6CDC /* bridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = F6827E102E05664C00382B28 /* bridge.mm */; };
 		F635AD462E0579E9005D6CDC /* usbcontroller_mac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F635AD442E0579E9005D6CDC /* usbcontroller_mac.cpp */; };
 		F635AD472E0579E9005D6CDC /* usbcontroller_mac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F635AD442E0579E9005D6CDC /* usbcontroller_mac.cpp */; };
@@ -143,6 +145,8 @@
 		F621F80B2F1C264A00DDB31E /* jf146-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "jf146-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
 		F62304282E59DF8500EE0089 /* vga_1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vga_1.h; sourceTree = "<group>"; };
 		F623042D2E5A230B00EE0089 /* font.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = font.h; sourceTree = "<group>"; };
+		F62C0A9B2F6D308900A66B1E /* c172-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "c172-fcu-efis-profile.h"; sourceTree = "<group>"; };
+		F62C0A9C2F6D308900A66B1E /* c172-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "c172-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
 		F62D2DF52E55FA4C00D307A4 /* xcrafts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xcrafts.h; sourceTree = "<group>"; };
 		F62D2DF92E55FA9100D307A4 /* 737.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = 737.h; sourceTree = "<group>"; };
 		F635AD432E0579E9005D6CDC /* usbcontroller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = usbcontroller.h; sourceTree = "<group>"; };
@@ -498,6 +502,8 @@
 				F67FE8132E895BAC00C4243C /* laminar-fcu-efis-profile.cpp */,
 				F6C69C0C2EC0DAE300BFDA65 /* laminar737-fcu-efis-profile.h */,
 				F6C69C0D2EC0DAE300BFDA65 /* laminar737-fcu-efis-profile.cpp */,
+				F62C0A9B2F6D308900A66B1E /* c172-fcu-efis-profile.h */,
+				F62C0A9C2F6D308900A66B1E /* c172-fcu-efis-profile.cpp */,
 			);
 			path = profiles;
 			sourceTree = "<group>";
@@ -723,6 +729,7 @@
 				F6A1493D2E4F04AE00FB8395 /* zibo-fmc-profile.cpp in Sources */,
 				F6C6E0332E8D5DAA00558F46 /* product-pap3-mcp.cpp in Sources */,
 				838AA8B52EEF2918006444F6 /* ff350-fcu-efis-profile.cpp in Sources */,
+				F62C0A9E2F6D308900A66B1E /* c172-fcu-efis-profile.cpp in Sources */,
 				F6C6E0342E8D5DAA00558F46 /* laminar-pap3-mcp-profile.cpp in Sources */,
 				F6C6E0352E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp in Sources */,
 				F6A1493E2E4F04AE00FB8395 /* ssg748-fmc-profile.cpp in Sources */,
@@ -822,6 +829,7 @@
 				F6BBFF082ED741B900FE9D7F /* rotatemd11-pap3-mcp-profile.cpp in Sources */,
 				F6BBFF092ED741B900FE9D7F /* ff777-pap3-mcp-profile.cpp in Sources */,
 				F6FDC3D02F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.cpp in Sources */,
+				F62C0A9D2F6D308900A66B1E /* c172-fcu-efis-profile.cpp in Sources */,
 				F6C6E0302E8D5DAA00558F46 /* product-pap3-mcp.cpp in Sources */,
 				F6C6E0312E8D5DAA00558F46 /* laminar-pap3-mcp-profile.cpp in Sources */,
 				F6C6E0322E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp in Sources */,

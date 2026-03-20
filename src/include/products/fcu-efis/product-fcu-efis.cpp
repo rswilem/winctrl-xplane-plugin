@@ -4,6 +4,7 @@
 #include "config.h"
 #include "dataref.h"
 #include "plugins-menu.h"
+#include "profiles/c172-fcu-efis-profile.h"
 #include "profiles/ff350-fcu-efis-profile.h"
 #include "profiles/ff767-fcu-efis-profile.h"
 #include "profiles/ff777-fcu-efis-profile.h"
@@ -51,6 +52,9 @@ void ProductFCUEfis::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (Laminar737FCUEfisProfile::IsEligible()) {
         profile = new Laminar737FCUEfisProfile(this);
+        profileReady = true;
+    } else if (C172FCUEfisProfile::IsEligible()) {
+        profile = new C172FCUEfisProfile(this);
         profileReady = true;
     } else if (LaminarFCUEfisProfile::IsEligible()) {
         profile = new LaminarFCUEfisProfile(this);

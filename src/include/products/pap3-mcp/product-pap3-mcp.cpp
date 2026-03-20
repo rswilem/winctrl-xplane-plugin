@@ -667,7 +667,6 @@ void ProductPAP3MCP::didReceiveData(int reportId, uint8_t *report, int reportLen
             lastBankAngleByte = currentBankAngleByte;
         }
     }
-
 }
 
 void ProductPAP3MCP::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, uint8_t count) {

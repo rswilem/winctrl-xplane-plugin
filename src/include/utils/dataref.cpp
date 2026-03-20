@@ -20,6 +20,7 @@ int handleCommandCallback(XPLMCommandRef inCommand, XPLMCommandPhase inPhase, vo
 Dataref::Dataref() {
     cachedValues = {};
     refs = {};
+    mainThreadId = std::this_thread::get_id();
 }
 
 Dataref::~Dataref() {
@@ -34,43 +35,48 @@ Dataref *Dataref::getInstance() {
     return instance;
 }
 
-template void Dataref::createDataref<int>(const char *ref, int *value, bool writable = false, DatarefShouldChangeCallback<int> changeCallback = nullptr);
-template void Dataref::createDataref<bool>(const char *ref, bool *value, bool writable = false, DatarefShouldChangeCallback<bool> changeCallback = nullptr);
-template void Dataref::createDataref<float>(const char *ref, float *value, bool writable = false, DatarefShouldChangeCallback<float> changeCallback = nullptr);
-template void Dataref::createDataref<double>(const char *ref, double *value, bool writable = false, DatarefShouldChangeCallback<double> changeCallback = nullptr);
-template void Dataref::createDataref<std::string>(const char *ref, std::string *value, bool writable = false, DatarefShouldChangeCallback<std::string> changeCallback = nullptr);
+template void Dataref::createDataref<int>(
+    const char *ref, int *value, bool writable = false, DatarefShouldChangeCallback<int> changeCallback = nullptr);
+template void Dataref::createDataref<bool>(
+    const char *ref, bool *value, bool writable = false, DatarefShouldChangeCallback<bool> changeCallback = nullptr);
+template void Dataref::createDataref<float>(
+    const char *ref, float *value, bool writable = false, DatarefShouldChangeCallback<float> changeCallback = nullptr);
+template void Dataref::createDataref<double>(const char *ref,
+    double *value,
+    bool writable = false,
+    DatarefShouldChangeCallback<double> changeCallback = nullptr);
+template void Dataref::createDataref<std::string>(const char *ref,
+    std::string *value,
+    bool writable = false,
+    DatarefShouldChangeCallback<std::string> changeCallback = nullptr);
 
 template<typename T>
 void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefShouldChangeCallback<T> changeCallback) {
     unbind(ref);
 
     XPLMDataRef handle = nullptr;
-    boundRefs[ref] = {
-        handle,
-        value,
-        {[changeCallback](DataRefValueType newValue) -> bool {
-            if (!changeCallback) {
-                return true;
-            } else if constexpr (std::is_same_v<T, std::string>) {
-                if (std::holds_alternative<std::string>(newValue)) {
-                    return changeCallback(std::get<std::string>(newValue));
-                }
-            } else if constexpr (std::is_same_v<T, int> || std::is_same_v<T, bool>) {
-                if (std::holds_alternative<int>(newValue)) {
-                    return changeCallback(std::get<int>(newValue));
-                }
-            } else if constexpr (std::is_same_v<T, float>) {
-                if (std::holds_alternative<float>(newValue)) {
-                    return changeCallback(std::get<float>(newValue));
-                }
-            } else if constexpr (std::is_same_v<T, double>) {
-                if (std::holds_alternative<double>(newValue)) {
-                    return changeCallback(std::get<double>(newValue));
-                }
-            }
-            return false;
-        }},
-    };
+    boundRefs[ref] = { handle, value, { [changeCallback](DataRefValueType newValue) -> bool {
+                          if (!changeCallback) {
+                              return true;
+                          } else if constexpr (std::is_same_v<T, std::string>) {
+                              if (std::holds_alternative<std::string>(newValue)) {
+                                  return changeCallback(std::get<std::string>(newValue));
+                              }
+                          } else if constexpr (std::is_same_v<T, int> || std::is_same_v<T, bool>) {
+                              if (std::holds_alternative<int>(newValue)) {
+                                  return changeCallback(std::get<int>(newValue));
+                              }
+                          } else if constexpr (std::is_same_v<T, float>) {
+                              if (std::holds_alternative<float>(newValue)) {
+                                  return changeCallback(std::get<float>(newValue));
+                              }
+                          } else if constexpr (std::is_same_v<T, double>) {
+                              if (std::holds_alternative<double>(newValue)) {
+                                  return changeCallback(std::get<double>(newValue));
+                              }
+                          }
+                          return false;
+                      } } };
 
     if constexpr ((std::is_same_v<T, int>) || (std::is_same_v<T, bool>) ) {
         handle = XPLMRegisterDataAccessor(
@@ -209,12 +215,18 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
 }
 
 template void Dataref::monitorExistingDataref<int>(const char *ref, DatarefMonitorChangedCallback<int> changeCallback);
-template void Dataref::monitorExistingDataref<bool>(const char *ref, DatarefMonitorChangedCallback<bool> changeCallback);
-template void Dataref::monitorExistingDataref<float>(const char *ref, DatarefMonitorChangedCallback<float> changeCallback);
-template void Dataref::monitorExistingDataref<double>(const char *ref, DatarefMonitorChangedCallback<double> changeCallback);
-template void Dataref::monitorExistingDataref<std::string>(const char *ref, DatarefMonitorChangedCallback<std::string> changeCallback);
-template void Dataref::monitorExistingDataref<std::vector<float>>(const char *ref, DatarefMonitorChangedCallback<std::vector<float>> changeCallback);
-template void Dataref::monitorExistingDataref<std::vector<int>>(const char *ref, DatarefMonitorChangedCallback<std::vector<int>> changeCallback);
+template void Dataref::monitorExistingDataref<bool>(
+    const char *ref, DatarefMonitorChangedCallback<bool> changeCallback);
+template void Dataref::monitorExistingDataref<float>(
+    const char *ref, DatarefMonitorChangedCallback<float> changeCallback);
+template void Dataref::monitorExistingDataref<double>(
+    const char *ref, DatarefMonitorChangedCallback<double> changeCallback);
+template void Dataref::monitorExistingDataref<std::string>(
+    const char *ref, DatarefMonitorChangedCallback<std::string> changeCallback);
+template void Dataref::monitorExistingDataref<std::vector<float>>(
+    const char *ref, DatarefMonitorChangedCallback<std::vector<float>> changeCallback);
+template void Dataref::monitorExistingDataref<std::vector<int>>(
+    const char *ref, DatarefMonitorChangedCallback<std::vector<int>> changeCallback);
 
 template<typename T>
 void Dataref::monitorExistingDataref(const char *ref, DatarefMonitorChangedCallback<T> changeCallback) {
@@ -251,7 +263,7 @@ void Dataref::monitorExistingDataref(const char *ref, DatarefMonitorChangedCallb
     if (boundRefs.find(ref) != boundRefs.end()) {
         boundRefs[ref].changeCallbacks.push_back(callback);
     } else {
-        boundRefs[ref] = {0, nullptr, {callback}};
+        boundRefs[ref] = { 0, nullptr, { callback } };
     }
 }
 
@@ -290,7 +302,20 @@ void Dataref::clearCache() {
     cachedValues.clear();
 }
 
+void Dataref::drainMainThreadQueue() {
+    std::vector<std::function<void()>> tasks;
+    {
+        std::lock_guard<std::mutex> lock(taskQueueMutex);
+        tasks.swap(taskQueue);
+    }
+    for (auto &task : tasks) {
+        task();
+    }
+}
+
 void Dataref::update() {
+    drainMainThreadQueue();
+
     std::vector<std::pair<std::string, CachedValue>> updates;
 
     for (auto &[key, data] : cachedValues) {
@@ -372,7 +397,7 @@ T Dataref::getCached(const char *ref) {
     auto it = cachedValues.find(ref);
     if (it == cachedValues.end()) {
         auto val = get<T>(ref);
-        cachedValues[ref] = {.value = val, .lastUpdateCycleNumber = XPLMGetCycleNumber()};
+        cachedValues[ref] = { .value = val, .lastUpdateCycleNumber = XPLMGetCycleNumber() };
         return val;
     }
 
@@ -411,6 +436,23 @@ template std::string Dataref::get<std::string>(const char *ref);
 
 template<typename T>
 T Dataref::get(const char *ref) {
+    if (std::this_thread::get_id() != mainThreadId) {
+        std::promise<T> promise;
+        auto future = promise.get_future();
+        std::string refStr(ref);
+        {
+            std::lock_guard<std::mutex> lock(taskQueueMutex);
+            taskQueue.push_back([this, refStr, &promise]() {
+                try {
+                    promise.set_value(get<T>(refStr.c_str()));
+                } catch (...) {
+                    promise.set_exception(std::current_exception());
+                }
+            });
+        }
+        return future.get();
+    }
+
     XPLMDataRef handle = findRef(ref);
     if (!handle) {
         if constexpr (std::is_same_v<T, std::string>) {
@@ -492,7 +534,7 @@ void Dataref::set(const char *ref, T value, bool setCacheOnly) {
         return;
     }
 
-    cachedValues[ref] = {.value = value, .lastUpdateCycleNumber = XPLMGetCycleNumber()};
+    cachedValues[ref] = { .value = value, .lastUpdateCycleNumber = XPLMGetCycleNumber() };
 
     executeChangedCallbacksForDataref(ref);
 
@@ -543,7 +585,7 @@ void Dataref::bindExistingCommand(const char *command, CommandExecutedCallback c
         return;
     }
 
-    boundCommands[command] = {handle, callback};
+    boundCommands[command] = { handle, callback };
 
     XPLMRegisterCommandHandler(handle, handleCommandCallback, 1, nullptr);
 }

@@ -2,13 +2,18 @@
 #define DATAREF_H
 
 #include <functional>
+#include <future>
+#include <mutex>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <variant>
+#include <vector>
 #include <XPLMDataAccess.h>
 #include <XPLMUtilities.h>
 
-using DataRefValueType = std::variant<float, double, int, bool, std::string, std::vector<int>, std::vector<float>, std::vector<unsigned char>>;
+using DataRefValueType = std::
+    variant<float, double, int, bool, std::string, std::vector<int>, std::vector<float>, std::vector<unsigned char>>;
 template<typename T>
 using DatarefShouldChangeCallback = std::function<bool(T)>;
 template<typename T>
@@ -42,6 +47,10 @@ class Dataref {
         std::unordered_map<std::string, XPLMDataRef> refs;
         std::unordered_map<std::string, CachedValue> cachedValues;
         XPLMDataRef findRef(const char *ref);
+        std::thread::id mainThreadId;
+        std::mutex taskQueueMutex;
+        std::vector<std::function<void()>> taskQueue;
+        void drainMainThreadQueue();
 
     public:
         static Dataref *getInstance();
@@ -49,7 +58,8 @@ class Dataref {
         template<typename T>
         void monitorExistingDataref(const char *ref, DatarefMonitorChangedCallback<T> callback);
         template<typename T>
-        void createDataref(const char *ref, T *value, bool writable = false, DatarefShouldChangeCallback<T> changeCallback = nullptr);
+        void createDataref(
+            const char *ref, T *value, bool writable = false, DatarefShouldChangeCallback<T> changeCallback = nullptr);
         void bindExistingCommand(const char *command, CommandExecutedCallback callback);
         void createCommand(const char *command, const char *description, CommandExecutedCallback callback);
         void unbind(const char *ref);

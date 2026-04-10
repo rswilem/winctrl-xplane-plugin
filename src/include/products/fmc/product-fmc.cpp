@@ -363,16 +363,16 @@ std::pair<uint8_t, uint8_t> ProductFMC::dataFromColFont(char color, bool fontSma
 }
 
 char ProductFMC::getPageCharacter(std::vector<std::vector<char>> &page, int line, int pos) {
-    if (line < page.size() || line >= ProductFMC::PageLines) {
+    if (line < 0 || line >= static_cast<int>(page.size()) || line >= ProductFMC::PageLines) {
         return 0;
     }
 
-    if (pos < 0 || pos > ProductFMC::PageCharsPerLine) {
+    if (pos < 0 || pos >= ProductFMC::PageCharsPerLine) {
         return 0;
     }
 
     pos = pos * ProductFMC::PageBytesPerChar;
-    return page[line][pos * ProductFMC::PageBytesPerChar + ProductFMC::PageBytesPerChar - 1];
+    return page[line][pos + ProductFMC::PageBytesPerChar - 1];
 }
 
 void ProductFMC::writeLineToPage(std::vector<std::vector<char>> &page, int line, int pos, const std::string &text, char color, bool fontSmall) {

@@ -18,22 +18,61 @@ XCraftsFMCProfile::XCraftsFMCProfile(ProductFMC *product) : FMCAircraftProfile(p
     product->setAllLedsEnabled(false);
     product->setFont(FontVariant::FontXCrafts);
 
-    const std::string cdu = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? "CDU1" : "CDU2";
-    Dataref::getInstance()->monitorExistingDataref<float>(("XCrafts/FMS/" + cdu + "_brt").c_str(), [product](float rawBrightness) {
-        bool poweredOn = Dataref::getInstance()->getCached<bool>("XCrafts/FMS/power_stat");
-        uint8_t brightness = poweredOn ? rawBrightness * 255 : 0;
-        product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, brightness);
+    const std::string cdu = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? "CDU_1" : "CDU_2";
+    Dataref::getInstance()->monitorExistingDataref<int>(("XCrafts/FMS/WW_" + cdu + "_BACKLIGHT").c_str(), [this, product](int brightness) {
         product->setLedBrightness(FMCLed::BACKLIGHT, brightness);
     });
 
+    Dataref::getInstance()->monitorExistingDataref<int>(("XCrafts/FMS/WW_" + cdu + "_SCREEN_BACKLIGHT").c_str(), [this, product](int brightness) {
+        product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, brightness);
+    });
+
+    Dataref::getInstance()->monitorExistingDataref<int>(("XCrafts/FMS/WW_" + cdu + "_OVERALL_LEDS_BRIGHTNESS").c_str(), [this, product](int brightness) {
+        product->setLedBrightness(FMCLed::OVERALL_LEDS_BRIGHTNESS, brightness);
+    });
+
     Dataref::getInstance()->monitorExistingDataref<bool>("XCrafts/FMS/power_stat", [this, cdu](bool poweredOn) {
-        Dataref::getInstance()->executeChangedCallbacksForDataref(("XCrafts/FMS/" + cdu + "_brt").c_str());
+        Dataref::getInstance()->executeChangedCallbacksForDataref(("XCrafts/FMS/WW_" + cdu + "_BACKLIGHT").c_str());
+        Dataref::getInstance()->executeChangedCallbacksForDataref(("XCrafts/FMS/WW_" + cdu + "_SCREEN_BACKLIGHT").c_str());
+        Dataref::getInstance()->executeChangedCallbacksForDataref(("XCrafts/FMS/WW_" + cdu + "_OVERALL_LEDS_BRIGHTNESS").c_str());
+    });
+
+    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_EXEC").c_str(), [product](bool enabled) {
+        product->setLedBrightness(FMCLed::PFP_EXEC, enabled ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
+    });
+
+    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_CALL").c_str(), [product](bool enabled) {
+        product->setLedBrightness(FMCLed::PFP_CALL, enabled ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_MCDU, enabled ? 1 : 0);
+    });
+
+    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_FAIL").c_str(), [product](bool enabled) {
+        product->setLedBrightness(FMCLed::PFP_FAIL, enabled ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_FAIL, enabled ? 1 : 0);
+    });
+
+    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_MSG").c_str(), [product](bool enabled) {
+        product->setLedBrightness(FMCLed::PFP_MSG, enabled ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_FM, enabled ? 1 : 0);
+    });
+
+    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_OFST").c_str(), [product](bool enabled) {
+        product->setLedBrightness(FMCLed::PFP_OFST, enabled ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_IND, enabled ? 1 : 0);
     });
 }
 
 XCraftsFMCProfile::~XCraftsFMCProfile() {
-    const std::string cdu = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? "CDU1" : "CDU2";
-    Dataref::getInstance()->unbind(("XCrafts/FMS/" + cdu + "_brt").c_str());
+    const std::string cdu = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? "CDU_1" : "CDU_2";
+    Dataref::getInstance()->unbind(("XCrafts/FMS/WW_" + cdu + "_BACKLIGHT").c_str());
+    Dataref::getInstance()->unbind(("XCrafts/FMS/WW_" + cdu + "_SCREEN_BACKLIGHT").c_str());
+    Dataref::getInstance()->unbind(("XCrafts/FMS/WW_" + cdu + "_OVERALL_LEDS_BRIGHTNESS").c_str());
+    Dataref::getInstance()->unbind(("XCrafts/FMS/WW_" + cdu + "_EXEC").c_str());
+    Dataref::getInstance()->unbind(("XCrafts/FMS/WW_" + cdu + "_CALL").c_str());
+    Dataref::getInstance()->unbind(("XCrafts/FMS/WW_" + cdu + "_FAIL").c_str());
+    Dataref::getInstance()->unbind(("XCrafts/FMS/WW_" + cdu + "_MSG").c_str());
+    Dataref::getInstance()->unbind(("XCrafts/FMS/WW_" + cdu + "_OFST").c_str());
     Dataref::getInstance()->unbind("XCrafts/FMS/power_stat");
 }
 
@@ -82,27 +121,26 @@ const std::vector<FMCButtonDef> &XCraftsFMCProfile::buttonDefs() const {
                         {FMCKey::LSK5R, "XCrafts/ERJ/" + cdu + "/RSK5"},
                         {FMCKey::LSK6R, "XCrafts/ERJ/" + cdu + "/RSK6"},
 
-                        {std::vector<FMCKey>{FMCKey::MCDU_SEC_FPLN, FMCKey::PFP_INIT_REF}, "XCrafts/ERJ/" + cdu + "/Key_NAV;XCrafts/ERJ/" + cdu + "/LSK4"}, // Nav IDENT
-                        {FMCKey::PFP3_CLB, "XCrafts/ERJ/" + cdu + "/Key_PERF;XCrafts/ERJ/" + cdu + "/RSK2"},                                                // Perf CLIMB
-                        {FMCKey::PFP3_CRZ, "XCrafts/ERJ/" + cdu + "/Key_PERF;XCrafts/ERJ/" + cdu + "/LSK2"},                                                // Perf CRUISE
-                        {std::vector<FMCKey>{FMCKey::MCDU_AIRPORT, FMCKey::PFP3_DES}, "XCrafts/ERJ/" + cdu + "/Key_PERF;XCrafts/ERJ/" + cdu + "/LSK3"},     // Perf DESCENT
-                                                                                                                                                            //        {std::vector<FMCKey>{FMCKey::PFP4_VNAV, FMCKey::PFP7_VNAV}, "XCrafts/ERJ/"+cdu+"/Key_NAV;XCrafts/ERJ/"+cdu+"/LSK3"}, // Nav TOD details
-                                                                                                                                                            //        {FMCKey::PFP_HOLD, "XCrafts/ERJ/"+cdu+"/Key_NAV;XCrafts/ERJ/"+cdu+"/LSK3"}, // Nav HOLD
-                                                                                                                                                            //        {FMCKey::PFP_FIX, "XCrafts/ERJ/"+cdu+"/Key_NAV;XCrafts/ERJ/"+cdu+"/LSK3"}, // Nav PILOT WAYPOINT
-
-                        //        {FMCKey::PFP_EXEC, "custom_tbd"},
-                        //        {FMCKey::PFP_DEP_ARR, "custom_tbd"},
-
-                        {FMCKey::PROG, "XCrafts/ERJ/" + cdu + "/Key_PROG"},
-                        {FMCKey::PFP3_N1_LIMIT, "XCrafts/ERJ/" + cdu + "/Key_TRS"},
-                        {FMCKey::MCDU_PERF, "XCrafts/ERJ/" + cdu + "/Key_PERF"},
-                        {std::vector<FMCKey>{FMCKey::MCDU_INIT, FMCKey::PFP_ROUTE}, "XCrafts/ERJ/" + cdu + "/Key_RTE"},
-                        {std::vector<FMCKey>{FMCKey::MCDU_DATA, FMCKey::PFP4_FMC_COMM, FMCKey::PFP7_FMC_COMM}, "XCrafts/ERJ/" + cdu + "/Key_DLK"},
-                        {std::vector<FMCKey>{FMCKey::MCDU_FPLN, FMCKey::PFP_LEGS}, "XCrafts/ERJ/" + cdu + "/Key_FPL"},
-                        {std::vector<FMCKey>{FMCKey::MCDU_RAD_NAV, FMCKey::PFP4_NAV_RAD, FMCKey::PFP7_NAV_RAD}, "XCrafts/ERJ/" + cdu + "/Key_RADIO"},
-                        {FMCKey::MENU, "XCrafts/ERJ/" + cdu + "/Key_DLK"},
-                        {FMCKey::PAGE_PREV, "XCrafts/ERJ/" + cdu + "/Key_PREV"},
-                        {FMCKey::PAGE_NEXT, "XCrafts/ERJ/" + cdu + "/Key_NEXT"},
+                        {FMCKey::PFP_INIT_REF, "XCrafts/ERJ/" + cdu + "_WW_Key_INIT_REF"},
+                        {FMCKey::PFP_ROUTE, "XCrafts/ERJ/" + cdu + "_WW_Key_RTE"},
+                        {FMCKey::PFP3_CLB, "XCrafts/ERJ/" + cdu + "_WW_Key_CLB"},
+                        {FMCKey::PFP3_CRZ, "XCrafts/ERJ/" + cdu + "_WW_Key_CRZ"},
+                        {FMCKey::PFP3_DES, "XCrafts/ERJ/" + cdu + "_WW_Key_DES"},
+                        {FMCKey::MENU, "XCrafts/ERJ/" + cdu + "_WW_Key_MENU"},
+                        {FMCKey::PFP_LEGS, "XCrafts/ERJ/" + cdu + "_WW_Key_LEGS"},
+                        {FMCKey::PFP_DEP_ARR, "XCrafts/ERJ/" + cdu + "_WW_Key_DEP_ARR"},
+                        {FMCKey::PFP_HOLD, "XCrafts/ERJ/" + cdu + "_WW_Key_HOLD"},
+                        {FMCKey::PROG, "XCrafts/ERJ/" + cdu + "_WW_Key_PROG"},
+                        {FMCKey::PFP_EXEC, "XCrafts/ERJ/" + cdu + "_WW_Key_EXEC"},
+                        {FMCKey::PFP3_N1_LIMIT, "XCrafts/ERJ/" + cdu + "_WW_Key_N1_LIMIT"},
+                        {FMCKey::PFP_FIX, "XCrafts/ERJ/" + cdu + "_WW_Key_FIX"},
+                        {FMCKey::PAGE_PREV, "XCrafts/ERJ/" + cdu + "_WW_Key_PREV_PAGE"},
+                        {FMCKey::PAGE_NEXT, "XCrafts/ERJ/" + cdu + "_WW_Key_NEXT_PAGE"},
+                        {FMCKey::PFP4_ATC, "XCrafts/ERJ/" + cdu + "_WW_Key_ATC"},
+                        {std::vector<FMCKey>{FMCKey::PFP4_VNAV, FMCKey::PFP7_VNAV}, "XCrafts/ERJ/" + cdu + "_WW_Key_VNAV"},
+                        {std::vector<FMCKey>{FMCKey::PFP4_FMC_COMM, FMCKey::PFP7_FMC_COMM}, "XCrafts/ERJ/" + cdu + "_WW_Key_FMC_COMM"},
+                        {std::vector<FMCKey>{FMCKey::PFP4_NAV_RAD, FMCKey::PFP7_NAV_RAD}, "XCrafts/ERJ/" + cdu + "_WW_Key_NAV_RAD"},
+                        {FMCKey::PFP7_ALTN, "XCrafts/ERJ/" + cdu + "_WW_Key_ALTN"},
 
                         // Numeric Keys
                         {FMCKey::KEY1, "XCrafts/ERJ/" + cdu + "/Key_1"},
@@ -237,6 +275,7 @@ void XCraftsFMCProfile::mapCharacter(std::vector<uint8_t> *buffer, uint8_t chara
             buffer->insert(buffer->end(), FMCSpecialCharacter::FILLED_TRIANGLE_LEFT.begin(), FMCSpecialCharacter::FILLED_TRIANGLE_LEFT.end());
             break;
 
+        case '?':
         case 'h': // OPEN BLK - White square
             buffer->insert(buffer->end(), FMCSpecialCharacter::WHITE_SQUARE.begin(), FMCSpecialCharacter::WHITE_SQUARE.end());
             break;

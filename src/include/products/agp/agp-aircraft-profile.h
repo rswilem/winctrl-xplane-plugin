@@ -8,7 +8,7 @@
 class ProductAGP;
 
 enum class AGPDatarefType : unsigned char {
-    EXECUTE_CMD_ONCE = 1,
+    EXECUTE_CMD_PHASED = 1,
     SET_VALUE,
     TERRAIN_ON_ND,
     LANDING_GEAR
@@ -17,7 +17,7 @@ enum class AGPDatarefType : unsigned char {
 struct AGPButtonDef {
         std::string name;
         std::string dataref;
-        AGPDatarefType datarefType = AGPDatarefType::EXECUTE_CMD_ONCE;
+        AGPDatarefType datarefType = AGPDatarefType::EXECUTE_CMD_PHASED;
         double value = 0.0;
 };
 

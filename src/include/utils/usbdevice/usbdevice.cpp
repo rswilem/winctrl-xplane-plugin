@@ -118,6 +118,10 @@ USBDevice *USBDevice::Device(HIDDeviceHandle hidDevice, uint16_t vendorId, uint1
         case 0xBB80: // AGP
             return new ProductAGP(hidDevice, vendorId, productId, vendorName, productName);
 
+            // Unknown...
+            // case 0xBB99: // TCAS
+            //     return new ProductTCAS(hidDevice, vendorId, productId, vendorName, productName);
+
         case 0xB920: // URSA MINOR 32 Throttle Metal L
         case 0xB930: // URSA MINOR 32 Throttle Metal R
             return new ProductUrsaMinorThrottle(hidDevice, vendorId, productId, vendorName, productName);

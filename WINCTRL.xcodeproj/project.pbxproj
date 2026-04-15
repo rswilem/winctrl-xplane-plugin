@@ -88,6 +88,10 @@
 		F6AF9EC12D06F84900530297 /* dataref.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF9EBC2D06F84900530297 /* dataref.cpp */; };
 		F6AF9EC62D078DB000530297 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6AF9EC52D078DB000530297 /* Cocoa.framework */; };
 		F6AF9ECC2D078ED400530297 /* appstate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF9ECB2D078ED400530297 /* appstate.cpp */; };
+		F6B0007A2F8FE329001FE040 /* product-tcas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B000772F8FE329001FE040 /* product-tcas.cpp */; };
+		F6B0007B2F8FE329001FE040 /* toliss-tcas-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B000742F8FE329001FE040 /* toliss-tcas-profile.cpp */; };
+		F6B0007C2F8FE329001FE040 /* product-tcas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B000772F8FE329001FE040 /* product-tcas.cpp */; };
+		F6B0007D2F8FE329001FE040 /* toliss-tcas-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6B000742F8FE329001FE040 /* toliss-tcas-profile.cpp */; };
 		F6BB75782E32634700C2B21F /* product-fcu-efis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6BB75762E32634700C2B21F /* product-fcu-efis.cpp */; };
 		F6BB75792E32634700C2B21F /* toliss-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6BB75722E32634700C2B21F /* toliss-fcu-efis-profile.cpp */; };
 		F6BB757A2E32634700C2B21F /* product-fcu-efis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6BB75762E32634700C2B21F /* product-fcu-efis.cpp */; };
@@ -232,6 +236,11 @@
 		F6AF9EC52D078DB000530297 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F6AF9ECA2D078ED400530297 /* appstate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = appstate.h; sourceTree = "<group>"; };
 		F6AF9ECB2D078ED400530297 /* appstate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = appstate.cpp; sourceTree = "<group>"; };
+		F6B000732F8FE329001FE040 /* toliss-tcas-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "toliss-tcas-profile.h"; sourceTree = "<group>"; };
+		F6B000742F8FE329001FE040 /* toliss-tcas-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "toliss-tcas-profile.cpp"; sourceTree = "<group>"; };
+		F6B000762F8FE329001FE040 /* product-tcas.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "product-tcas.h"; sourceTree = "<group>"; };
+		F6B000772F8FE329001FE040 /* product-tcas.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "product-tcas.cpp"; sourceTree = "<group>"; };
+		F6B000782F8FE329001FE040 /* tcas-aircraft-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "tcas-aircraft-profile.h"; sourceTree = "<group>"; };
 		F6B79CFC2F4A5BFD00517E6A /* logger.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = logger.hpp; sourceTree = "<group>"; };
 		F6BB75712E32634700C2B21F /* toliss-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "toliss-fcu-efis-profile.h"; sourceTree = "<group>"; };
 		F6BB75722E32634700C2B21F /* toliss-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "toliss-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
@@ -497,6 +506,26 @@
 			path = utils;
 			sourceTree = "<group>";
 		};
+		F6B000752F8FE329001FE040 /* profiles */ = {
+			isa = PBXGroup;
+			children = (
+				F6B000732F8FE329001FE040 /* toliss-tcas-profile.h */,
+				F6B000742F8FE329001FE040 /* toliss-tcas-profile.cpp */,
+			);
+			path = profiles;
+			sourceTree = "<group>";
+		};
+		F6B000792F8FE329001FE040 /* tcas */ = {
+			isa = PBXGroup;
+			children = (
+				F6B000752F8FE329001FE040 /* profiles */,
+				F6B000762F8FE329001FE040 /* product-tcas.h */,
+				F6B000772F8FE329001FE040 /* product-tcas.cpp */,
+				F6B000782F8FE329001FE040 /* tcas-aircraft-profile.h */,
+			);
+			path = tcas;
+			sourceTree = "<group>";
+		};
 		F6BB75732E32634700C2B21F /* profiles */ = {
 			isa = PBXGroup;
 			children = (
@@ -634,6 +663,7 @@
 			children = (
 				F6A77E712ED3514600061D03 /* agp */,
 				F6D8E6C62ED059390041C4FB /* ecam */,
+				F6B000792F8FE329001FE040 /* tcas */,
 				F6A1492E2E4F03A400FB8395 /* fmc */,
 				F6BB75772E32634700C2B21F /* fcu-efis */,
 				F6FC2A152E5C5377009A40E2 /* pap3-mcp */,
@@ -782,6 +812,8 @@
 				F621F80C2F1C264A00DDB31E /* jf146-fcu-efis-profile.cpp in Sources */,
 				F6E73EE42ED9CCA7000A8B6A /* toliss-ursa-minor-throttle-profile.cpp in Sources */,
 				F64BE3E92E1BF625003C1B73 /* usbcontroller_win.cpp in Sources */,
+				F6B0007A2F8FE329001FE040 /* product-tcas.cpp in Sources */,
+				F6B0007B2F8FE329001FE040 /* toliss-tcas-profile.cpp in Sources */,
 				8321A6022ED27B1E00E3746A /* ff777-fcu-efis-profile.cpp in Sources */,
 				F671B5DF2EA96BBE00141EF2 /* rotatemd11-fmc-profile.cpp in Sources */,
 				83124BD02EE0A3D700C34D9D /* ff767-fcu-efis-profile.cpp in Sources */,
@@ -811,6 +843,8 @@
 				F635AD462E0579E9005D6CDC /* usbcontroller_mac.cpp in Sources */,
 				F6827E0A2E05652E00382B28 /* WinctrlDesktopApp.swift in Sources */,
 				F635AD4B2E05819E005D6CDC /* usbdevice_mac.cpp in Sources */,
+				F6B0007C2F8FE329001FE040 /* product-tcas.cpp in Sources */,
+				F6B0007D2F8FE329001FE040 /* toliss-tcas-profile.cpp in Sources */,
 				F64BE3EB2E1BF625003C1B73 /* usbdevice_win.cpp in Sources */,
 				F6CC2B492F0E4E5100C0A4D8 /* ff777-fcu-efis-profile.cpp in Sources */,
 				F64BE3ED2E1BF625003C1B73 /* usbcontroller_win.cpp in Sources */,

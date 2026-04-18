@@ -241,4 +241,4 @@ cd ..
 
 echo "Bundle created. Distribution: build/dist/$PROJECT_NAME-$VERSION.zip"
 
-./update_compatibility.sh
+./update_readme.sh

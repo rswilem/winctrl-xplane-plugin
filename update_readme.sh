@@ -246,7 +246,7 @@ while IFS= read -r line; do
 done < "$README"
 
 # Write updated file
-(echo -n "$BEFORE"; echo "$MATRIX"; echo "$AFTER") > "$README"
+(echo -n "$BEFORE"; echo "$MATRIX"; echo -n "$AFTER") > "$README"
 
 # Cleanup
 rm -rf "$TEMP_DIR"

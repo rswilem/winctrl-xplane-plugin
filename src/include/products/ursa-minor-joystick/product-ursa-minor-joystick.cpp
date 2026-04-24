@@ -57,6 +57,10 @@ bool ProductUrsaMinorJoystick::connect() {
 
     std::string lightingSetting = AppState::getInstance()->readPreference("JoystickLighting", "enabled");
 
+    if (lightingSetting == "enabled") {
+        setLedBrightness(128);
+    }
+
     menuItemId = PluginsMenu::getInstance()->addItem(
         classIdentifier(),
         std::vector<MenuItem>{

@@ -77,12 +77,15 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &XCraftsFCUEfisProfile::but
         {0, {"MACH", "XCrafts/ERJ/MACH_KIAS_toggle"}},
         {1, {"LOC", "XCrafts/ERJ/LNAV"}},
         {2, {"TRK/FPA", "XCrafts/ERJ/FPA"}},
-        {3, {"AP", "XCrafts/APYD_Toggle"}},
+        {3, {"AP1", "XCrafts/APYD_Toggle"}},
+        {4, {"AP2", "XCrafts/ERJ/TOGA"}},
         {5, {"A/THR", "XCrafts/ERJ/AutoThrottle"}},
         {7, {"METRIC", "XCrafts/ERJ/PFD/altitude_meters"}},
         {8, {"APPR", "XCrafts/ERJ/APPCH"}},
         {9, {"SPD DEC", "XCrafts/ERJ/autopilot/airspeed_dial_kts_mach", FCUEfisDatarefType::ADJUST_VALUE, -1.0}},
         {10, {"SPD INC", "XCrafts/ERJ/autopilot/airspeed_dial_kts_mach", FCUEfisDatarefType::ADJUST_VALUE, 1.0}},
+        {11, {"SPD PUSH", "XCrafts/ERJ/PFD/AT_speed_source"}}, // or set XCrafts/speed_knob_fms_man to 0
+        {12, {"SPD PULL", "XCrafts/ERJ/PFD/AT_speed_source"}}, // or set XCrafts/speed_knob_fms_man to 1
         {13, {"HDG DEC", "sim/autopilot/heading_down"}},
         {14, {"HDG INC", "sim/autopilot/heading_up"}},
         {15, {"HDG PUSH", "sim/autopilot/heading_sync"}},
@@ -187,7 +190,7 @@ void XCraftsFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.vsVerticalLine = data.vsMode && (data.verticalSpeed != "-----");
 
     data.latMode = true;
-    data.spdManaged = false;
+    data.spdManaged = Dataref::getInstance()->getCached<int>("XCrafts/speed_knob_fms_man") == 0;
     data.hdgManaged = false;
     data.altManaged = false;
 

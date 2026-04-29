@@ -392,10 +392,20 @@ void XCraftsFMCProfile::updatePage(std::vector<std::vector<char>> &page) {
         }
     }
 
-    std::vector<unsigned char> scratchpadText = datarefManager->getCached<std::vector<unsigned char>>(("XCrafts/FMS/CDU_" + cduNumber + "_ScratchPad").c_str());
-    if (!scratchpadText.empty()) {
-        for (int i = 0; i < scratchpadText.size() && i < ProductFMC::PageCharsPerLine; ++i) {
-            unsigned char c = scratchpadText[i];
+    // First check for MessagePad, which overrides ScratchPad
+    std::vector<unsigned char> displayText;
+    std::vector<unsigned char> messagePadText = datarefManager->getCached<std::vector<unsigned char>>(("XCrafts/FMS/CDU_" + cduNumber + "_MessagePad").c_str());
+
+    if (!messagePadText.empty() && messagePadText[0] != 0x20) {
+        displayText = messagePadText;
+    } else {
+        // Fall back to ScratchPad
+        displayText = datarefManager->getCached<std::vector<unsigned char>>(("XCrafts/FMS/CDU_" + cduNumber + "_ScratchPad").c_str());
+    }
+
+    if (!displayText.empty()) {
+        for (int i = 0; i < displayText.size() && i < ProductFMC::PageCharsPerLine; ++i) {
+            unsigned char c = displayText[i];
             if (c == 0x00 || c == '|') {
                 break;
             }

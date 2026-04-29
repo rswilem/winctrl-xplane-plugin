@@ -27,9 +27,17 @@ USBController::USBController() {
     enumerateDevices();
 
     std::thread monitorThread([this]() {
+        unsigned char tickCount = 0;
         while (!shouldShutdown) {
-            std::this_thread::sleep_for(std::chrono::seconds(5));
-            if (!shouldShutdown) {
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+            if (shouldShutdown) {
+                break;
+            }
+            for (auto *dev : devices) {
+                dev->cancelStuckWriteIfNeeded(2000);
+            }
+            if (++tickCount >= 3) {
+                tickCount = 0;
                 checkForDeviceChanges();
             }
         }

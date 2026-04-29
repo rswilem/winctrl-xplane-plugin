@@ -104,6 +104,8 @@ void USBDevice::update() {
 }
 
 void USBDevice::disconnect() {
+    connected = false; // Stop new items from being enqueued before draining
+
     // Wait for write queue to drain before disconnecting
     while (writeQueueSize.load() > 0 && writeThreadRunning) {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -114,6 +116,7 @@ void USBDevice::disconnect() {
     if (writeThread.joinable()) {
         writeThread.join();
     }
+    // Handle was closed and reset by the write thread itself on exit
 
     if (hidDevice != INVALID_HANDLE_VALUE) {
         // Give input thread time to exit
@@ -154,6 +157,8 @@ bool USBDevice::writeData(std::vector<uint8_t> data) {
 }
 
 void USBDevice::writeThreadLoop() {
+    writeThreadNativeHandle = OpenThread(THREAD_ALL_ACCESS, FALSE, GetCurrentThreadId());
+
     while (writeThreadRunning) {
         std::vector<uint8_t> data;
 
@@ -181,20 +186,52 @@ void USBDevice::writeThreadLoop() {
             }
 
             DWORD bytesWritten;
-            if (!WriteFile(hidDevice, paddedData.data(), (DWORD) paddedData.size(), &bytesWritten, nullptr)) {
+            writeStartTime.store(std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now().time_since_epoch())
+                    .count());
+            BOOL writeResult = WriteFile(hidDevice, paddedData.data(), (DWORD) paddedData.size(), &bytesWritten, nullptr);
+            writeStartTime.store(0);
+
+            if (!writeResult) {
                 DWORD error = GetLastError();
-                const char *errorName = "UNKNOWN";
-                if (error == ERROR_DEVICE_NOT_CONNECTED) {
-                    errorName = "DEVICE_NOT_CONNECTED";
-                } else if (error == ERROR_INVALID_HANDLE) {
-                    errorName = "INVALID_HANDLE";
-                } else if (error == ERROR_IO_DEVICE) {
-                    errorName = "IO_DEVICE";
+                if (error == ERROR_OPERATION_ABORTED) {
+                    Logger::getInstance()->debug("WriteFile cancelled (I/O abort) for %s\n",
+                        productName.empty() ? "Unknown" : productName.c_str());
+                } else {
+                    const char *errorName = "UNKNOWN";
+                    if (error == ERROR_DEVICE_NOT_CONNECTED) {
+                        errorName = "DEVICE_NOT_CONNECTED";
+                    } else if (error == ERROR_INVALID_HANDLE) {
+                        errorName = "INVALID_HANDLE";
+                    } else if (error == ERROR_IO_DEVICE) {
+                        errorName = "IO_DEVICE";
+                    }
+                    Logger::getInstance()->error("WriteFile failed for %s (vendorId: 0x%04X, productId: 0x%04X): %lu (%s)\n",
+                        productName.empty() ? "Unknown" : productName.c_str(), vendorId, productId, error, errorName);
                 }
-                Logger::getInstance()->error("WriteFile failed for %s (vendorId: 0x%04X, productId: 0x%04X): %lu (%s)\n",
-                    productName.empty() ? "Unknown" : productName.c_str(), vendorId, productId, error, errorName);
             }
         }
+    }
+
+    if (writeThreadNativeHandle != INVALID_HANDLE_VALUE) {
+        CloseHandle(writeThreadNativeHandle);
+        writeThreadNativeHandle = INVALID_HANDLE_VALUE;
+    }
+}
+
+void USBDevice::cancelStuckWriteIfNeeded(int thresholdMs) {
+    int64_t startTime = writeStartTime.load();
+    if (startTime == 0 || writeThreadNativeHandle == INVALID_HANDLE_VALUE) {
+        return;
+    }
+
+    auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now().time_since_epoch())
+                     .count();
+    if (nowMs - startTime > thresholdMs) {
+        Logger::getInstance()->error("WriteFile stuck for >%dms on %s, cancelling I/O\n",
+            thresholdMs, productName.empty() ? "Unknown" : productName.c_str());
+        CancelSynchronousIo(writeThreadNativeHandle);
     }
 }
 #endif

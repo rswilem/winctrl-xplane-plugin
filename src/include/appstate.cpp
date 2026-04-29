@@ -6,6 +6,8 @@
 #include "usbcontroller.h"
 #include "usbdevice.h"
 
+#include "power-scheme.h"
+
 #include <fstream>
 #include <XPLMProcessing.h>
 
@@ -34,6 +36,8 @@ bool AppState::initialize() {
 
     XPLMRegisterFlightLoopCallback(AppState::Update, REFRESH_INTERVAL_SECONDS_FAST, nullptr);
 
+    WindowsPowerScheme::enableHighPerformance();
+
     pluginInitialized = true;
 
 #ifdef DEBUG
@@ -58,6 +62,9 @@ void AppState::deinitialize() {
     }
 
     Logger::getInstance()->info("Plugin deinitializing...\n");
+
+    WindowsPowerScheme::restorePrevious();
+
     XPLMUnregisterFlightLoopCallback(AppState::Update, nullptr);
 
     USBController::getInstance()->destroy();

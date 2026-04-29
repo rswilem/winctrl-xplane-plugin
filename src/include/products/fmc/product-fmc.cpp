@@ -30,6 +30,21 @@ ProductFMC::ProductFMC(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t pr
     pressedButtonIndices = {};
 
     connect();
+
+#ifdef DEBUG
+    Dataref::getInstance()->createCommand(
+        PRODUCT_NAME "/debug/reload_active_font", "Reloads the active font on the FMC", [this](XPLMCommandPhase inPhase) {
+            if (inPhase != xplm_CommandBegin) {
+                return;
+            }
+
+            std::string fontFile = AppState::getInstance()->readPreference("FMCFont", "");
+            Logger::getInstance()->info("Reloading active font (\"%s\") on FMC...\n", fontFile.c_str());
+
+            setFont(preferredFontVariant);
+            updatePage(true);
+        });
+#endif
 }
 
 ProductFMC::~ProductFMC() {

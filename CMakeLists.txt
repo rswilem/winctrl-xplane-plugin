@@ -73,7 +73,7 @@ FUNCTION(FIND_SOURCE_FILES return_list base_dir)
         LIST(PREPEND new_list "${base_dir}/main.cpp")
     ENDIF()
 
-    LIST(FILTER new_list EXCLUDE REGEX ".*/desktop/.*")
+    LIST(FILTER new_list EXCLUDE REGEX ".*/(desktop|windows-stresstest)/.*")
 
     SET(${return_list} ${new_list} PARENT_SCOPE)
 ENDFUNCTION()

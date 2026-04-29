@@ -38,6 +38,8 @@
 		F6531CE52F8FD99000FAC94D /* xcrafts-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6531CE32F8FD99000FAC94D /* xcrafts-pap3-mcp-profile.cpp */; };
 		F6531CE82F8FD99C00FAC94D /* xcrafts-ursa-minor-throttle-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6531CE72F8FD99C00FAC94D /* xcrafts-ursa-minor-throttle-profile.cpp */; };
 		F6531CE92F8FD99C00FAC94D /* xcrafts-ursa-minor-throttle-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6531CE72F8FD99C00FAC94D /* xcrafts-ursa-minor-throttle-profile.cpp */; };
+		F65361762FA244A90039C2C9 /* power-scheme.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65361752FA244A90039C2C9 /* power-scheme.cpp */; };
+		F65361772FA244A90039C2C9 /* power-scheme.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65361752FA244A90039C2C9 /* power-scheme.cpp */; };
 		F67110DD2E5AF429008D493B /* font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67110DC2E5AF429008D493B /* font.cpp */; };
 		F67110DE2E5AF429008D493B /* font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67110DC2E5AF429008D493B /* font.cpp */; };
 		F671B5DE2EA96BBE00141EF2 /* rotatemd11-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F671B5DD2EA96BBE00141EF2 /* rotatemd11-fmc-profile.cpp */; };
@@ -175,6 +177,8 @@
 		F6531CE32F8FD99000FAC94D /* xcrafts-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
 		F6531CE62F8FD99C00FAC94D /* xcrafts-ursa-minor-throttle-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-ursa-minor-throttle-profile.h"; sourceTree = "<group>"; };
 		F6531CE72F8FD99C00FAC94D /* xcrafts-ursa-minor-throttle-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-ursa-minor-throttle-profile.cpp"; sourceTree = "<group>"; };
+		F65361742FA244A90039C2C9 /* power-scheme.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "power-scheme.h"; sourceTree = "<group>"; };
+		F65361752FA244A90039C2C9 /* power-scheme.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "power-scheme.cpp"; sourceTree = "<group>"; };
 		F66F91662D0332F600F84283 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		F67110DC2E5AF429008D493B /* font.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = font.cpp; sourceTree = "<group>"; };
 		F671B5DC2EA96BBE00141EF2 /* rotatemd11-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "rotatemd11-fmc-profile.h"; sourceTree = "<group>"; };
@@ -501,6 +505,8 @@
 				F6C248452EBE498500617E89 /* plugins-menu.cpp */,
 				F6A77E772ED3620600061D03 /* segment-display.h */,
 				F6A77E782ED3620600061D03 /* segment-display.cpp */,
+				F65361742FA244A90039C2C9 /* power-scheme.h */,
+				F65361752FA244A90039C2C9 /* power-scheme.cpp */,
 				F6B79CFC2F4A5BFD00517E6A /* logger.hpp */,
 			);
 			path = utils;
@@ -821,6 +827,7 @@
 				F6A77E7A2ED3620600061D03 /* segment-display.cpp in Sources */,
 				F6AF9ECC2D078ED400530297 /* appstate.cpp in Sources */,
 				F68428622EC6389D0027756D /* toliss-ursa-minor-joystick-profile.cpp in Sources */,
+				F65361762FA244A90039C2C9 /* power-scheme.cpp in Sources */,
 				F6A1492F2E4F03A400FB8395 /* product-fmc.cpp in Sources */,
 				F6531CE82F8FD99C00FAC94D /* xcrafts-ursa-minor-throttle-profile.cpp in Sources */,
 				F6CC2B502F0E5F4B00C0A4D8 /* ff777-pdc-profile.cpp in Sources */,
@@ -874,6 +881,7 @@
 				F6A149432E4F04AE00FB8395 /* ff777-fmc-profile.cpp in Sources */,
 				F6A149442E4F04AE00FB8395 /* ixeg733-fmc-profile.cpp in Sources */,
 				F6827E092E05652800382B28 /* ContentView.swift in Sources */,
+				F65361772FA244A90039C2C9 /* power-scheme.cpp in Sources */,
 				F6FBC55F2E3A3E15004E5F42 /* FCUEfisControlView.swift in Sources */,
 				F69FF22D2E1D13CB00F9D2D9 /* GenericDeviceView.swift in Sources */,
 				F69FF22E2E1D13CB00F9D2D9 /* DeviceModel.swift in Sources */,

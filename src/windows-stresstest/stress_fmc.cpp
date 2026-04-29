@@ -19,8 +19,8 @@
 #include "default.h"
 
 #include <algorithm>
-#include <cstring>
 #include <cstdio>
+#include <cstring>
 
 // ---------------------------------------------------------------------------
 // Scrolling text source — uppercase ASCII, wraps around.
@@ -37,9 +37,7 @@ static constexpr int kLoremLen = sizeof(kLoremIpsum) - 1; // exclude null termin
 
 // ---------------------------------------------------------------------------
 
-StressFMC::StressFMC(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t productId,
-                     std::string vendorName, std::string productName)
-    : USBDevice(hidDevice, vendorId, productId, vendorName, productName) {
+StressFMC::StressFMC(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t productId, std::string vendorName, std::string productName) : USBDevice(hidDevice, vendorId, productId, vendorName, productName) {
     connect();
 }
 
@@ -119,8 +117,7 @@ void StressFMC::showBackground_WINCTRL_LOGO() {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00
-    };
+        0x00, 0x00};
     writeData(data);
 }
 

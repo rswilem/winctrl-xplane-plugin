@@ -2,11 +2,10 @@
 
 #include "config.h"
 #include "dataref.h"
+#include "power-scheme.h"
 #include "SimpleIni.h"
 #include "usbcontroller.h"
 #include "usbdevice.h"
-
-#include "power-scheme.h"
 
 #include <fstream>
 #include <XPLMProcessing.h>

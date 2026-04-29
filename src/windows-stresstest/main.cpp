@@ -1,7 +1,7 @@
 // FMC Windows Stress Test — interactive menu edition
 
-#include "stress_fmc.h"
 #include "power-scheme.h"
+#include "stress_fmc.h"
 #include "usbcontroller.h"
 
 #include <conio.h>
@@ -11,7 +11,7 @@
 static void waitForKey() {
     printf("\nPress Enter to exit...\n");
     fflush(stdout);
-    (void)getchar();
+    (void) getchar();
 }
 
 static void clearScreen() {
@@ -41,7 +41,7 @@ static void printMenu(StressFMC *fmc) {
     printf("  3. Toggle LEDs\n");
     printf("  4. Clear display\n");
     printf("  5. %s High Performance power plan\n",
-           WindowsPowerScheme::isHighPerfEnabled() ? "Disable" : "Enable");
+        WindowsPowerScheme::isHighPerfEnabled() ? "Disable" : "Enable");
     printf("  Q. Quit\n\n");
     printf("> ");
     fflush(stdout);
@@ -56,9 +56,9 @@ static void runStressTest(StressFMC *fmc) {
     printf("Stress test running — press any key to stop.\n\n");
     fflush(stdout);
 
-    int  scrollOffset = 0;
-    int  frameCount   = 0;
-    bool ledsOn       = false;
+    int scrollOffset = 0;
+    int frameCount = 0;
+    bool ledsOn = false;
 
     while (!_kbhit()) {
         fmc->drawScrollingText(scrollOffset++);
@@ -75,7 +75,7 @@ static void runStressTest(StressFMC *fmc) {
         Sleep(50); // ~20 FPS
     }
 
-    (void)_getch(); // consume the key
+    (void) _getch(); // consume the key
     fmc->setAllLedsEnabled(false);
     printf("\n\nStopped.\n");
     Sleep(600);
@@ -93,7 +93,9 @@ static void drainQueue(StressFMC *fmc) {
         size_t qs = fmc->getWriteQueueSize();
         printf("\rQueue size: %zu   ", qs);
         fflush(stdout);
-        if (qs == 0) break;
+        if (qs == 0) {
+            break;
+        }
         Sleep(50);
     }
 
@@ -155,7 +157,9 @@ int main() {
     StressFMC *fmc = nullptr;
     for (auto *dev : controller->devices) {
         fmc = dynamic_cast<StressFMC *>(dev);
-        if (fmc) break;
+        if (fmc) {
+            break;
+        }
     }
 
     if (!fmc) {
@@ -172,13 +176,26 @@ int main() {
         int ch = _getch();
 
         switch (ch) {
-            case '1': runStressTest(fmc);   break;
-            case '2': drainQueue(fmc);      break;
-            case '3': toggleLeds(fmc);      break;
-            case '4': clearFMCDisplay(fmc);      break;
-            case '5': toggleHighPerformance();    break;
-            case 'q': case 'Q': goto quit;
-            default: break;
+            case '1':
+                runStressTest(fmc);
+                break;
+            case '2':
+                drainQueue(fmc);
+                break;
+            case '3':
+                toggleLeds(fmc);
+                break;
+            case '4':
+                clearFMCDisplay(fmc);
+                break;
+            case '5':
+                toggleHighPerformance();
+                break;
+            case 'q':
+            case 'Q':
+                goto quit;
+            default:
+                break;
         }
     }
 
@@ -190,4 +207,3 @@ quit:
     waitForKey();
     return 0;
 }
-

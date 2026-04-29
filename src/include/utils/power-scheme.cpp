@@ -5,9 +5,7 @@
 #if IBM
 static const GUID kHighPerformanceGuid = {
     0x8c5e7fda, 0xe8bf, 0x4a96,
-    {0x9a, 0x85, 0xa6, 0xe2, 0x3a, 0x8c, 0x63, 0x5c}
-};
-
+    {0x9a, 0x85, 0xa6, 0xe2, 0x3a, 0x8c, 0x63, 0x5c}};
 
 void WindowsPowerScheme::enableHighPerformance() {
     GUID *current = nullptr;
@@ -45,7 +43,11 @@ bool WindowsPowerScheme::isHighPerfEnabled() {
 #else
 
 void WindowsPowerScheme::enableHighPerformance() {}
+
 void WindowsPowerScheme::restorePrevious() {}
-bool WindowsPowerScheme::isHighPerfEnabled() { return false; }
+
+bool WindowsPowerScheme::isHighPerfEnabled() {
+    return false;
+}
 
 #endif

@@ -18,8 +18,7 @@ void notifyButtonPressed(uint16_t /*buttonId*/, uint16_t /*productId*/) {}
 // ---------------------------------------------------------------------------
 // Device factory — only MCDU product IDs are handled; all others are ignored.
 // ---------------------------------------------------------------------------
-USBDevice *USBDevice::Device(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t productId,
-    std::string vendorName, std::string productName) {
+USBDevice *USBDevice::Device(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t productId, std::string vendorName, std::string productName) {
     if (vendorId != WINCTRL_VENDOR_ID) {
         Logger::getInstance()->debug("Vendor ID mismatch: 0x%04X != 0x%04X\n", vendorId, WINCTRL_VENDOR_ID);
         return nullptr;
@@ -79,11 +78,18 @@ size_t USBDevice::getWriteQueueSize() {
 int USBDevice::getDisplayUpdateFrameInterval(int minWaitFrames) {
     size_t queueSize = writeQueueSize.load();
     int interval;
-    if      (queueSize < 50)   interval = 2;
-    else if (queueSize < 250)  interval = 4;
-    else if (queueSize < 500)  interval = 8;
-    else if (queueSize < 1000) interval = 16;
-    else if (queueSize < 2000) interval = 32;
-    else                       interval = 100;
+    if (queueSize < 50) {
+        interval = 2;
+    } else if (queueSize < 250) {
+        interval = 4;
+    } else if (queueSize < 500) {
+        interval = 8;
+    } else if (queueSize < 1000) {
+        interval = 16;
+    } else if (queueSize < 2000) {
+        interval = 32;
+    } else {
+        interval = 100;
+    }
     return std::max(interval, minWaitFrames);
 }

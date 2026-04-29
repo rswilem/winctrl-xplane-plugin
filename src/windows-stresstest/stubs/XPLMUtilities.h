@@ -6,14 +6,21 @@
 extern "C" {
 #endif
 
-static inline void XPLMDebugString(const char *inString) { (void)inString; }
-static inline void XPLMGetSystemPath(char *outSystemPath) { if (outSystemPath) outSystemPath[0] = '\0'; }
+static inline void XPLMDebugString(const char *inString) {
+    (void) inString;
+}
+
+static inline void XPLMGetSystemPath(char *outSystemPath) {
+    if (outSystemPath) {
+        outSystemPath[0] = '\0';
+    }
+}
 
 #ifdef __cplusplus
 }
 #endif
 
 typedef int XPLMCommandPhase;
-static const XPLMCommandPhase xplm_CommandBegin    = 0;
+static const XPLMCommandPhase xplm_CommandBegin = 0;
 static const XPLMCommandPhase xplm_CommandContinue = 1;
-static const XPLMCommandPhase xplm_CommandEnd      = 2;
+static const XPLMCommandPhase xplm_CommandEnd = 2;

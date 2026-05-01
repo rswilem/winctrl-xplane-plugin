@@ -186,10 +186,10 @@ const std::map<char, FMCTextColor> &SSG748FMCProfile::colorMap() const {
         {'g', FMCTextColor::COLOR_GREEN},
         {'p', FMCTextColor::COLOR_MAGENTA},
         {'w', FMCTextColor::COLOR_WHITE},
-        {'l', FMCTextColor::COLOR_RED},                                                               // l = Large/white
-        {'s', FMCTextColor::COLOR_GREY},                                                              // s = Small/white
-        {'x', FMCTextColor::COLOR_RED},                                                               // x = Special/labels (white)
-        {'i', FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_WHITE, FMCTextColor::COLOR_RED)}, // i = Inverted
+        {'l', FMCTextColor::COLOR_RED},                                                                // l = Large/white
+        {'s', FMCTextColor::COLOR_GREY},                                                               // s = Small/white
+        {'x', FMCTextColor::COLOR_RED},                                                                // x = Special/labels (white)
+        {'i', FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_WHITE, FMCTextColor::COLOR_GREY)}, // i = Inverted
     };
 
     return colMap;

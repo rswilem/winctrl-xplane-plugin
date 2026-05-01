@@ -55,7 +55,7 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
     unbind(ref);
 
     XPLMDataRef handle = nullptr;
-    boundRefs[ref] = { handle, value, { [changeCallback](DataRefValueType newValue) -> bool {
+    boundRefs[ref] = {handle, value, {[changeCallback](DataRefValueType newValue) -> bool {
                           if (!changeCallback) {
                               return true;
                           } else if constexpr (std::is_same_v<T, std::string>) {
@@ -76,7 +76,7 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
                               }
                           }
                           return false;
-                      } } };
+                      }}};
 
     if constexpr ((std::is_same_v<T, int>) || (std::is_same_v<T, bool>) ) {
         handle = XPLMRegisterDataAccessor(
@@ -263,7 +263,7 @@ void Dataref::monitorExistingDataref(const char *ref, DatarefMonitorChangedCallb
     if (boundRefs.find(ref) != boundRefs.end()) {
         boundRefs[ref].changeCallbacks.push_back(callback);
     } else {
-        boundRefs[ref] = { 0, nullptr, { callback } };
+        boundRefs[ref] = {0, nullptr, {callback}};
     }
 }
 
@@ -397,7 +397,7 @@ T Dataref::getCached(const char *ref) {
     auto it = cachedValues.find(ref);
     if (it == cachedValues.end()) {
         auto val = get<T>(ref);
-        cachedValues[ref] = { .value = val, .lastUpdateCycleNumber = XPLMGetCycleNumber() };
+        cachedValues[ref] = {.value = val, .lastUpdateCycleNumber = XPLMGetCycleNumber()};
         return val;
     }
 
@@ -534,7 +534,7 @@ void Dataref::set(const char *ref, T value, bool setCacheOnly) {
         return;
     }
 
-    cachedValues[ref] = { .value = value, .lastUpdateCycleNumber = XPLMGetCycleNumber() };
+    cachedValues[ref] = {.value = value, .lastUpdateCycleNumber = XPLMGetCycleNumber()};
 
     executeChangedCallbacksForDataref(ref);
 
@@ -585,7 +585,7 @@ void Dataref::bindExistingCommand(const char *command, CommandExecutedCallback c
         return;
     }
 
-    boundCommands[command] = { handle, callback };
+    boundCommands[command] = {handle, callback};
 
     XPLMRegisterCommandHandler(handle, handleCommandCallback, 1, nullptr);
 }

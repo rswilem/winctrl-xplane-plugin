@@ -35,31 +35,33 @@ enum FMCLed : unsigned char {
     _MCDU_END = 16
 };
 
-enum FMCTextColor : int {
-    COLOR_BLACK = 0x0000,
-    COLOR_AMBER = 0x0021,
-    COLOR_WHITE = 0x0042,
-    COLOR_CYAN = 0x0063,
-    COLOR_GREEN = 0x0084,
-    COLOR_MAGENTA = 0x00A5,
-    COLOR_RED = 0x00C6,
-    COLOR_YELLOW = 0x00E7,
-    COLOR_DARKBROWN = 0x0108,
-    COLOR_GREY = 0x0129,
-    COLOR_LIGHTBROWN = 0x014A,
+struct FMCTextColor {
+        enum : int {
+            COLOR_BLACK = 0x0000,
+            COLOR_AMBER = 0x0021,
+            COLOR_WHITE = 0x0042,
+            COLOR_CYAN = 0x0063,
+            COLOR_GREEN = 0x0084,
+            COLOR_MAGENTA = 0x00A5,
+            COLOR_RED = 0x00C6,
+            COLOR_YELLOW = 0x00E7,
+            COLOR_DARKBROWN = 0x0108,
+            COLOR_GREY = 0x0129,
+            COLOR_LIGHTBROWN = 0x014A,
+        };
 
-    _ADD_BG = 0x1B,
-    COLOR_AMBER_BG = COLOR_AMBER + _ADD_BG,
-    COLOR_BLACK_BG = COLOR_BLACK + _ADD_BG,
-    COLOR_WHITE_BG = COLOR_WHITE + _ADD_BG,
-    COLOR_CYAN_BG = COLOR_CYAN + _ADD_BG,
-    COLOR_GREEN_BG = COLOR_GREEN + _ADD_BG,
-    COLOR_MAGENTA_BG = COLOR_MAGENTA + _ADD_BG,
-    COLOR_RED_BG = COLOR_RED + _ADD_BG,
-    COLOR_YELLOW_BG = COLOR_YELLOW + _ADD_BG,
-    COLOR_DARKBROWN_BG = COLOR_DARKBROWN + _ADD_BG,
-    COLOR_GREY_BG = COLOR_GREY + _ADD_BG,
-    COLOR_LIGHTBROWN_BG = COLOR_LIGHTBROWN + _ADD_BG,
+        int value;
+
+        constexpr FMCTextColor(int v) : value(v) {}
+
+        constexpr operator int() const {
+            return value;
+        }
+
+        // So it's FG x 33 + BG x 3 for background colors.. The / 11 is just the compressed form of / 33 * 3
+        static constexpr FMCTextColor withBackgroundColor(FMCTextColor fg, FMCTextColor bg) {
+            return {fg.value + (bg.value / 11)};
+        }
 };
 
 struct FMCSpecialCharacter {

@@ -247,7 +247,7 @@ const std::map<char, FMCTextColor> &ZiboFMCProfile::colorMap() const {
         {'M', FMCTextColor::COLOR_MAGENTA},
         {'G', FMCTextColor::COLOR_GREEN},
         {'C', FMCTextColor::COLOR_CYAN},
-        {'I', FMCTextColor::COLOR_WHITE_BG}, // White (should be inverted gray/white)
+        {'I', FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_WHITE, FMCTextColor::COLOR_RED)}, // White (should be inverted gray/white)
         {'X', FMCTextColor::COLOR_WHITE},    // White (should be special labels)
     };
 

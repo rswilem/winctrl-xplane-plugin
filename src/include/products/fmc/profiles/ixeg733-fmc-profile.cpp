@@ -182,7 +182,7 @@ const std::map<char, FMCTextColor> &IXEG733FMCProfile::colorMap() const {
         {'W', FMCTextColor::COLOR_WHITE},
         {'G', FMCTextColor::COLOR_GREEN}, // Green text
         {'S', FMCTextColor::COLOR_GREEN}, // Green text (Small)
-        {'I', FMCTextColor::COLOR_GREEN_BG},
+        {'I', FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_WHITE, FMCTextColor::COLOR_GREEN)},
     };
     return colMap;
 }

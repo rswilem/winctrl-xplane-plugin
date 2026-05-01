@@ -14,19 +14,34 @@ SSG748FMCProfile::SSG748FMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
     product->setAllLedsEnabled(false);
     product->setFont(FontVariant::FontVGA1);
 
-    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("ssg/LGT/mcdu_brt_sw", [product](const std::vector<float> &brightness) {
-        if (brightness.size() < 27) {
-            return;
-        }
-
-        uint8_t target = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on") ? brightness[10] * 255 : 0;
+    Dataref::getInstance()->monitorExistingDataref<float>("ssg/LGT/mcdu_brt_sw", [product](float brightness) {
+        uint8_t target = Dataref::getInstance()->get<bool>("ssg/Elec/bus_1_powered") ? brightness * 255 : 0;
         product->setLedBrightness(FMCLed::BACKLIGHT, target);
         product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, target);
     });
 
-    Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
+    Dataref::getInstance()->monitorExistingDataref<bool>("ssg/Elec/bus_1_powered", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("ssg/LGT/mcdu_brt_sw");
     });
+
+    Dataref::getInstance()->monitorExistingDataref<bool>("SSG/UFMC/Exec_Light_on_Pilot", [product](bool enabled) {
+        if (product->deviceVariant != FMCDeviceVariant::VARIANT_CAPTAIN) {
+            return;
+        }
+
+        product->setLedBrightness(FMCLed::PFP_EXEC, enabled ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
+    });
+    Dataref::getInstance()->monitorExistingDataref<bool>("SSG/UFMC/Exec_Light_on_Copilot", [product](bool enabled) {
+        if (product->deviceVariant != FMCDeviceVariant::VARIANT_FIRSTOFFICER) {
+            return;
+        }
+
+        product->setLedBrightness(FMCLed::PFP_EXEC, enabled ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
+    });
+
+    Dataref::getInstance()->executeChangedCallbacksForDataref("ssg/Elec/bus_1_powered");
 }
 
 SSG748FMCProfile::~SSG748FMCProfile() {
@@ -171,10 +186,10 @@ const std::map<char, FMCTextColor> &SSG748FMCProfile::colorMap() const {
         {'g', FMCTextColor::COLOR_GREEN},
         {'p', FMCTextColor::COLOR_MAGENTA},
         {'w', FMCTextColor::COLOR_WHITE},
-        {'l', FMCTextColor::COLOR_RED},      // l = Large/white
-        {'s', FMCTextColor::COLOR_GREY},     // s = Small/white
-        {'x', FMCTextColor::COLOR_RED},      // x = Special/labels (white)
-        {'i', FMCTextColor::COLOR_WHITE_BG}, // i = Inverted
+        {'l', FMCTextColor::COLOR_RED},                                                               // l = Large/white
+        {'s', FMCTextColor::COLOR_GREY},                                                              // s = Small/white
+        {'x', FMCTextColor::COLOR_RED},                                                               // x = Special/labels (white)
+        {'i', FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_WHITE, FMCTextColor::COLOR_RED)}, // i = Inverted
     };
 
     return colMap;
@@ -218,12 +233,53 @@ void SSG748FMCProfile::updatePage(std::vector<std::vector<char>> &page) {
             continue;
         }
 
+        // Count visible characters (skip ';X' color escapes, stop at 0x00)
+        auto visibleLength = [&](const std::string &s) {
+            int len = 0;
+            for (int i = 0; i < (int) s.size(); ++i) {
+                if ((unsigned char) s[i] == 0x00) {
+                    break;
+                }
+                if (s[i] == ';' && i + 1 < (int) s.size()) {
+                    ++i;
+                    continue;
+                }
+                if (s[i] == '[' && i + 1 < (int) s.size() && s[i + 1] == ']') {
+                    ++i;
+                    ++len;
+                    continue;
+                }
+                ++len;
+            }
+            return len;
+        };
+
+        // If too long, strip spaces from the middle outward until it fits
+        while (visibleLength(text) > (int) ProductFMC::PageCharsPerLine) {
+            int mid = text.size() / 2;
+            int found = -1;
+            for (int d = 0; d <= mid; ++d) {
+                if (mid + d < (int) text.size() && text[mid + d] == ' ') {
+                    found = mid + d;
+                    break;
+                }
+                if (mid - d >= 0 && text[mid - d] == ' ') {
+                    found = mid - d;
+                    break;
+                }
+            }
+            if (found == -1) {
+                break;
+            }
+            text.erase(found, 1);
+        }
+
         char currentColor = 'W';
         bool fontSmall = lineIndex % 2 == 1;
         int displayPos = 0;
 
         for (int i = 0; i < text.size() && displayPos < ProductFMC::PageCharsPerLine; ++i) {
-            char c = text[i];
+            unsigned char c = text[i];
             if (c == 0x00) {
                 break;
             }
@@ -237,8 +293,8 @@ void SSG748FMCProfile::updatePage(std::vector<std::vector<char>> &page) {
 
             if (c == '[' && i + 1 < text.size() && text[i + 1] == ']') {
                 product->writeLineToPage(page, lineIndex, displayPos, "#", currentColor, fontSmall);
-                i++; // Skip the closing bracket
                 displayPos++;
+                i++; // Skip the closing bracket
                 continue;
             }
 

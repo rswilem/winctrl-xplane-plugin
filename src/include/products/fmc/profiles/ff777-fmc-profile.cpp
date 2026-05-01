@@ -183,7 +183,7 @@ const std::map<char, FMCTextColor> &FlightFactor777FMCProfile::colorMap() const 
         {3, FMCTextColor::COLOR_GREEN},
         {4, FMCTextColor::COLOR_CYAN},
         {5, FMCTextColor::COLOR_GREY},
-        {6, FMCTextColor::COLOR_WHITE_BG},
+        {6, FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_WHITE, FMCTextColor::COLOR_GREY)},
     };
 
     return colMap;

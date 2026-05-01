@@ -223,25 +223,25 @@ const std::unordered_map<FMCKey, const FMCButtonDef *> &XCraftsFMCProfile::butto
 
 const std::map<char, FMCTextColor> &XCraftsFMCProfile::colorMap() const {
     static const std::map<char, FMCTextColor> colors = {
-        {0x00, COLOR_WHITE},
-        {0x01, COLOR_CYAN},
-        {0x02, COLOR_GREEN},
-        {0x03, COLOR_YELLOW},
-        {0x04, COLOR_MAGENTA},
-        {0x05, COLOR_RED},
-        {0x06, COLOR_LIGHTBROWN},
-        {0x07, COLOR_AMBER},
-        {0x08, COLOR_GREY},
+        {0x00, FMCTextColor::COLOR_WHITE},
+        {0x01, FMCTextColor::COLOR_CYAN},
+        {0x02, FMCTextColor::COLOR_GREEN},
+        {0x03, FMCTextColor::COLOR_YELLOW},
+        {0x04, FMCTextColor::COLOR_MAGENTA},
+        {0x05, FMCTextColor::COLOR_RED},
+        {0x06, FMCTextColor::COLOR_LIGHTBROWN},
+        {0x07, FMCTextColor::COLOR_AMBER},
+        {0x08, FMCTextColor::COLOR_GREY},
 
-        {0xF0, COLOR_WHITE_BG},
-        {0xF1, COLOR_CYAN_BG},
-        {0xF2, COLOR_GREEN_BG},
-        {0xF3, COLOR_YELLOW_BG},
-        {0xF4, COLOR_MAGENTA_BG},
-        {0xF5, COLOR_RED_BG},
-        {0xF6, COLOR_GREY_BG},
-        {0xF7, COLOR_AMBER_BG},
-        {0xF8, COLOR_DARKBROWN_BG},
+        {0xF0, FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_BLACK, FMCTextColor::COLOR_WHITE)},
+        {0xF1, FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_BLACK, FMCTextColor::COLOR_CYAN)},
+        {0xF2, FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_BLACK, FMCTextColor::COLOR_GREEN)},
+        {0xF3, FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_BLACK, FMCTextColor::COLOR_YELLOW)},
+        {0xF4, FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_BLACK, FMCTextColor::COLOR_MAGENTA)},
+        {0xF5, FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_BLACK, FMCTextColor::COLOR_RED)},
+        {0xF6, FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_BLACK, FMCTextColor::COLOR_LIGHTBROWN)},
+        {0xF7, FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_BLACK, FMCTextColor::COLOR_AMBER)},
+        {0xF8, FMCTextColor::withBackgroundColor(FMCTextColor::COLOR_BLACK, FMCTextColor::COLOR_GREY)},
     };
 
     return colors;

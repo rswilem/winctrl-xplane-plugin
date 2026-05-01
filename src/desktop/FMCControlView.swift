@@ -193,6 +193,7 @@ struct FMCControlView: View {
                         Text("XCRAFTS_DEPT_SID").tag("XCRAFTS_DEPT_SID")
                         Text("──────────").disabled(true)
                         Text("CHARACTER_TEST").tag("CHARACTER_TEST")
+                        Text("COLOR_TEST").tag("COLOR_TEST")
                         Text("ALL_GLYPHS").tag("ALL_GLYPHS")
                     }
                     .pickerStyle(.menu)
@@ -640,6 +641,60 @@ struct FMCControlView: View {
             while index < buf.count {
                 let maxLength = min(63, buf.count - index)
                 var usbBuf = [UInt8](buf[index..<index+maxLength])
+                usbBuf.insert(0xf2, at: 0)
+                if maxLength < 63 {
+                    usbBuf.append(contentsOf: Array(repeating: 0, count: 63 - maxLength))
+                }
+                fmc.writeData(usbBuf)
+                index += maxLength
+            }
+            break
+
+        case "COLOR_TEST":
+            var currentLine = 0
+            var charBuffer: [UInt8] = []
+
+            let COLOR_BLACK: UInt16 = 0x0000
+            let COLOR_AMBER: UInt16 = 0x0021
+            let COLOR_WHITE: UInt16 = 0x0042
+            let COLOR_CYAN: UInt16 = 0x0063
+            let COLOR_GREEN: UInt16 = 0x0084
+            let COLOR_MAGENTA: UInt16 = 0x00A5
+            let COLOR_RED: UInt16 = 0x00C6
+            let COLOR_YELLOW: UInt16 = 0x00E7
+            let COLOR_DARKBROWN: UInt16 = 0x0108
+            let COLOR_GREY: UInt16 = 0x0129
+            let COLOR_LIGHTBROWN: UInt16 = 0x014A
+            
+            let writeCustomTextLine = { (text: String, foreground: UInt16, background: UInt16) in
+                // Pad line to 24 characters with spaces
+                let paddedText = text.padding(toLength: 24, withPad: " ", startingAt: 0)
+                let hex = paddedText.utf8.map { UInt8($0) }
+
+                var color: UInt16 = foreground
+                if background != COLOR_BLACK {
+                    color = foreground + (background / 11);
+                }
+                // Encode characters as [0x42, 0x00, character]
+                for byte in hex {
+                    charBuffer += [UInt8(color & 0xFF), UInt8((color >> 8) & 0xFF), byte]
+                }
+                
+                currentLine += 1
+            }
+
+            writeCustomTextLine("A message from TheRamon.", COLOR_GREEN, COLOR_BLACK)
+            writeCustomTextLine("TRUE REVERSE VIDEO", COLOR_YELLOW, COLOR_RED)
+            writeCustomTextLine("IN ANY COLOR COMBINATION", COLOR_MAGENTA, COLOR_DARKBROWN)
+            writeCustomTextLine("FOR EXMPL BLACK ON GREEN", COLOR_BLACK, COLOR_GREEN)
+            writeCustomTextLine("OR AMBER ON MAGENTA", COLOR_AMBER, COLOR_MAGENTA)
+            writeCustomTextLine("OR SIMPLY BLACK ON WHITE", COLOR_BLACK, COLOR_WHITE)
+            
+            // Send accumulated buffer in chunks of 63 bytes
+            var index = 0
+            while index < charBuffer.count {
+                let maxLength = min(63, charBuffer.count - index)
+                var usbBuf = [UInt8](charBuffer[index..<index+maxLength])
                 usbBuf.insert(0xf2, at: 0)
                 if maxLength < 63 {
                     usbBuf.append(contentsOf: Array(repeating: 0, count: 63 - maxLength))

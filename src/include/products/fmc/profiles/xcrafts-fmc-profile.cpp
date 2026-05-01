@@ -95,6 +95,7 @@ const std::vector<std::string> &XCraftsFMCProfile::displayDatarefs() const {
                             datarefs.push_back(std::string(buffer));
                         }
 
+                        datarefs.push_back("XCrafts/FMS/CDU_" + cduNumber + "_MessagePad");
                         datarefs.push_back("XCrafts/FMS/CDU_" + cduNumber + "_ScratchPad");
                         return datarefs;
                     }())

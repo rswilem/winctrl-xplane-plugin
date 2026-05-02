@@ -8,6 +8,7 @@
 #include "profiles/ff777-fmc-profile.h"
 #include "profiles/ixeg733-fmc-profile.h"
 #include "profiles/laminar-a333-fmc-profile.h"
+#include "profiles/laminar-citx-fmc-profile.h"
 #include "profiles/rotatemd11-fmc-profile.h"
 #include "profiles/ssg748-fmc-profile.h"
 #include "profiles/toliss-fmc-profile.h"
@@ -67,6 +68,10 @@ void ProductFMC::setProfileForCurrentAircraft() {
     } else if (LaminarA333FMCProfile::IsEligible()) {
         clearDisplay();
         profile = new LaminarA333FMCProfile(this);
+        profileReady = true;
+    } else if (LaminarCitXFMCProfile::IsEligible()) {
+        clearDisplay();
+        profile = new LaminarCitXFMCProfile(this);
         profileReady = true;
     } else if (XCraftsFMCProfile::IsEligible()) {
         clearDisplay();

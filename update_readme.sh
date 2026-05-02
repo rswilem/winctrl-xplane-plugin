@@ -39,6 +39,7 @@ ssg748|SSG 747
 jf146|JustFlight 146
 laminar-737|Laminar 737
 laminar-a333|Laminar A330 (Aerogenesis)
+laminar-citx|Laminar Citation X
 c172|Laminar C172
 "
 

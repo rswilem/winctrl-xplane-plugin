@@ -301,28 +301,16 @@ void ZiboPAP3MCPProfile::setBankAngleIndex(int target) {
     }
 
     int current = readBankAngleIndex();
-    if (current < 0) {
+    if (current < 0 || current == target) {
         return;
     }
 
-    // Nudge to target position (max 10 steps to prevent infinite loops)
-    const int maxSteps = 10;
-    int steps = 0;
-
-    while (current != target && steps++ < maxSteps) {
-        const bool goUp = (target > current);
-        const char *cmd = goUp ? "laminar/B738/autopilot/bank_angle_up" : "laminar/B738/autopilot/bank_angle_dn";
-
+    // X-Plane processes commands at end-of-frame, so the dataref won't update
+    // within the same call. Calculate delta up front and fire all commands at once.
+    const char *cmd = (target > current) ? "laminar/B738/autopilot/bank_angle_up" : "laminar/B738/autopilot/bank_angle_dn";
+    int steps = std::abs(target - current);
+    for (int i = 0; i < steps; i++) {
         Dataref::getInstance()->executeCommand(cmd);
-
-        // Re-read position (Zibo updates quickly)
-        int next = readBankAngleIndex();
-        if (next == current) {
-            // Stuck, try again
-            Dataref::getInstance()->executeCommand(cmd);
-            next = readBankAngleIndex();
-        }
-        current = next;
     }
 }
 
@@ -367,16 +355,16 @@ void ZiboPAP3MCPProfile::maybeToggle(const char *dataref, bool hwState, const ch
 
 // Handle maintained switches (FD CAPT/FO, A/T, AP Disconnect)
 void ZiboPAP3MCPProfile::handleSwitchChanged(uint8_t byteOffset, uint8_t bitMask, bool state) {
-    // FD CAPT: byte 0x04, bit 0x08 (inverted - pressed = OFF line, so pressed means switch is ON)
+    // FD CAPT: byte 0x04, bit 0x08 = OFF line; bit is HIGH when switch is OFF, LOW when switch is ON
     if (byteOffset == 0x04 && bitMask == 0x08) {
-        hwFDCaptOn = state; // State represents if the switch is ON
+        hwFDCaptOn = !state; // OFF line active (state=true) means switch is OFF
         maybeToggle("laminar/B738/autopilot/flight_director_pos", hwFDCaptOn, "laminar/B738/autopilot/flight_director_toggle");
         return;
     }
 
-    // FD FO: byte 0x04, bit 0x20 (inverted - pressed = OFF line, so pressed means switch is ON)
+    // FD FO: byte 0x04, bit 0x20 = OFF line; bit is HIGH when switch is OFF, LOW when switch is ON
     if (byteOffset == 0x04 && bitMask == 0x20) {
-        hwFDFoOn = state;
+        hwFDFoOn = !state; // OFF line active (state=true) means switch is OFF
         maybeToggle("laminar/B738/autopilot/flight_director_fo_pos", hwFDFoOn, "laminar/B738/autopilot/flight_director_fo_toggle");
         return;
     }
@@ -403,17 +391,23 @@ void ZiboPAP3MCPProfile::handleSwitchChanged(uint8_t byteOffset, uint8_t bitMask
         return;
     }
 
-    // AP DISCONNECT: byte 0x04, bit 0x80 = UP line (inverted), byte 0x05, bit 0x01 = DOWN line
+    // AP DISCONNECT: byte 0x04, bit 0x80 = UP line, byte 0x05, bit 0x01 = DOWN line
+    // The bar is a latching (non-spring) switch. When it moves, both lines transition
+    // in the same frame. Only act on the rising edge of each line to avoid double-toggle.
     if (byteOffset == 0x04 && bitMask == 0x80) {
-        // UP line: pressed = engaged, released = disengaged
-        hwApDiscEngaged = !state;
-        maybeToggle("laminar/B738/autopilot/disconnect_pos", hwApDiscEngaged, "laminar/B738/autopilot/disconnect_toggle");
+        if (state) {
+            // UP line rising: bar just clicked back up (re-engage position)
+            hwApDiscEngaged = true;
+            maybeToggle("laminar/B738/autopilot/disconnect_pos", hwApDiscEngaged, "laminar/B738/autopilot/disconnect_toggle");
+        }
         return;
     }
     if (byteOffset == 0x05 && bitMask == 0x01) {
-        // DOWN line: pressed = disengaged, released = engaged
-        hwApDiscEngaged = state;
-        maybeToggle("laminar/B738/autopilot/disconnect_pos", hwApDiscEngaged, "laminar/B738/autopilot/disconnect_toggle");
+        if (state) {
+            // DOWN line rising: bar just clicked down (disengage position)
+            hwApDiscEngaged = false;
+            maybeToggle("laminar/B738/autopilot/disconnect_pos", hwApDiscEngaged, "laminar/B738/autopilot/disconnect_toggle");
+        }
         return;
     }
 }

@@ -64,6 +64,7 @@ const std::vector<std::string> &XCraftsFCUEfisProfile::displayDatarefs() const {
         "sim/cockpit/autopilot/autopilot_mode",
         "XCrafts/ERJ/autothrottle_armed",
         "XCrafts/ERJ/autopilot/autothrottle_system_active",
+        "XCrafts/speed_knob_fms_man",
 
         "sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot",
         "sim/physics/metric_press",
@@ -90,14 +91,16 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &XCraftsFCUEfisProfile::but
         {14, {"HDG INC", "sim/autopilot/heading_up"}},
         {15, {"HDG PUSH", "sim/autopilot/heading_sync"}},
         {16, {"HDG PULL", "sim/autopilot/heading"}},
-        {17, {"ALT DEC", "XCrafts/ERJ/autopilot/altitude", FCUEfisDatarefType::ADJUST_VALUE, -100.0}},
-        {18, {"ALT INC", "XCrafts/ERJ/autopilot/altitude", FCUEfisDatarefType::ADJUST_VALUE, 100.0}},
+        {17, {"ALT DEC", "custom_altitude", FCUEfisDatarefType::EXECUTE_CMD_ONCE, -1.0}},
+        {18, {"ALT INC", "custom_altitude", FCUEfisDatarefType::EXECUTE_CMD_ONCE, 1.0}},
         {19, {"ALT PUSH", "XCrafts/ERJ/VNAV"}},
         {20, {"ALT PULL", "XCrafts/ERJ/FLCH"}},
         {21, {"VS DEC", "XCrafts/ERJ/autopilot/vertical_velocity", FCUEfisDatarefType::ADJUST_VALUE, -100.0}},
         {22, {"VS INC", "XCrafts/ERJ/autopilot/vertical_velocity", FCUEfisDatarefType::ADJUST_VALUE, 100.0}},
         {23, {"VS PUSH", "XCrafts/ERJ/alt_hold"}},
         {24, {"VS PULL", "XCrafts/ERJ/VS"}},
+        {25, {"ALT 100", "custom_set_altitude_mode", FCUEfisDatarefType::SET_VALUE, 100.0}},
+        {26, {"ALT 1000", "custom_set_altitude_mode", FCUEfisDatarefType::SET_VALUE, 1000.0}},
 
         // Buttons 27-31 reserved
 
@@ -190,7 +193,7 @@ void XCraftsFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.vsVerticalLine = data.vsMode && (data.verticalSpeed != "-----");
 
     data.latMode = true;
-    data.spdManaged = Dataref::getInstance()->getCached<int>("XCrafts/speed_knob_fms_man") == 0;
+    data.spdManaged = Dataref::getInstance()->getCached<int>("XCrafts/speed_knob_fms_man") == 1;
     data.hdgManaged = false;
     data.altManaged = false;
 
@@ -219,15 +222,19 @@ void XCraftsFCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMCo
         return;
     }
 
-    auto dr = Dataref::getInstance();
-
-    if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::ADJUST_VALUE) {
-        float current = dr->get<float>(button->dataref.c_str());
-        dr->set<float>(button->dataref.c_str(), current + static_cast<float>(button->value));
-
+    auto datarefManager = Dataref::getInstance();
+    if (phase == xplm_CommandBegin && button->dataref == "custom_set_altitude_mode") {
+        altitudeIncrements = button->value;
+    } else if (phase == xplm_CommandBegin && button->dataref == "custom_altitude") {
+        bool directionUp = button->value > 0.0f;
+        float current = datarefManager->get<float>("XCrafts/ERJ/autopilot/altitude");
+        datarefManager->set<float>("XCrafts/ERJ/autopilot/altitude", current + (directionUp ? altitudeIncrements : -altitudeIncrements));
+    } else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::ADJUST_VALUE) {
+        float current = datarefManager->get<float>(button->dataref.c_str());
+        datarefManager->set<float>(button->dataref.c_str(), current + static_cast<float>(button->value));
     } else if (phase == xplm_CommandBegin && (button->datarefType == FCUEfisDatarefType::BAROMETER_PILOT || button->datarefType == FCUEfisDatarefType::BAROMETER_FO)) {
-        bool isBaroHpa = dr->getCached<bool>("sim/physics/metric_press");
-        float baroValue = dr->getCached<float>("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot");
+        bool isBaroHpa = datarefManager->getCached<bool>("sim/physics/metric_press");
+        float baroValue = datarefManager->getCached<float>("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot");
         bool increase = button->value > 0;
 
         if (isBaroHpa) {
@@ -238,16 +245,16 @@ void XCraftsFCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMCo
             baroValue += increase ? 0.01f : -0.01f;
         }
 
-        dr->set<float>("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot", baroValue);
+        datarefManager->set<float>("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot", baroValue);
 
     } else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::SET_VALUE) {
-        dr->set<float>(button->dataref.c_str(), static_cast<float>(button->value));
+        datarefManager->set<float>(button->dataref.c_str(), static_cast<float>(button->value));
 
     } else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::TOGGLE_VALUE) {
-        int current = dr->get<int>(button->dataref.c_str());
-        dr->set<int>(button->dataref.c_str(), current ? 0 : 1);
+        int current = datarefManager->get<int>(button->dataref.c_str());
+        datarefManager->set<int>(button->dataref.c_str(), current ? 0 : 1);
 
     } else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::EXECUTE_CMD_ONCE) {
-        dr->executeCommand(button->dataref.c_str());
+        datarefManager->executeCommand(button->dataref.c_str());
     }
 }

@@ -7,6 +7,9 @@
 #include <vector>
 
 class XCraftsFCUEfisProfile : public FCUEfisAircraftProfile {
+    private:
+        int altitudeIncrements = 0;
+
     public:
         XCraftsFCUEfisProfile(ProductFCUEfis *product);
         ~XCraftsFCUEfisProfile();

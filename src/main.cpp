@@ -11,7 +11,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-#include <filesystem>
 #include <memory>
 #include <vector>
 #include <XPLMDisplay.h>
@@ -36,44 +35,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 
 PLUGIN_API void XPluginReceiveMessage(XPLMPluginID from, long msg, void *params);
 void menuAction(void *mRef, void *iRef);
-
-void removeOldPlugin() { // remove <filesystem> when removing this function
-    Logger::getInstance()->info("Checking for old plugin versions to remove...\n");
-    char systemPath[512];
-    XPLMGetSystemPath(systemPath);
-    std::string rootDirectory = systemPath;
-    if (rootDirectory.ends_with("/")) {
-        rootDirectory = rootDirectory.substr(0, rootDirectory.length() - 1); // Remove trailing slash
-    }
-
-    std::string pluginDirectory = rootDirectory + ALL_PLUGINS_DIRECTORY + "winctrl/";
-
-    try {
-        std::vector<std::string> oldPluginPaths = {
-            pluginDirectory + "mac_x64/winwing.xpl",
-            pluginDirectory + "lin_x64/winwing.xpl",
-            pluginDirectory + "win_x64/winwing.xpl",
-        };
-
-        // Attempt to delete any old versions of the plugin
-        int changes = 0;
-        for (const auto &path : oldPluginPaths) {
-            if (std::filesystem::exists(path)) {
-                // We have winctrl.xpl at this path now, so attempt to delete the old plugin
-                Logger::getInstance()->info("Found old plugin at path: %s. Removing...\n", path.c_str());
-
-                if (std::filesystem::remove(path) > 0) {
-                    Logger::getInstance()->info("Successfully removed old plugin at path: %s\n", path.c_str());
-                    changes++;
-                } else {
-                    Logger::getInstance()->info("Failed to remove old plugin at path: %s\n", path.c_str());
-                }
-            }
-        }
-    } catch (const std::filesystem::filesystem_error &e) {
-        Logger::getInstance()->error("Error during plugin migration: %s\n", e.what());
-    }
-}
 
 PLUGIN_API int XPluginStart(char *name, char *sig, char *desc) {
     strcpy(name, FRIENDLY_NAME);
@@ -141,8 +102,6 @@ PLUGIN_API int XPluginStart(char *name, char *sig, char *desc) {
     });
 
     Logger::getInstance()->info("Plugin started (version %s)\n", VERSION);
-
-    removeOldPlugin();
 
     return 1;
 }

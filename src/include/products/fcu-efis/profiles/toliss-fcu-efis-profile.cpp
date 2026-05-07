@@ -95,8 +95,8 @@ TolissFCUEfisProfile::TolissFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAir
             return;
         }
 
-        bool isExpedMode = panelLights[49] > 0;  // EXPED Light (A319, A320, A321)
-        bool isAltMode339 = panelLights[51] > 0; // ALT Light (A330, A340, A350, A380)
+        bool isExpedMode = panelLights[49] > std::numeric_limits<float>::epsilon();  // EXPED Light (A319, A320, A321)
+        bool isAltMode339 = panelLights[51] > std::numeric_limits<float>::epsilon(); // ALT Light (A330, A340, A350, A380)
         product->setLedBrightness(FCUEfisLed::EXPED_GREEN, isExpedMode || isAltMode339);
     });
 

@@ -57,21 +57,21 @@ TolissAGPProfile::TolissAGPProfile(ProductAGP *product) : AGPAircraftProfile(pro
             return;
         }
 
-        product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_CENTER, panelLights[0] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::LDG_GEAR_UNLK_CENTER, panelLights[1] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_LEFT, panelLights[2] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::LDG_GEAR_UNLK_LEFT, panelLights[3] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_RIGHT, panelLights[4] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::LDG_GEAR_UNLK_RIGHT, panelLights[5] || isAnnunTest() ? 1 : 0);
+        product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_CENTER, panelLights[0] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::LDG_GEAR_UNLK_CENTER, panelLights[1] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_LEFT, panelLights[2] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::LDG_GEAR_UNLK_LEFT, panelLights[3] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_RIGHT, panelLights[4] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::LDG_GEAR_UNLK_RIGHT, panelLights[5] > std::numeric_limits<float>::epsilon() ? 1 : 0);
 
-        product->setLedBrightness(AGPLed::BRAKE_FAN_ON, panelLights[10] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::BRAKE_FAN_HOT, panelLights[11] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::AUTOBRK_LO_ON, panelLights[12] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::AUTOBRK_LO_DECEL, panelLights[13] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::AUTOBRK_MED_ON, panelLights[14] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::AUTOBRK_MED_DECEL, panelLights[15] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::AUTOBRK_MAX_ON, panelLights[16] || isAnnunTest() ? 1 : 0);
-        product->setLedBrightness(AGPLed::AUTOBRK_MAX_DECEL, panelLights[17] || isAnnunTest() ? 1 : 0);
+        product->setLedBrightness(AGPLed::BRAKE_FAN_ON, panelLights[10] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::BRAKE_FAN_HOT, panelLights[11] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::AUTOBRK_LO_ON, panelLights[12] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::AUTOBRK_LO_DECEL, panelLights[13] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::AUTOBRK_MED_ON, panelLights[14] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::AUTOBRK_MED_DECEL, panelLights[15] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::AUTOBRK_MAX_ON, panelLights[16] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(AGPLed::AUTOBRK_MAX_DECEL, panelLights[17] > std::numeric_limits<float>::epsilon() ? 1 : 0);
     });
 }
 

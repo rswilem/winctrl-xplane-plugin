@@ -40,7 +40,7 @@ TolissTCASProfile::TolissTCASProfile(ProductTCAS *product) : TCASAircraftProfile
     //     if (panelLights.size() < 18) {
     //         return;
     //     }
-    //     product->setLedBrightness(TCASLed::ATC_FAIL, panelLights[0] || isAnnunTest() ? 1 : 0);
+    //     product->setLedBrightness(TCASLed::ATC_FAIL, panelLights[0] > std::numeric_limits<float>::epsilon() || isAnnunTest() ? 1 : 0);
     // });
 }
 

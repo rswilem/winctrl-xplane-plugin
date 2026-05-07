@@ -346,7 +346,10 @@ void XCraftsFMCProfile::updatePage(std::vector<std::vector<char>> &page) {
 
         // Parse XCrafts format: RRCCFS[TEXT]
         // RR CC F S
-        // 13 15 6 010 DEPARTUREv
+        // 05 18 1 2 IRMA8A ST     DEPARTUREv                    
+        // 13 15 6 0 10DEPARTUREv                                
+        // 13 15 6 0 10DEPARTUREv
+        // 13 10 6 0 15ACT APP SPEEDv
         // 13 17 2 0 TAKEOFFv
         // 13 01 2 0 $CLEAR            APPLYv
         // 11 01 1 8 $TCAS/XPDR
@@ -361,7 +364,7 @@ void XCraftsFMCProfile::updatePage(std::vector<std::vector<char>> &page) {
         }
 
         unsigned char colorCode = text[5] - '0';
-        if (fontStyle >= XCraftsFMCFontStyle::LargeReversed) {
+        if (fontStyle >= XCraftsFMCFontStyle::LargeReverseVideo) {
             colorCode = 0xF0 + colorCode;
         }
 
@@ -381,7 +384,7 @@ void XCraftsFMCProfile::updatePage(std::vector<std::vector<char>> &page) {
                 }
 
                 int displayCol = colIndex + (j - textStartIndex);
-                bool isSmallFont = fontStyle == XCraftsFMCFontStyle::Small || fontStyle == XCraftsFMCFontStyle::SmallReversed || fontStyle == XCraftsFMCFontStyle::SmallReversedBox;
+                bool isSmallFont = fontStyle == XCraftsFMCFontStyle::Small || fontStyle == XCraftsFMCFontStyle::SmallReverseVideo || fontStyle == XCraftsFMCFontStyle::SmallReverseVideoBoxed;
 
                 char existing = product->getPageCharacter(page, lineIndex, displayCol);
                 if (existing && c == 0x20) {

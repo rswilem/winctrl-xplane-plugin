@@ -87,6 +87,8 @@
 		F6AAEE232F261A790020CF32 /* ff777-ursa-minor-throttle-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AAEE1F2F261A790020CF32 /* ff777-ursa-minor-throttle-profile.cpp */; };
 		F6AAEE242F261A790020CF32 /* zibo-ursa-minor-throttle-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AAEE212F261A790020CF32 /* zibo-ursa-minor-throttle-profile.cpp */; };
 		F6AAEE252F261A790020CF32 /* ff777-ursa-minor-throttle-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AAEE1F2F261A790020CF32 /* ff777-ursa-minor-throttle-profile.cpp */; };
+		F6ADBA012FA72A0A00DCA201 /* laminar-citx-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6ADBA002FA72A0A00DCA201 /* laminar-citx-fmc-profile.cpp */; };
+		F6ADBA022FA72A0A00DCA201 /* laminar-citx-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6ADBA002FA72A0A00DCA201 /* laminar-citx-fmc-profile.cpp */; };
 		F6AF9EC12D06F84900530297 /* dataref.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF9EBC2D06F84900530297 /* dataref.cpp */; };
 		F6AF9EC62D078DB000530297 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6AF9EC52D078DB000530297 /* Cocoa.framework */; };
 		F6AF9ECC2D078ED400530297 /* appstate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF9ECB2D078ED400530297 /* appstate.cpp */; };
@@ -152,6 +154,7 @@
 		838AA8B32EEF2918006444F6 /* ff350-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ff350-fcu-efis-profile.h"; sourceTree = "<group>"; };
 		838AA8B42EEF2918006444F6 /* ff350-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "ff350-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
 		D607B19909A556E400699BC3 /* winctrl.xpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = winctrl.xpl; sourceTree = BUILT_PRODUCTS_DIR; };
+		F60BE7C62FA8CA0E00E5C542 /* xplane-version.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "xplane-version.hpp"; sourceTree = "<group>"; };
 		F61F8B2D2D059ED500E63C3F /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		F62002542F89129C0020E2AB /* xcrafts-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-fcu-efis-profile.h"; sourceTree = "<group>"; };
 		F62002552F89129C0020E2AB /* xcrafts-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
@@ -235,6 +238,8 @@
 		F6AAEE1F2F261A790020CF32 /* ff777-ursa-minor-throttle-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "ff777-ursa-minor-throttle-profile.cpp"; sourceTree = "<group>"; };
 		F6AAEE202F261A790020CF32 /* zibo-ursa-minor-throttle-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zibo-ursa-minor-throttle-profile.h"; sourceTree = "<group>"; };
 		F6AAEE212F261A790020CF32 /* zibo-ursa-minor-throttle-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "zibo-ursa-minor-throttle-profile.cpp"; sourceTree = "<group>"; };
+		F6ADB9FF2FA72A0A00DCA201 /* laminar-citx-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "laminar-citx-fmc-profile.h"; sourceTree = "<group>"; };
+		F6ADBA002FA72A0A00DCA201 /* laminar-citx-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "laminar-citx-fmc-profile.cpp"; sourceTree = "<group>"; };
 		F6AF9EBB2D06F84900530297 /* dataref.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dataref.h; sourceTree = "<group>"; };
 		F6AF9EBC2D06F84900530297 /* dataref.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = dataref.cpp; sourceTree = "<group>"; };
 		F6AF9EC52D078DB000530297 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -439,6 +444,8 @@
 		F6A1492A2E4F03A400FB8395 /* profiles */ = {
 			isa = PBXGroup;
 			children = (
+				F6ADB9FF2FA72A0A00DCA201 /* laminar-citx-fmc-profile.h */,
+				F6ADBA002FA72A0A00DCA201 /* laminar-citx-fmc-profile.cpp */,
 				5DBA922F2E6F4D71007328BC /* ff767-fmc-profile.h */,
 				5DBA92302E6F4D71007328BC /* ff767-fmc-profile.cpp */,
 				F6A149352E4F04AE00FB8395 /* ff777-fmc-profile.h */,
@@ -508,6 +515,7 @@
 				F65361742FA244A90039C2C9 /* power-scheme.h */,
 				F65361752FA244A90039C2C9 /* power-scheme.cpp */,
 				F6B79CFC2F4A5BFD00517E6A /* logger.hpp */,
+				F60BE7C62FA8CA0E00E5C542 /* xplane-version.hpp */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -799,6 +807,7 @@
 				F68428662EC63F070027756D /* zibo-ursa-minor-joystick-profile.cpp in Sources */,
 				F6A77E722ED3514600061D03 /* toliss-agp-profile.cpp in Sources */,
 				F6FDC3D12F3E129F008E66F5 /* ff777-ursa-minor-joystick-profile.cpp in Sources */,
+				F6ADBA012FA72A0A00DCA201 /* laminar-citx-fmc-profile.cpp in Sources */,
 				F6A77E732ED3514600061D03 /* product-agp.cpp in Sources */,
 				F6D8E6C92ED059390041C4FB /* product-ecam.cpp in Sources */,
 				F6D8E6CA2ED059390041C4FB /* toliss-ecam-profile.cpp in Sources */,
@@ -915,6 +924,7 @@
 				F6D8E6C72ED059390041C4FB /* product-ecam.cpp in Sources */,
 				F6D8E6C82ED059390041C4FB /* toliss-ecam-profile.cpp in Sources */,
 				F6C248472EBE498500617E89 /* plugins-menu.cpp in Sources */,
+				F6ADBA022FA72A0A00DCA201 /* laminar-citx-fmc-profile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,10 +8,10 @@
 enum class XCraftsFMCFontStyle : unsigned char {
     Large = 1,
     Small = 2,
-    LargeReversed = 3,
-    SmallReversed = 4,
-    LargeReversedBox = 5,
-    SmallReversedBox = 6
+    LargeReverseVideo = 3,
+    SmallReverseVideo = 4,
+    LargeReverseVideoBoxed = 5,
+    SmallReverseVideoBoxed = 6
 };
 
 class XCraftsFMCProfile : public FMCAircraftProfile {

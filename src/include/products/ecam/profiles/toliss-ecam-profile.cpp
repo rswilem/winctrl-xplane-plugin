@@ -3,6 +3,7 @@
 #include "appstate.h"
 #include "dataref.h"
 #include "product-ecam.h"
+#include "xplane-version.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -19,35 +20,35 @@ TolissECAMProfile::TolissECAMProfile(ProductECAM *product) : ECAMAircraftProfile
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/PanelBrightnessLevel");
-        Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/OHPLightsATA31_Raw");
+        Dataref::getInstance()->executeChangedCallbacksForDataref(ifXPlane11("AirbusFBW/OHPLightsATA31", "AirbusFBW/OHPLightsATA31_Raw"));
     });
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/ECPAvail", [this, product](bool enabled) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/PanelBrightnessLevel");
-        Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/OHPLightsATA31_Raw");
+        Dataref::getInstance()->executeChangedCallbacksForDataref(ifXPlane11("AirbusFBW/OHPLightsATA31", "AirbusFBW/OHPLightsATA31_Raw"));
     });
 
-    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/OHPLightsATA31_Raw", [product](const std::vector<float> &panelLights) {
+    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>(ifXPlane11("AirbusFBW/OHPLightsATA31", "AirbusFBW/OHPLightsATA31_Raw"), [product](const std::vector<float> &panelLights) {
         if (panelLights.size() < 45) {
             return;
         }
 
-        product->setLedBrightness(ECAMLed::ENG, panelLights[30] ? 1 : 0);
-        product->setLedBrightness(ECAMLed::BLEED, panelLights[31] ? 1 : 0);
-        product->setLedBrightness(ECAMLed::PRESS, panelLights[32] ? 1 : 0);
-        product->setLedBrightness(ECAMLed::ELEC, panelLights[33] ? 1 : 0);
-        product->setLedBrightness(ECAMLed::HYD, panelLights[34] ? 1 : 0);
-        product->setLedBrightness(ECAMLed::FUEL, panelLights[35] ? 1 : 0);
+        product->setLedBrightness(ECAMLed::ENG, panelLights[30] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(ECAMLed::BLEED, panelLights[31] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(ECAMLed::PRESS, panelLights[32] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(ECAMLed::ELEC, panelLights[33] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(ECAMLed::HYD, panelLights[34] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(ECAMLed::FUEL, panelLights[35] > std::numeric_limits<float>::epsilon() ? 1 : 0);
 
-        product->setLedBrightness(ECAMLed::APU, panelLights[36] ? 1 : 0);
-        product->setLedBrightness(ECAMLed::COND, panelLights[37] ? 1 : 0);
-        product->setLedBrightness(ECAMLed::DOOR, panelLights[38] ? 1 : 0);
-        product->setLedBrightness(ECAMLed::WHEEL, panelLights[39] ? 1 : 0);
-        product->setLedBrightness(ECAMLed::F_CTL, panelLights[40] ? 1 : 0);
+        product->setLedBrightness(ECAMLed::APU, panelLights[36] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(ECAMLed::COND, panelLights[37] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(ECAMLed::DOOR, panelLights[38] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(ECAMLed::WHEEL, panelLights[39] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(ECAMLed::F_CTL, panelLights[40] > std::numeric_limits<float>::epsilon() ? 1 : 0);
 
-        product->setLedBrightness(ECAMLed::STS, panelLights[41] ? 1 : 0);
-        product->setLedBrightness(ECAMLed::CLR_LEFT, panelLights[42] ? 1 : 0);
-        product->setLedBrightness(ECAMLed::CLR_RIGHT, panelLights[43] ? 1 : 0);
+        product->setLedBrightness(ECAMLed::STS, panelLights[41] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(ECAMLed::CLR_LEFT, panelLights[42] > std::numeric_limits<float>::epsilon() ? 1 : 0);
+        product->setLedBrightness(ECAMLed::CLR_RIGHT, panelLights[43] > std::numeric_limits<float>::epsilon() ? 1 : 0);
     });
 }
 
@@ -55,7 +56,7 @@ TolissECAMProfile::~TolissECAMProfile() {
     Dataref::getInstance()->unbind("AirbusFBW/PanelBrightnessLevel");
     Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
     Dataref::getInstance()->unbind("AirbusFBW/ECPAvail");
-    Dataref::getInstance()->unbind("AirbusFBW/OHPLightsATA31_Raw");
+    Dataref::getInstance()->unbind(ifXPlane11("AirbusFBW/OHPLightsATA31", "AirbusFBW/OHPLightsATA31_Raw"));
 }
 
 bool TolissECAMProfile::IsEligible() {

@@ -193,6 +193,10 @@ void ProductTCAS::didReceiveData(int reportId, uint8_t *report, int reportLength
 void ProductTCAS::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, uint8_t count) {
     USBDevice::didReceiveButton(hardwareButtonIndex, pressed, count);
 
+    if (!connected || !profile) {
+        return;
+    }
+
     auto &buttons = profile->buttonDefs();
     auto it = buttons.find(hardwareButtonIndex);
     if (it == buttons.end()) {

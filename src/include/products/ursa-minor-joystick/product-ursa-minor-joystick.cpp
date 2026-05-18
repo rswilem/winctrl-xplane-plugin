@@ -129,7 +129,7 @@ void ProductUrsaMinorJoystick::update() {
 
     USBDevice::update();
 
-    if (Dataref::getInstance()->getCached<bool>("sim/cockpit/electrical/avionics_on")) {
+    if (Dataref::getInstance()->getCached<int>("sim/time/total_flight_time_sec") > 10) {
         float gForce = Dataref::getInstance()->get<float>("sim/flightmodel/forces/g_nrml");
         float delta = fabs(gForce - lastGForce);
         lastGForce = gForce;

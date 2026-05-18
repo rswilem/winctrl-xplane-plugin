@@ -32,7 +32,7 @@ class ProductTCAS : public USBDevice {
         ProductTCAS(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t productId, std::string vendorName, std::string productName);
         ~ProductTCAS();
 
-        static constexpr unsigned char IdentifierByte = 0x99;
+        static constexpr unsigned char IdentifierByte = 0x81;
 
         const char *classIdentifier() override;
         const char *activeProfileName() const override;

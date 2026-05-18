@@ -7,6 +7,7 @@
 #include "product-fmc.h"
 #include "product-pap3-mcp.h"
 #include "product-pdc.h"
+#include "product-tcas.h"
 #include "product-ursa-minor-joystick.h"
 #include "product-ursa-minor-throttle.h"
 
@@ -129,6 +130,8 @@ USBDevice *USBDevice::Device(HIDDeviceHandle hidDevice, uint16_t vendorId, uint1
             // Unknown...
             // case 0xBB99: // TCAS
             //     return new ProductTCAS(hidDevice, vendorId, productId, vendorName, productName);
+        case 0xBB81: // TCAS
+            return new ProductTCAS(hidDevice, vendorId, productId, vendorName, productName);
 
         case 0xB920: // URSA MINOR 32 Throttle Metal L
         case 0xB930: // URSA MINOR 32 Throttle Metal R

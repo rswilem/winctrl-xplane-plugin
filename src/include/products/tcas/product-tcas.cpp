@@ -124,10 +124,9 @@ void ProductTCAS::setLCDText(const std::string &squawkCode) {
         0x00, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     packet.resize(64, 0x00);
 
-    const int rowOffsets[8] = {25, 29, 33, 37, 41, 45, 49, 53};
+    const int rowOffsets[7] = {37, 33, 29, 25, 49, 45, 41};
 
     std::string allDigits = squawkCode;
-    uint16_t colonMask = 0;
 
     for (int digitIndex = 0; digitIndex < 4; ++digitIndex) {
         if (digitIndex < static_cast<int>(allDigits.length())) {

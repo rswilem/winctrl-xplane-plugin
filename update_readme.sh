@@ -21,7 +21,7 @@ DEVICE_NAMES="
 0|fcu-efis|FCU (+ optional EFIS L+R)
 0|ecam|32 ECAM
 0|agp|32 AGP Metal
-2|tcas|32 TCAS
+0|tcas|32 TCAS
 0|ursa-minor-throttle|URSA MINOR 32 Throttle Metal (+ optional 32 PAC Metal)
 "
 

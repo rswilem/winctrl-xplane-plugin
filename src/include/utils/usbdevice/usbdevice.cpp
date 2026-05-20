@@ -39,6 +39,10 @@ USBDevice *USBDevice::Device(HIDDeviceHandle hidDevice, uint16_t vendorId, uint1
             constexpr uint8_t identifierByte = 0x09;
             return new ProductUrsaMinorJoystick(hidDevice, vendorId, productId, vendorName, productName, identifierByte);
         }
+        case 0xAA17: { // WINWING Orion Joystick Base 2 + JGRIP-F16
+            constexpr uint8_t identifierByte = 0x07;
+            return new ProductUrsaMinorJoystick(hidDevice, vendorId, productId, vendorName, productName, identifierByte);
+        }
 
         case 0xBB36: { // MCDU-32 (Captain)
             constexpr uint8_t identifierByte = 0x32;
@@ -127,9 +131,6 @@ USBDevice *USBDevice::Device(HIDDeviceHandle hidDevice, uint16_t vendorId, uint1
         case 0xBB80: // AGP
             return new ProductAGP(hidDevice, vendorId, productId, vendorName, productName);
 
-            // Unknown...
-            // case 0xBB99: // TCAS
-            //     return new ProductTCAS(hidDevice, vendorId, productId, vendorName, productName);
         case 0xBB81: // TCAS
             return new ProductTCAS(hidDevice, vendorId, productId, vendorName, productName);
 

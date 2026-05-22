@@ -3,7 +3,13 @@
 
 #include "tcas-aircraft-profile.h"
 
+#include <string>
+#include <XPLMUtilities.h>
+
 class ZiboTCASProfile : public TCASAircraftProfile {
+    private:
+        std::string squawkInput;
+
     public:
         ZiboTCASProfile(ProductTCAS *product);
         ~ZiboTCASProfile();

@@ -39,8 +39,8 @@ USBDevice *USBDevice::Device(HIDDeviceHandle hidDevice, uint16_t vendorId, uint1
             constexpr uint8_t identifierByte = 0x09;
             return new ProductUrsaMinorJoystick(hidDevice, vendorId, productId, vendorName, productName, identifierByte);
         }
-        case 0xAA17: { // WINWING Orion Joystick Base 2 + JGRIP-F16
-            constexpr uint8_t identifierByte = 0x07;
+        case 0xBEB8: { // WINWING Orion Joystick Base 2 + JGRIP-F16
+            constexpr uint8_t identifierByte = 0x08;
             return new ProductUrsaMinorJoystick(hidDevice, vendorId, productId, vendorName, productName, identifierByte);
         }
 
@@ -139,7 +139,7 @@ USBDevice *USBDevice::Device(HIDDeviceHandle hidDevice, uint16_t vendorId, uint1
             return new ProductUrsaMinorThrottle(hidDevice, vendorId, productId, vendorName, productName);
 
         default:
-            Logger::getInstance()->debug("Unknown WINCTRL device - vendorId: 0x%04X, productId: 0x%04X (%s)\n", vendorId, productId, productName.c_str());
+            Logger::getInstance()->info("Unknown WINCTRL device - vendorId: 0x%04X, productId: 0x%04X (%s)\n", vendorId, productId, productName.c_str());
             return nullptr;
     }
 }

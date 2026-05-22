@@ -73,8 +73,6 @@ const std::vector<FMCButtonDef> &SparkyB744FMCProfile::buttonDefs() const {
     const std::string fms = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN  ? "fms1"
                           : product->deviceVariant == FMCDeviceVariant::VARIANT_OBSERVER ? "fms3"
                                                                                          : "fms2";
-    // FMS function keys: use standard X-Plane commands (sim/FMS for captain, sim/FMS2 for FO)
-    const std::string fms_cmd = product->deviceVariant == FMCDeviceVariant::VARIANT_FIRSTOFFICER ? "sim/FMS2" : "sim/FMS";
 
     return cache.try_emplace(product->deviceVariant,
                     std::vector<FMCButtonDef>{
@@ -90,18 +88,21 @@ const std::vector<FMCButtonDef> &SparkyB744FMCProfile::buttonDefs() const {
                         {FMCKey::LSK4R, "laminar/B747/" + fms + "/ls_key/R4"},
                         {FMCKey::LSK5R, "laminar/B747/" + fms + "/ls_key/R5"},
                         {FMCKey::LSK6R, "laminar/B747/" + fms + "/ls_key/R6"},
-                        {std::vector<FMCKey>{FMCKey::PFP_INIT_REF, FMCKey::MCDU_INIT}, fms_cmd + "/index"},
-                        {std::vector<FMCKey>{FMCKey::PFP_ROUTE, FMCKey::MCDU_SEC_FPLN}, fms_cmd + "/sec_fpln"},
-                        {std::vector<FMCKey>{FMCKey::PFP4_NAV_RAD, FMCKey::MCDU_RAD_NAV, FMCKey::PFP7_NAV_RAD}, fms_cmd + "/navrad"},
-                        {std::vector<FMCKey>{FMCKey::PFP4_VNAV, FMCKey::MCDU_DATA, FMCKey::PFP7_VNAV}, fms_cmd + "/clb"},
-                        {std::vector<FMCKey>{FMCKey::PFP_FIX, FMCKey::MCDU_EMPTY_BOTTOM_LEFT}, fms_cmd + "/fix"},
-                        {std::vector<FMCKey>{FMCKey::PFP_LEGS, FMCKey::MCDU_FPLN, FMCKey::MCDU_DIR}, fms_cmd + "/legs"},
-                        {std::vector<FMCKey>{FMCKey::PFP_DEP_ARR, FMCKey::MCDU_AIRPORT}, fms_cmd + "/dep_arr"},
-                        {FMCKey::PFP_HOLD, fms_cmd + "/hold"},
-                        {FMCKey::PROG, fms_cmd + "/prog"},
-                        {std::vector<FMCKey>{FMCKey::PFP_EXEC, FMCKey::MCDU_EMPTY_TOP_RIGHT}, fms_cmd + "/exec"},
-                        {FMCKey::PAGE_PREV, fms_cmd + "/prev"},
-                        {FMCKey::PAGE_NEXT, fms_cmd + "/next"},
+                        {std::vector<FMCKey>{FMCKey::PFP_INIT_REF, FMCKey::MCDU_INIT}, "laminar/B747/" + fms + "/func_key/index"},
+                        {std::vector<FMCKey>{FMCKey::PFP_ROUTE, FMCKey::MCDU_SEC_FPLN}, "laminar/B747/" + fms + "/func_key/fpln"},
+                        {std::vector<FMCKey>{FMCKey::PFP_DEP_ARR, FMCKey::MCDU_AIRPORT}, "laminar/B747/" + fms + "/func_key/clb"},
+                        {std::vector<FMCKey>{FMCKey::MCDU_ATC_COMM, FMCKey::PFP4_ATC}, "laminar/B747/" + fms + "/func_key/crz"},
+                        {std::vector<FMCKey>{FMCKey::PFP4_VNAV, FMCKey::MCDU_DATA, FMCKey::PFP7_VNAV}, "laminar/B747/" + fms + "/func_key/des"},
+                        {std::vector<FMCKey>{FMCKey::PFP_FIX, FMCKey::MCDU_EMPTY_BOTTOM_LEFT}, "laminar/B747/" + fms + "/func_key/dir_intc"},
+                        {std::vector<FMCKey>{FMCKey::PFP_LEGS, FMCKey::MCDU_FPLN, FMCKey::MCDU_DIR}, "laminar/B747/" + fms + "/func_key/legs"},
+                        {FMCKey::PFP_HOLD, "laminar/B747/" + fms + "/func_key/dep_arr"},
+                        {std::vector<FMCKey>{FMCKey::PFP4_FMC_COMM, FMCKey::PFP7_FMC_COMM, FMCKey::MCDU_DATA}, "laminar/B747/" + fms + "/func_key/hold"},
+                        {FMCKey::PROG, "laminar/B747/" + fms + "/func_key/prog"},
+                        {FMCKey::MENU, "laminar/B747/" + fms + "/func_key/fix"},
+                        {std::vector<FMCKey>{FMCKey::PFP4_NAV_RAD, FMCKey::MCDU_RAD_NAV, FMCKey::PFP7_NAV_RAD}, "laminar/B747/" + fms + "/func_key/navrad"},
+                        {FMCKey::PAGE_PREV, "laminar/B747/" + fms + "/func_key/prev_pg"},
+                        {FMCKey::PAGE_NEXT, "laminar/B747/" + fms + "/func_key/next_pg"},
+                        {std::vector<FMCKey>{FMCKey::PFP_EXEC, FMCKey::MCDU_EMPTY_TOP_RIGHT}, "laminar/B747/" + fms + "/key/execute"},
                         {FMCKey::KEY1, "laminar/B747/" + fms + "/alphanum_key/1"},
                         {FMCKey::KEY2, "laminar/B747/" + fms + "/alphanum_key/2"},
                         {FMCKey::KEY3, "laminar/B747/" + fms + "/alphanum_key/3"},

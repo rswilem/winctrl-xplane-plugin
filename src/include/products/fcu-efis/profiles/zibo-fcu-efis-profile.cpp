@@ -205,7 +205,7 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &ZiboFCUEfisProfile::button
         {26, {"ALT 1000", ""}},
 
         // EFIS Left (Captain) buttons (32-63)
-        {32, {"L_FD", "laminar/B738/autopilot/flight_director_toggle", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
+        {32, {"L_FD", "laminar/B738/autopilot/flight_director_pos,laminar/B738/autopilot/flight_director_toggle,laminar/B738/autopilot/flight_director_toggle", FCUEfisDatarefType::SET_VALUE_USING_COMMANDS, 1.0}},
         {33, {"L_LS", "sim/instruments/EFIS_mode_up"}},
         {34, {"L_CSTR", "sim/instruments/EFIS_fix"}},
         {35, {"L_WPT", "sim/instruments/EFIS_fix"}},
@@ -243,7 +243,7 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &ZiboFCUEfisProfile::button
         {62, {"L_2 VOR", "sim/cockpit2/EFIS/EFIS_2_selection_pilot", FCUEfisDatarefType::SET_VALUE, 2.0}},
 
         // EFIS Right (FO) buttons (64-95)
-        {64, {"R_FD", "laminar/B738/autopilot/flight_director_fo_toggle", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
+        {64, {"R_FD", "laminar/B738/autopilot/flight_director_fo_pos,laminar/B738/autopilot/flight_director_fo_toggle,laminar/B738/autopilot/flight_director_fo_toggle", FCUEfisDatarefType::SET_VALUE_USING_COMMANDS, 1.0}},
         {65, {"R_LS", "sim/instruments/EFIS_copilot_mode_up"}},
         {66, {"R_CSTR", "sim/instruments/EFIS_copilot_fix"}},
         {67, {"R_WPT", "sim/instruments/EFIS_copilot_fix"}},
@@ -399,6 +399,32 @@ void ZiboFCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMComma
             float increment = inHpa ? 0.02953f : 0.01f;
             float newBaro = baroValue + (increase ? increment : -increment);
             datarefManager->set<float>(datarefName, newBaro);
+        }
+    } else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::SET_VALUE_USING_COMMANDS) {
+        std::stringstream ss(button->dataref);
+        std::string item;
+        std::vector<std::string> parts;
+        while (std::getline(ss, item, ',')) {
+            parts.push_back(item);
+        }
+
+        if (parts.size() >= 3) {
+            auto posRef = parts[0];
+            auto leftCmd = parts[1];
+            auto rightCmd = parts[2];
+
+            int current = datarefManager->get<int>(posRef.c_str());
+            int target = static_cast<int>(button->value);
+
+            if (current < target) {
+                for (int i = current; i < target; i++) {
+                    datarefManager->executeCommand(rightCmd.c_str());
+                }
+            } else if (current > target) {
+                for (int i = current; i > target; i--) {
+                    datarefManager->executeCommand(leftCmd.c_str());
+                }
+            }
         }
     } else if (phase == xplm_CommandBegin && button->datarefType == FCUEfisDatarefType::EXECUTE_CMD_ONCE) {
         datarefManager->executeCommand(button->dataref.c_str());

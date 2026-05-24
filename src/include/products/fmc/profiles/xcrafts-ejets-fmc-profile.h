@@ -17,6 +17,7 @@ enum class XCraftsFMCFontStyle : unsigned char {
 class XCraftsEjetsFMCProfile : public FMCAircraftProfile {
     private:
         std::regex datarefRegex;
+        bool isAnnunTest();
 
     public:
         XCraftsEjetsFMCProfile(ProductFMC *product);

@@ -24,20 +24,26 @@ XCraftsEjetsFCUEfisProfile::XCraftsEjetsFCUEfisProfile(ProductFCUEfis *product) 
         product->forceStateSync();
     });
 
-    Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit/autopilot/autopilot_mode", [product](int mode) {
+    Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit/autopilot/autopilot_mode", [this, product](int mode) {
         bool engaged = (mode == 2);
-        product->setLedBrightness(FCUEfisLed::AP1_GREEN, engaged ? 1 : 0);
-        product->setLedBrightness(FCUEfisLed::AP2_GREEN, engaged ? 1 : 0);
-        product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, engaged ? 1 : 0);
-        product->setLedBrightness(FCUEfisLed::EFISR_FD_GREEN, engaged ? 1 : 0);
+        product->setLedBrightness(FCUEfisLed::AP1_GREEN, (engaged || isAnnunTest()) ? 1 : 0);
+        product->setLedBrightness(FCUEfisLed::AP2_GREEN, (engaged || isAnnunTest()) ? 1 : 0);
+        product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, (engaged || isAnnunTest()) ? 1 : 0);
+        product->setLedBrightness(FCUEfisLed::EFISR_FD_GREEN, (engaged || isAnnunTest()) ? 1 : 0);
     });
 
-    Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/autothrottle_armed", [product](int armed) {
-        product->setLedBrightness(FCUEfisLed::ATHR_GREEN, armed == 1 ? 1 : 0);
+    Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/autothrottle_armed", [this, product](int armed) {
+        product->setLedBrightness(FCUEfisLed::ATHR_GREEN, (armed == 1 || isAnnunTest()) ? 1 : 0);
     });
 
-    Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/autopilot/autothrottle_system_active", [product](int active) {
-        product->setLedBrightness(FCUEfisLed::ATHR_GREEN, active == 1 ? 1 : 0);
+    Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/autopilot/autothrottle_system_active", [this, product](int active) {
+        product->setLedBrightness(FCUEfisLed::ATHR_GREEN, (active == 1 || isAnnunTest()) ? 1 : 0);
+    });
+
+    Dataref::getInstance()->monitorExistingDataref<bool>("XCrafts/ERJ/cockpit/annunciators_test", [this](bool) {
+        Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/autopilot/autopilot_mode");
+        Dataref::getInstance()->executeChangedCallbacksForDataref("XCrafts/ERJ/autothrottle_armed");
+        Dataref::getInstance()->executeChangedCallbacksForDataref("XCrafts/ERJ/autopilot/autothrottle_system_active");
     });
 }
 
@@ -46,6 +52,7 @@ XCraftsEjetsFCUEfisProfile::~XCraftsEjetsFCUEfisProfile() {
     Dataref::getInstance()->unbind("sim/cockpit/autopilot/autopilot_mode");
     Dataref::getInstance()->unbind("XCrafts/ERJ/autothrottle_armed");
     Dataref::getInstance()->unbind("XCrafts/ERJ/autopilot/autothrottle_system_active");
+    Dataref::getInstance()->unbind("XCrafts/ERJ/cockpit/annunciators_test");
 }
 
 bool XCraftsEjetsFCUEfisProfile::IsEligible() {
@@ -234,6 +241,10 @@ void XCraftsEjetsFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
 
     data.efisLeft = efisValue;
     data.efisRight = {.displayEnabled = false};
+}
+
+bool XCraftsEjetsFCUEfisProfile::isAnnunTest() {
+    return Dataref::getInstance()->get<bool>("XCrafts/ERJ/cockpit/annunciators_test");
 }
 
 void XCraftsEjetsFCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMCommandPhase phase) {

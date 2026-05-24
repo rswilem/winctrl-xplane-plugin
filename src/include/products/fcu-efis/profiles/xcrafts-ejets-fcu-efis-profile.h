@@ -9,6 +9,7 @@
 class XCraftsEjetsFCUEfisProfile : public FCUEfisAircraftProfile {
     private:
         int altitudeIncrements = 0;
+        bool isAnnunTest();
 
     public:
         XCraftsEjetsFCUEfisProfile(ProductFCUEfis *product);

@@ -40,29 +40,37 @@ XCraftsEjetsFMCProfile::XCraftsEjetsFMCProfile(ProductFMC *product) : FMCAircraf
         Dataref::getInstance()->executeChangedCallbacksForDataref(("XCrafts/FMS/WW_" + cdu + "_OVERALL_LEDS_BRIGHTNESS").c_str());
     });
 
-    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_EXEC").c_str(), [product](bool enabled) {
-        product->setLedBrightness(FMCLed::PFP_EXEC, enabled ? 1 : 0);
-        product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
+    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_EXEC").c_str(), [this, product](bool enabled) {
+        product->setLedBrightness(FMCLed::PFP_EXEC, (enabled || isAnnunTest()) ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_STATUS, (enabled || isAnnunTest()) ? 1 : 0);
     });
 
-    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_CALL").c_str(), [product](bool enabled) {
-        product->setLedBrightness(FMCLed::PFP_CALL, enabled ? 1 : 0);
-        product->setLedBrightness(FMCLed::MCDU_MCDU, enabled ? 1 : 0);
+    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_CALL").c_str(), [this, product](bool enabled) {
+        product->setLedBrightness(FMCLed::PFP_CALL, (enabled || isAnnunTest()) ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_MCDU, (enabled || isAnnunTest()) ? 1 : 0);
     });
 
-    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_FAIL").c_str(), [product](bool enabled) {
-        product->setLedBrightness(FMCLed::PFP_FAIL, enabled ? 1 : 0);
-        product->setLedBrightness(FMCLed::MCDU_FAIL, enabled ? 1 : 0);
+    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_FAIL").c_str(), [this, product](bool enabled) {
+        product->setLedBrightness(FMCLed::PFP_FAIL, (enabled || isAnnunTest()) ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_FAIL, (enabled || isAnnunTest()) ? 1 : 0);
     });
 
-    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_MSG").c_str(), [product](bool enabled) {
-        product->setLedBrightness(FMCLed::PFP_MSG, enabled ? 1 : 0);
-        product->setLedBrightness(FMCLed::MCDU_FM, enabled ? 1 : 0);
+    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_MSG").c_str(), [this, product](bool enabled) {
+        product->setLedBrightness(FMCLed::PFP_MSG, (enabled || isAnnunTest()) ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_FM, (enabled || isAnnunTest()) ? 1 : 0);
     });
 
-    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_OFST").c_str(), [product](bool enabled) {
-        product->setLedBrightness(FMCLed::PFP_OFST, enabled ? 1 : 0);
-        product->setLedBrightness(FMCLed::MCDU_IND, enabled ? 1 : 0);
+    Dataref::getInstance()->monitorExistingDataref<bool>(("XCrafts/FMS/WW_" + cdu + "_OFST").c_str(), [this, product](bool enabled) {
+        product->setLedBrightness(FMCLed::PFP_OFST, (enabled || isAnnunTest()) ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_IND, (enabled || isAnnunTest()) ? 1 : 0);
+    });
+
+    Dataref::getInstance()->monitorExistingDataref<bool>("XCrafts/ERJ/cockpit/annunciators_test", [cdu](bool) {
+        Dataref::getInstance()->executeChangedCallbacksForDataref(("XCrafts/FMS/WW_" + cdu + "_EXEC").c_str());
+        Dataref::getInstance()->executeChangedCallbacksForDataref(("XCrafts/FMS/WW_" + cdu + "_CALL").c_str());
+        Dataref::getInstance()->executeChangedCallbacksForDataref(("XCrafts/FMS/WW_" + cdu + "_FAIL").c_str());
+        Dataref::getInstance()->executeChangedCallbacksForDataref(("XCrafts/FMS/WW_" + cdu + "_MSG").c_str());
+        Dataref::getInstance()->executeChangedCallbacksForDataref(("XCrafts/FMS/WW_" + cdu + "_OFST").c_str());
     });
 }
 
@@ -77,6 +85,7 @@ XCraftsEjetsFMCProfile::~XCraftsEjetsFMCProfile() {
     Dataref::getInstance()->unbind(("XCrafts/FMS/WW_" + cdu + "_MSG").c_str());
     Dataref::getInstance()->unbind(("XCrafts/FMS/WW_" + cdu + "_OFST").c_str());
     Dataref::getInstance()->unbind("XCrafts/FMS/power_stat");
+    Dataref::getInstance()->unbind("XCrafts/ERJ/cockpit/annunciators_test");
 }
 
 bool XCraftsEjetsFMCProfile::IsEligible() {
@@ -271,6 +280,10 @@ const std::map<char, FMCTextColor> &XCraftsEjetsFMCProfile::colorMap() const {
     };
 
     return colors;
+}
+
+bool XCraftsEjetsFMCProfile::isAnnunTest() {
+    return Dataref::getInstance()->get<bool>("XCrafts/ERJ/cockpit/annunciators_test");
 }
 
 void XCraftsEjetsFMCProfile::mapCharacter(std::vector<uint8_t> *buffer, uint8_t character, bool isFontSmall) {

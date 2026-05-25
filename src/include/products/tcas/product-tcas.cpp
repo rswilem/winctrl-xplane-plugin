@@ -7,6 +7,7 @@
 #include "profiles/fps748-tcas-profile.h"
 #include "profiles/sparky744-tcas-profile.h"
 #include "profiles/toliss-tcas-profile.h"
+#include "profiles/xcrafts-erj-tcas-profile.h"
 #include "profiles/zibo-tcas-profile.h"
 #include "segment-display.h"
 
@@ -49,6 +50,9 @@ void ProductTCAS::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (SparkyB744TCASProfile::IsEligible()) {
         profile = new SparkyB744TCASProfile(this);
+        profileReady = true;
+    } else if (XCraftsERJTCASProfile::IsEligible()) {
+        profile = new XCraftsERJTCASProfile(this);
         profileReady = true;
     } else if (ZiboTCASProfile::IsEligible()) {
         profile = new ZiboTCASProfile(this);

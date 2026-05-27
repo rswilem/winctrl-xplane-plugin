@@ -5,6 +5,9 @@
 #include "dataref.h"
 #include "plugins-menu.h"
 #include "profiles/toliss-agp-profile.h"
+#include "profiles/xcrafts-ejets-agp-profile.h"
+#include "profiles/xcrafts-erj-agp-profile.h"
+#include "profiles/zibo-agp-profile.h"
 #include "segment-display.h"
 
 #include <algorithm>
@@ -40,7 +43,16 @@ const char *ProductAGP::activeProfileName() const {
 }
 
 void ProductAGP::setProfileForCurrentAircraft() {
-    if (TolissAGPProfile::IsEligible()) {
+    if (XCraftsEjetsAGPProfile::IsEligible()) {
+        profile = new XCraftsEjetsAGPProfile(this);
+        profileReady = true;
+    } else if (XCraftsErjAGPProfile::IsEligible()) {
+        profile = new XCraftsErjAGPProfile(this);
+        profileReady = true;
+    } else if (ZiboAGPProfile::IsEligible()) {
+        profile = new ZiboAGPProfile(this);
+        profileReady = true;
+    } else if (TolissAGPProfile::IsEligible()) {
         profile = new TolissAGPProfile(this);
         profileReady = true;
     } else {

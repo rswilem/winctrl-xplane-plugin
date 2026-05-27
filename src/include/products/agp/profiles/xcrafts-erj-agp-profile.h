@@ -1,0 +1,21 @@
+#ifndef XCRAFTS_ERJ_AGP_PROFILE_H
+#define XCRAFTS_ERJ_AGP_PROFILE_H
+
+#include "agp-aircraft-profile.h"
+
+#include <string>
+
+class XCraftsErjAGPProfile : public AGPAircraftProfile {
+    public:
+        XCraftsErjAGPProfile(ProductAGP *product);
+        ~XCraftsErjAGPProfile();
+
+        static bool IsEligible();
+        const std::unordered_map<uint16_t, AGPButtonDef> &buttonDefs() const override;
+
+        void buttonPressed(const AGPButtonDef *button, XPLMCommandPhase phase) override;
+
+        void updateDisplays() override;
+};
+
+#endif

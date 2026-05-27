@@ -165,6 +165,12 @@
 		F6EBDC052FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC032FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp */; };
 		F6EBDC082FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC072FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp */; };
 		F6EBDC092FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC072FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp */; };
+		F6EBDC0C2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC0B2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp */; };
+		F6EBDC0D2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC0B2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp */; };
+		F6EBDC102FC6CA46005AFCBD /* xcrafts-ejets-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC0F2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.cpp */; };
+		F6EBDC112FC6CA46005AFCBD /* xcrafts-ejets-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC0F2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.cpp */; };
+		F6EBDC142FC6CFD1005AFCBD /* zibo-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC132FC6CFD1005AFCBD /* zibo-agp-profile.cpp */; };
+		F6EBDC152FC6CFD1005AFCBD /* zibo-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC132FC6CFD1005AFCBD /* zibo-agp-profile.cpp */; };
 		F6EF56242F0AC43300AB61F1 /* zibo-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EF561E2F0AC43300AB61F1 /* zibo-pdc-profile.cpp */; };
 		F6EF56252F0AC43300AB61F1 /* product-pdc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EF56222F0AC43300AB61F1 /* product-pdc.cpp */; };
 		F6EF56262F0AC43300AB61F1 /* zibo-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EF561E2F0AC43300AB61F1 /* zibo-pdc-profile.cpp */; };
@@ -357,6 +363,12 @@
 		F6EBDC032FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-ejets-pdc-profile.cpp"; sourceTree = "<group>"; };
 		F6EBDC062FC6C497005AFCBD /* xcrafts-erj-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-erj-pdc-profile.h"; sourceTree = "<group>"; };
 		F6EBDC072FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-erj-pdc-profile.cpp"; sourceTree = "<group>"; };
+		F6EBDC0A2FC6C740005AFCBD /* xcrafts-erj-agp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-erj-agp-profile.h"; sourceTree = "<group>"; };
+		F6EBDC0B2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-erj-agp-profile.cpp"; sourceTree = "<group>"; };
+		F6EBDC0E2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-ejets-agp-profile.h"; sourceTree = "<group>"; };
+		F6EBDC0F2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-ejets-agp-profile.cpp"; sourceTree = "<group>"; };
+		F6EBDC122FC6CFD1005AFCBD /* zibo-agp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zibo-agp-profile.h"; sourceTree = "<group>"; };
+		F6EBDC132FC6CFD1005AFCBD /* zibo-agp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "zibo-agp-profile.cpp"; sourceTree = "<group>"; };
 		F6EF561D2F0AC43300AB61F1 /* zibo-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zibo-pdc-profile.h"; sourceTree = "<group>"; };
 		F6EF561E2F0AC43300AB61F1 /* zibo-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "zibo-pdc-profile.cpp"; sourceTree = "<group>"; };
 		F6EF56202F0AC43300AB61F1 /* pdc-aircraft-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "pdc-aircraft-profile.h"; sourceTree = "<group>"; };
@@ -564,6 +576,12 @@
 			children = (
 				F6A77E6B2ED3514600061D03 /* toliss-agp-profile.h */,
 				F6A77E6C2ED3514600061D03 /* toliss-agp-profile.cpp */,
+				F6EBDC0A2FC6C740005AFCBD /* xcrafts-erj-agp-profile.h */,
+				F6EBDC0B2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp */,
+				F6EBDC0E2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.h */,
+				F6EBDC0F2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.cpp */,
+				F6EBDC122FC6CFD1005AFCBD /* zibo-agp-profile.h */,
+				F6EBDC132FC6CFD1005AFCBD /* zibo-agp-profile.cpp */,
 			);
 			path = profiles;
 			sourceTree = "<group>";
@@ -916,6 +934,7 @@
 				F6BB757B2E32634700C2B21F /* toliss-fcu-efis-profile.cpp in Sources */,
 				F68164E62E3161FD00319E9D /* usbcontroller.cpp in Sources */,
 				F60ABAEE2FBE1355001C91EF /* jar330-fcu-efis-profile.cpp in Sources */,
+				F6EBDC0D2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp in Sources */,
 				F61F8B1E2D0456D700E63C3F /* main.cpp in Sources */,
 				F6C248462EBE498500617E89 /* plugins-menu.cpp in Sources */,
 				F68428662EC63F070027756D /* zibo-ursa-minor-joystick-profile.cpp in Sources */,
@@ -939,6 +958,7 @@
 				F6BBFF0B2ED741B900FE9D7F /* ff777-pap3-mcp-profile.cpp in Sources */,
 				F64BE3E72E1BF625003C1B73 /* usbdevice_win.cpp in Sources */,
 				F6E73EE32ED9CCA7000A8B6A /* product-ursa-minor-throttle.cpp in Sources */,
+				F6EBDC142FC6CFD1005AFCBD /* zibo-agp-profile.cpp in Sources */,
 				F621F80C2F1C264A00DDB31E /* jf146-fcu-efis-profile.cpp in Sources */,
 				F6E73EE42ED9CCA7000A8B6A /* toliss-ursa-minor-throttle-profile.cpp in Sources */,
 				F64BE3E92E1BF625003C1B73 /* usbcontroller_win.cpp in Sources */,
@@ -947,6 +967,7 @@
 				F6EBDC042FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp in Sources */,
 				F60ABAC62FBDA135001C91EF /* fps748-tcas-profile.cpp in Sources */,
 				F60ABAD62FBDF03F001C91EF /* xcrafts-ejets-ursa-minor-throttle-profile.cpp in Sources */,
+				F6EBDC102FC6CA46005AFCBD /* xcrafts-ejets-agp-profile.cpp in Sources */,
 				F60ABAD12FBDF034001C91EF /* xcrafts-ejets-pap3-mcp-profile.cpp in Sources */,
 				5D2C5F88110970AC7E4A6F6C /* sparky744-tcas-profile.cpp in Sources */,
 				8321A6022ED27B1E00E3746A /* ff777-fcu-efis-profile.cpp in Sources */,
@@ -983,6 +1004,8 @@
 			files = (
 				F635AD462E0579E9005D6CDC /* usbcontroller_mac.cpp in Sources */,
 				F6827E0A2E05652E00382B28 /* WinctrlDesktopApp.swift in Sources */,
+				F6EBDC152FC6CFD1005AFCBD /* zibo-agp-profile.cpp in Sources */,
+				F6EBDC112FC6CA46005AFCBD /* xcrafts-ejets-agp-profile.cpp in Sources */,
 				F635AD4B2E05819E005D6CDC /* usbdevice_mac.cpp in Sources */,
 				F67B29CE2FB71A19004849B1 /* c172-fcu-efis-profile.cpp in Sources */,
 				F67B29CF2FB71A19004849B1 /* cis-seneca-fcu-efis-profile.cpp in Sources */,
@@ -1041,6 +1064,7 @@
 				F6C6E0302E8D5DAA00558F46 /* product-pap3-mcp.cpp in Sources */,
 				F60ABAC12FBDA042001C91EF /* fps748-pap3-mcp-profile.cpp in Sources */,
 				56508BB21D043B1A701D5B0A /* sparky744-pap3-mcp-profile.cpp in Sources */,
+				F6EBDC0C2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp in Sources */,
 				F6C6E0312E8D5DAA00558F46 /* laminar-737-pap3-mcp-profile.cpp in Sources */,
 				F6C6E0322E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp in Sources */,
 				F6CC2B4A2F0E4E5500C0A4D8 /* ff350-fcu-efis-profile.cpp in Sources */,

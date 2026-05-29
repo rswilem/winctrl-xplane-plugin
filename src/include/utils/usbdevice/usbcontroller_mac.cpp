@@ -152,19 +152,20 @@ void USBController::DeviceRemovedCallback(void *context, IOReturn result, void *
     }
 
     auto *self = static_cast<USBController *>(context);
-    for (auto it = self->devices.begin(); it != self->devices.end();) {
+    for (auto it = self->devices.begin(); it != self->devices.end(); ++it) {
         if ((*it)->hidDevice == device) {
+            (*it)->connected = false;
             (*it)->blackout();
-            (*it)->disconnect();
-            ++it;
-        } else {
-            ++it;
         }
     }
 
     AppState::getInstance()->executeAfter(0, [self, device]() {
         for (auto it = self->devices.begin(); it != self->devices.end();) {
-            if ((*it)->hidDevice == device || !(*it)->connected) {
+            if ((*it)->hidDevice == device) {
+                // Null the hidDevice before disconnect so it skips IOHIDDeviceClose.
+                // The OS has already removed the device and re-closing it triggers an IOKit assertion.. ugh
+                (*it)->hidDevice = nullptr;
+                (*it)->disconnect();
                 delete *it;
                 it = self->devices.erase(it);
             } else {

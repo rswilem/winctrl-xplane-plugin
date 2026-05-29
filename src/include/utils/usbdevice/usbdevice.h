@@ -49,7 +49,7 @@ class USBDevice {
         void writeThreadLoop();
 
 #if APL
-        IOHIDQueueRef hidQueue;
+        IOHIDQueueRef hidQueue = nullptr;
         void handleHIDValue(IOHIDValueRef value);
 #elif IBM
         USHORT outputReportByteLength = 0;
@@ -65,7 +65,7 @@ class USBDevice {
         virtual ~USBDevice();
 
         HIDDeviceHandle hidDevice;
-        bool connected = false;
+        std::atomic<bool> connected{false};
         bool profileReady = false;
         uint16_t vendorId;
         uint16_t productId;

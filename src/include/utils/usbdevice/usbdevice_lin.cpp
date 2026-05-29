@@ -118,7 +118,6 @@ void USBDevice::forceStateSync() {
 
 bool USBDevice::writeData(std::vector<uint8_t> data) {
     if (hidDevice < 0 || !connected || data.empty()) {
-        Logger::getInstance()->debug("HID device not open, not connected, or empty data\n");
         return false;
     }
 

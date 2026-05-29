@@ -35,14 +35,16 @@ bool USBDevice::connect() {
         hidQueue = IOHIDQueueCreate(kCFAllocatorDefault, hidDevice, kInputReportSize, 0);
 
         CFArrayRef elements = IOHIDDeviceCopyMatchingElements(hidDevice, nullptr, kIOHIDOptionsTypeNone);
-        CFIndex count = CFArrayGetCount(elements);
-        for (CFIndex i = 0; i < count; i++) {
-            IOHIDElementRef elem = (IOHIDElementRef) CFArrayGetValueAtIndex(elements, i);
-            if (IOHIDElementGetType(elem) == kIOHIDElementTypeInput_Button) {
-                IOHIDQueueAddElement(hidQueue, elem);
+        if (elements) {
+            CFIndex count = CFArrayGetCount(elements);
+            for (CFIndex i = 0; i < count; i++) {
+                IOHIDElementRef elem = (IOHIDElementRef) CFArrayGetValueAtIndex(elements, i);
+                if (IOHIDElementGetType(elem) == kIOHIDElementTypeInput_Button) {
+                    IOHIDQueueAddElement(hidQueue, elem);
+                }
             }
+            CFRelease(elements);
         }
-        CFRelease(elements);
 
         IOHIDQueueScheduleWithRunLoop(hidQueue, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
         IOHIDQueueStart(hidQueue);
@@ -85,17 +87,15 @@ void USBDevice::disconnect() {
         writeThread.join();
     }
 
-    if (hidDevice) {
+    if (hidQueue) {
         IOHIDQueueStop(hidQueue);
         IOHIDQueueUnscheduleFromRunLoop(hidQueue, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
+        CFRelease(hidQueue);
         hidQueue = nullptr;
+    }
 
-        for (int i = 0; i < 10; i++) {
-            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.001, true);
-        }
-
+    if (hidDevice) {
         IOHIDDeviceClose(hidDevice, kIOHIDOptionsTypeNone);
-
         hidDevice = nullptr;
     }
 }
@@ -106,6 +106,10 @@ void USBDevice::forceStateSync() {
     }
 
     CFArrayRef elements = IOHIDDeviceCopyMatchingElements(hidDevice, nullptr, 0);
+    if (!elements) {
+        return;
+    }
+
     for (CFIndex i = 0; i < CFArrayGetCount(elements); i++) {
         IOHIDElementRef element = (IOHIDElementRef) CFArrayGetValueAtIndex(elements, i);
         if (IOHIDElementGetType(element) != kIOHIDElementTypeInput_Button) {
@@ -123,7 +127,6 @@ void USBDevice::forceStateSync() {
 
 bool USBDevice::writeData(std::vector<uint8_t> data) {
     if (!hidDevice || !connected || data.empty()) {
-        Logger::getInstance()->debug("HID device not open, not connected, or empty data\n");
         return false;
     }
 

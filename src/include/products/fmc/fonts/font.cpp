@@ -1,6 +1,7 @@
 #include "font.h"
 
 #include "737.h"
+#include "747.h"
 #include "airbus.h"
 #include "appstate.h"
 #include "config.h"
@@ -59,6 +60,10 @@ const std::vector<std::vector<unsigned char>> Font::GlyphData(FontVariant varian
 
         case FontVariant::Font737:
             result = fmcFont737;
+            break;
+
+        case FontVariant::Font747:
+            result = fmcFont747;
             break;
 
         case FontVariant::FontXCrafts:

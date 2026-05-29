@@ -282,6 +282,7 @@
 		F67FE8122E895BAC00C4243C /* laminar-a333-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "laminar-a333-fcu-efis-profile.h"; sourceTree = "<group>"; };
 		F67FE8132E895BAC00C4243C /* laminar-a333-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "laminar-a333-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
 		F68164E42E3161FD00319E9D /* usbcontroller.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = usbcontroller.cpp; sourceTree = "<group>"; };
+		F681E21B2FC9D8BB0009D9FB /* 747.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = 747.h; sourceTree = "<group>"; };
 		F6827DF82E0564F700382B28 /* WINCTRLDesktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WINCTRLDesktop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6827E032E05651E00382B28 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F6827E042E05651E00382B28 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -466,6 +467,7 @@
 				F69BE2972E61AC210019EA48 /* default.h */,
 				F69BE2962E619CC00019EA48 /* airbus.h */,
 				F62D2DF92E55FA9100D307A4 /* 737.h */,
+				F681E21B2FC9D8BB0009D9FB /* 747.h */,
 				F62D2DF52E55FA4C00D307A4 /* xcrafts.h */,
 				F62304282E59DF8500EE0089 /* vga_1.h */,
 			);

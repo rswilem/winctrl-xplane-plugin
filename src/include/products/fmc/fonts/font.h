@@ -8,6 +8,7 @@ enum class FontVariant : unsigned char {
     Default,
     FontAirbus,
     Font737,
+    Font747,
     FontXCrafts,
     FontVGA1,
     FontMD11,

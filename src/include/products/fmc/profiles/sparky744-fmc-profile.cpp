@@ -9,7 +9,7 @@
 
 SparkyB744FMCProfile::SparkyB744FMCProfile(ProductFMC *product) : FMCAircraftProfile(product) {
     product->setAllLedsEnabled(false);
-    product->setFont(FontVariant::Font737);
+    product->setFont(FontVariant::Font747);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [product](bool powered) {
         uint8_t target = powered ? 200 : 0;

@@ -16,7 +16,7 @@ FPS748FMCProfile::FPS748FMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
     datarefRegex = std::regex(prefix + "/UFMC/LINE_([0-9]+)");
 
     product->setAllLedsEnabled(false);
-    product->setFont(FontVariant::Font737);
+    product->setFont(FontVariant::Font747);
 
     Dataref::getInstance()->monitorExistingDataref<float>((alternatePrefix + "/LGT/mcdu_brt_sw").c_str(), [product, alternatePrefix](float brightness) {
         uint8_t target = Dataref::getInstance()->get<bool>((alternatePrefix + "/Elec/bus_1_powered").c_str()) ? brightness * 255 : 0;

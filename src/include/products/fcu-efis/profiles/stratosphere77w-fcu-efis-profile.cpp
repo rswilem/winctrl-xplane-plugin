@@ -302,12 +302,12 @@ void Strato77WFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     for (int i = 0; i < 2; i++) {
         bool isCaptain = (i == 0);
         const char *baroRef = isCaptain
-            ? "sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot"
-            : "sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot";
+                                ? "sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot"
+                                : "sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot";
 
         float baroInhg = dm->getCached<float>(baroRef);
-        bool baroIsHpa = baroModes.size() > (size_t)i && baroModes[i] > 0.5f;
-        bool isStd = altStd.size() > (size_t)i && altStd[i] > 0.5f;
+        bool baroIsHpa = baroModes.size() > (size_t) i && baroModes[i] > 0.5f;
+        bool isStd = altStd.size() > (size_t) i && altStd[i] > 0.5f;
 
         EfisDisplayValue value = {
             .displayEnabled = data.displayEnabled,
@@ -344,7 +344,7 @@ void Strato77WFCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLM
             std::string ref = rest.substr(0, colon);
             int index = std::stoi(rest.substr(colon + 1));
             auto current = dm->get<std::vector<float>>(ref.c_str());
-            if (index < (int)current.size()) {
+            if (index < (int) current.size()) {
                 current[index] = static_cast<float>(button->value);
                 dm->set<std::vector<float>>(ref.c_str(), current);
             }

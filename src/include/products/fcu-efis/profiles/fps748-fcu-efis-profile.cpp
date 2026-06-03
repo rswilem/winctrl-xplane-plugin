@@ -296,12 +296,17 @@ void FPS748FCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.displayEnabled = dm->getCached<bool>((altPrefix + "/Elec/bus_1_powered").c_str());
     data.displayTest = false;
 
+    data.displayEnabledWindowsFlag = FCUDisplayData::Window::All;
+    data.displayEnabledWindowsFlag &= ~FCUDisplayData::Window::LevelChangeHeader;
+
     // Speed
     bool speedBlank = dm->getCached<float>((prefix + "/B748/mcp/speed_is_blank").c_str()) > 0.5f;
     bool isMach = dm->getCached<float>((prefix + "/B748/systems/athr/MCPSPD_spdmach").c_str()) > 0.5f;
     data.spdMach = isMach;
 
     if (speedBlank) {
+        data.displayEnabledWindowsFlag &= ~FCUDisplayData::Window::SpeedMachHeader;
+        data.displayEnabledWindowsFlag &= ~FCUDisplayData::Window::SpeedMachValue;
         data.speed = "---";
     } else {
         float speed = dm->getCached<float>((prefix + "/B748/MCP/mcp_ias_mach_act").c_str());
@@ -360,6 +365,8 @@ void FPS748FCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.vsVerticalLine = !vsBlank;
 
     if (vsBlank) {
+        data.displayEnabledWindowsFlag &= ~FCUDisplayData::Window::VerticalSpeedFPAHeader;
+        data.displayEnabledWindowsFlag &= ~FCUDisplayData::Window::VerticalSpeedFPAValue;
         data.verticalSpeed = "----";
         data.vsSign = true;
     } else {

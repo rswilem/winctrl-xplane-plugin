@@ -24,6 +24,7 @@ DEVICE_NAMES="
 0|tcas|32 TCAS
 0|rmp|32 RMP
 0|ursa-minor-throttle|URSA MINOR 32 Throttle Metal (+ optional 32 PAC Metal)
+0|orion-throttle|ORION Throttle Base II
 "
 
 # Aircraft display names (pipe-separated: key|display_name)

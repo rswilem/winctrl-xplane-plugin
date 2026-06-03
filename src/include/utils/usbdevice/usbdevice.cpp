@@ -10,6 +10,7 @@
 #include "product-rmp.h"
 #include "product-tcas.h"
 #include "product-ursa-minor-throttle.h"
+#include "product-orion-throttle.h"
 #include "product-joystick.h"
 
 #include <XPLMUtilities.h>
@@ -151,8 +152,10 @@ USBDevice *USBDevice::Device(HIDDeviceHandle hidDevice, uint16_t vendorId, uint1
         case 0xB930: // URSA MINOR 32 Throttle Metal R
             return new ProductUrsaMinorThrottle(hidDevice, vendorId, productId, vendorName, productName);
 
+        case 0xBD64: // Orion Throttle Base II + F15EX HANDLE L + F15EX HANDLE R
+            return new ProductOrionThrottle(hidDevice, vendorId, productId, vendorName, productName);
+
             // Not yet implemented devices:
-            // 0xBD64 = Orion Throttle Base II + F15EX HANDLE L + F15EX HANDLE R
             // 0xB980 = WINCTRL Orion 32 Rudder Pedals Metal
 
         default:

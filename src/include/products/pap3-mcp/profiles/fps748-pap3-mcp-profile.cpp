@@ -25,42 +25,42 @@ FPS748PAP3MCPProfile::FPS748PAP3MCPProfile(ProductPAP3MCP *product) : PAP3MCPAir
         Dataref::getInstance()->executeChangedCallbacksForDataref((altPrefix + "/LGT/glaresheld_sw").c_str());
     });
 
-    // MCP mode LEDs
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_thr_act").c_str(), [product](float v) {
+    // MCP mode LEDs — use _ann (annunciator) datarefs, not _act
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_n1_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::N1, v > 0.5f ? 1 : 0);
     });
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_speed_act").c_str(), [product](float v) {
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_speed_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::SPEED, v > 0.5f ? 1 : 0);
     });
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_vnav_act").c_str(), [product](float v) {
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_vnav_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::VNAV, v > 0.5f ? 1 : 0);
     });
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_level_change_act").c_str(), [product](float v) {
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_level_change_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::LVL_CHG, v > 0.5f ? 1 : 0);
     });
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_hdg_select_act").c_str(), [product](float v) {
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_hdg_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::HDG_SEL, v > 0.5f ? 1 : 0);
     });
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_lnav_act").c_str(), [product](float v) {
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_lnav_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::LNAV, v > 0.5f ? 1 : 0);
     });
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_vor_loc_act").c_str(), [product](float v) {
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_vor_loc_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::VORLOC, v > 0.5f ? 1 : 0);
     });
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_app_act").c_str(), [product](float v) {
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_app_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::APP, v > 0.5f ? 1 : 0);
     });
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_alt_hold_act").c_str(), [product](float v) {
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_alt_hold_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::ALT_HLD, v > 0.5f ? 1 : 0);
     });
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_vert_speed_act").c_str(), [product](float v) {
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_vs_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::VS, v > 0.5f ? 1 : 0);
     });
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_a_cmd_act").c_str(), [product](float v) {
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_a_comm_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::CMD_A, v > 0.5f ? 1 : 0);
         product->setLedBrightness(PAP3MCPLed::MA_CAPT, v > 0.5f ? 1 : 0);
     });
-    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_b_cmd_act").c_str(), [product](float v) {
+    Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_b_comm_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::CMD_B, v > 0.5f ? 1 : 0);
         product->setLedBrightness(PAP3MCPLed::MA_FO, v > 0.5f ? 1 : 0);
     });
@@ -70,6 +70,21 @@ FPS748PAP3MCPProfile::FPS748PAP3MCPProfile(ProductPAP3MCP *product) : PAP3MCPAir
     });
 
     Dataref::getInstance()->executeChangedCallbacksForDataref((altPrefix + "/Elec/bus_1_powered").c_str());
+
+    auto *dm = Dataref::getInstance();
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_n1_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_speed_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_vnav_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_level_change_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_hdg_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_lnav_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_vor_loc_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_app_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_alt_hold_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_vs_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_a_comm_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_b_comm_ann").c_str());
+    dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_at_arm_act").c_str());
 }
 
 FPS748PAP3MCPProfile::~FPS748PAP3MCPProfile() {
@@ -79,18 +94,18 @@ FPS748PAP3MCPProfile::~FPS748PAP3MCPProfile() {
 
     Dataref::getInstance()->unbind((altPrefix + "/LGT/glaresheld_sw").c_str());
     Dataref::getInstance()->unbind((altPrefix + "/Elec/bus_1_powered").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_thr_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_speed_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_vnav_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_level_change_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_hdg_select_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_lnav_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_vor_loc_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_app_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_alt_hold_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_vert_speed_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_a_cmd_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_b_cmd_act").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_n1_ann").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_speed_ann").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_vnav_ann").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_level_change_ann").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_hdg_ann").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_lnav_ann").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_vor_loc_ann").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_app_ann").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_alt_hold_ann").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_vs_ann").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_a_comm_ann").c_str());
+    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_b_comm_ann").c_str());
     Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_at_arm_act").c_str());
 }
 
@@ -129,25 +144,25 @@ const std::unordered_map<uint16_t, PAP3MCPButtonDef> &FPS748PAP3MCPProfile::butt
 
     return cache.try_emplace(isSSG, std::unordered_map<uint16_t, PAP3MCPButtonDef>{
                     // Row 1
-                    {0, {"N1", prefix + "/UFMC/AP_N1_Button"}},
-                    {1, {"SPEED", prefix + "/UFMC/AP_SPD_Button"}},
-                    {2, {"VNAV", prefix + "/UFMC/AP_VNAV_Button"}},
-                    {3, {"LVL CHG", prefix + "/UFMC/AP_LVLCHG_Button"}},
-                    {4, {"HDG SEL", prefix + "/UFMC/AP_HDG_Button"}},
-                    {5, {"LNAV", prefix + "/UFMC/AP_LNAV_Button"}},
-                    {6, {"VOR LOC", prefix + "/UFMC/AP_VORLOC_Button"}},
-                    {7, {"APP", prefix + "/UFMC/AP_APP_Button"}},
+                    {0, {"N1", prefix + "/B748/MCP/mcp_thr_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {1, {"SPEED", prefix + "/B748/MCP/mcp_speed_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {2, {"VNAV", prefix + "/B748/MCP/mcp_vnav_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {3, {"LVL CHG", prefix + "/B748/MCP/mcp_level_change_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {4, {"HDG SEL", prefix + "/B748/MCP/mcp_hdg_select_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {5, {"LNAV", prefix + "/B748/MCP/mcp_lnav_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {6, {"VOR LOC", prefix + "/B748/MCP/mcp_vor_loc_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {7, {"APP", prefix + "/B748/MCP/mcp_app_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
 
                     // Row 2
-                    {8, {"ALT HLD", prefix + "/UFMC/AP_ALTHOLD_Button"}},
-                    {9, {"V/S", prefix + "/UFMC/AP_VS_Button"}},
-                    {10, {"CMD A", prefix + "/UFMC/AP_CMDA_Button"}},
-                    {12, {"CMD B", prefix + "/UFMC/AP_CMDB_Button"}},
-                    {14, {"AP DISC", prefix + "/UFMC/AP_discon_Button"}},
-                    {15, {"SPD INTV", prefix + "/UFMC/AP_SPD_Intervention_Button"}},
+                    {8, {"ALT HLD", prefix + "/B748/MCP/mcp_alt_hold_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {9, {"V/S", prefix + "/B748/MCP/mcp_vert_speed_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {10, {"CMD A", prefix + "/B748/MCP/mcp_a_cmd_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {12, {"CMD B", prefix + "/B748/MCP/mcp_b_cmd_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {14, {"C/O", prefix + "/B748/MCP/mcp_ias_co_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
+                    {15, {"SPD INTV", prefix + "/B748/MCP/mcp_speed_int_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
 
                     // Row 3
-                    {16, {"ALT INTV", prefix + "/UFMC/AP_Altitude_Intervention_Button"}},
+                    {16, {"ALT INTV", prefix + "/B748/MCP/mcp_alt_int_sw", PAP3MCPDatarefType::SET_VALUE_PHASED, 1.0}},
 
                     // Encoder directions (also exposed as discrete buttons)
                     {17, {"CRS CAPT DEC", "sim/autopilot/nav1_course_down"}},
@@ -193,7 +208,7 @@ void FPS748PAP3MCPProfile::updateDisplayData(PAP3MCPDisplayData &data) {
 
     bool isMach = dm->getCached<float>((prefix + "/B748/systems/athr/MCPSPD_spdmach").c_str()) > 0.5f;
     data.digitA = isMach;
-    data.speed = dm->getCached<float>((prefix + "/B748/MCP/mcp_ias_mach_act").c_str());
+    data.speed = std::floor(dm->getCached<float>((prefix + "/B748/MCP/mcp_ias_mach_act").c_str()));
     data.speedVisible = dm->getCached<float>((prefix + "/B748/mcp/speed_is_blank").c_str()) < 0.5f;
 
     data.heading = static_cast<int>(dm->getCached<float>((prefix + "/B748/MCP/mcp_heading_bug_act").c_str()));
@@ -214,7 +229,9 @@ void FPS748PAP3MCPProfile::buttonPressed(const PAP3MCPButtonDef *button, XPLMCom
         return;
     }
 
-    if (phase == xplm_CommandBegin && button->datarefType == PAP3MCPDatarefType::EXECUTE_CMD_ONCE) {
+    if (button->datarefType == PAP3MCPDatarefType::SET_VALUE_PHASED) {
+        Dataref::getInstance()->set<int>(button->dataref.c_str(), phase == xplm_CommandBegin ? static_cast<int>(button->value) : 0);
+    } else if (phase == xplm_CommandBegin && button->datarefType == PAP3MCPDatarefType::EXECUTE_CMD_ONCE) {
         Dataref::getInstance()->executeCommand(button->dataref.c_str());
     } else if (button->datarefType == PAP3MCPDatarefType::EXECUTE_CMD_PHASED) {
         Dataref::getInstance()->executeCommand(button->dataref.c_str(), phase);
@@ -240,6 +257,24 @@ void FPS748PAP3MCPProfile::maybeToggle(const char *stateDataref, bool hwState, c
     bool simState = Dataref::getInstance()->get<bool>(stateDataref);
     if (simState != hwState) {
         Dataref::getInstance()->executeCommand(toggleCmd);
+    }
+}
+
+void FPS748PAP3MCPProfile::handleBankAngleSwitch(uint8_t switchByte) {
+    bool isSSG = IsSSGVersion();
+    std::string prefix = isSSG ? "SSG" : "FPS";
+
+    // Hardware has 5 positions (no AUTO), mapped to values 1-5
+    // 0x02 = pos 1 (smallest), 0x04 = pos 2, 0x08 = pos 3, 0x10 = pos 4, 0x20 = pos 5 (max)
+    int target = -1;
+    if (switchByte & 0x02) target = 1;
+    else if (switchByte & 0x04) target = 2;
+    else if (switchByte & 0x08) target = 3;
+    else if (switchByte & 0x10) target = 4;
+    else if (switchByte & 0x20) target = 5;
+
+    if (target >= 1) {
+        Dataref::getInstance()->set<float>((prefix + "/B748/MCP/mcp_bank_angle_act").c_str(), static_cast<float>(target));
     }
 }
 
@@ -283,13 +318,14 @@ void FPS748PAP3MCPProfile::handleSwitchChanged(uint8_t byteOffset, uint8_t bitMa
     if (byteOffset == 0x04 && bitMask == 0x80) {
         if (state) {
             hwApDiscEngaged = false;
-            Dataref::getInstance()->executeCommand((prefix + "/UFMC/AP_Discon").c_str());
+            Dataref::getInstance()->set<float>((prefix + "/B748/MCP/mcp_ap_disengage_act").c_str(), 1.0f);
         }
         return;
     }
     if (byteOffset == 0x05 && bitMask == 0x01) {
         if (state) {
             hwApDiscEngaged = true;
+            Dataref::getInstance()->set<float>((prefix + "/B748/MCP/mcp_ap_disengage_act").c_str(), 0.0f);
         }
         return;
     }

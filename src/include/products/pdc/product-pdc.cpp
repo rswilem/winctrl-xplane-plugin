@@ -3,6 +3,7 @@
 #include "appstate.h"
 #include "dataref.h"
 #include "plugins-menu.h"
+#include "profiles/fps748-pdc-profile.h"
 #include "profiles/ff777-pdc-profile.h"
 #include "profiles/zibo-pdc-profile.h"
 #include "profiles/xcrafts-erj-pdc-profile.h"
@@ -39,7 +40,10 @@ const char *ProductPDC::activeProfileName() const {
 }
 
 void ProductPDC::setProfileForCurrentAircraft() {
-    if (XCraftsErjPDCProfile::IsEligible()) {
+    if (FPS748PDCProfile::IsEligible()) {
+        profile = new FPS748PDCProfile(this);
+        profileReady = true;
+    } else if (XCraftsErjPDCProfile::IsEligible()) {
         profile = new XCraftsErjPDCProfile(this);
         profileReady = true;
     } else if (XCraftsEjetsPDCProfile::IsEligible()) {

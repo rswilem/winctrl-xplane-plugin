@@ -56,6 +56,10 @@
 		F60ABAEA2FBE134D001C91EF /* jar330-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAE82FBE134D001C91EF /* jar330-fmc-profile.cpp */; };
 		F60ABAED2FBE1355001C91EF /* jar330-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAEC2FBE1355001C91EF /* jar330-fcu-efis-profile.cpp */; };
 		F60ABAEE2FBE1355001C91EF /* jar330-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAEC2FBE1355001C91EF /* jar330-fcu-efis-profile.cpp */; };
+		F60D39C02FD0D3B600C792EB /* product-orion-throttle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60D39BE2FD0D3B600C792EB /* product-orion-throttle.cpp */; };
+		F60D39C12FD0D3B600C792EB /* product-orion-throttle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60D39BE2FD0D3B600C792EB /* product-orion-throttle.cpp */; };
+		F60D39C42FD0D3C800C792EB /* fps748-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60D39C32FD0D3C800C792EB /* fps748-pdc-profile.cpp */; };
+		F60D39C52FD0D3C800C792EB /* fps748-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60D39C32FD0D3C800C792EB /* fps748-pdc-profile.cpp */; };
 		F60F7FD92FC9B67B000EA4E2 /* rotatemd11-tcas-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60F7FD82FC9B67B000EA4E2 /* rotatemd11-tcas-profile.cpp */; };
 		F60F7FDA2FC9B67B000EA4E2 /* rotatemd11-tcas-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60F7FD82FC9B67B000EA4E2 /* rotatemd11-tcas-profile.cpp */; };
 		F60F7FDD2FC9B681000EA4E2 /* rotatemd11-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60F7FDC2FC9B681000EA4E2 /* rotatemd11-agp-profile.cpp */; };
@@ -263,6 +267,11 @@
 		F60ABAEB2FBE1355001C91EF /* jar330-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "jar330-fcu-efis-profile.h"; sourceTree = "<group>"; };
 		F60ABAEC2FBE1355001C91EF /* jar330-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "jar330-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
 		F60BE7C62FA8CA0E00E5C542 /* xplane-version.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "xplane-version.hpp"; sourceTree = "<group>"; };
+		F60D39BC2FD0D3B600C792EB /* orion-throttle-aircraft-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "orion-throttle-aircraft-profile.h"; sourceTree = "<group>"; };
+		F60D39BD2FD0D3B600C792EB /* product-orion-throttle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "product-orion-throttle.h"; sourceTree = "<group>"; };
+		F60D39BE2FD0D3B600C792EB /* product-orion-throttle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "product-orion-throttle.cpp"; sourceTree = "<group>"; };
+		F60D39C22FD0D3C800C792EB /* fps748-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "fps748-pdc-profile.h"; sourceTree = "<group>"; };
+		F60D39C32FD0D3C800C792EB /* fps748-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "fps748-pdc-profile.cpp"; sourceTree = "<group>"; };
 		F60F7FD72FC9B67B000EA4E2 /* rotatemd11-tcas-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "rotatemd11-tcas-profile.h"; sourceTree = "<group>"; };
 		F60F7FD82FC9B67B000EA4E2 /* rotatemd11-tcas-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "rotatemd11-tcas-profile.cpp"; sourceTree = "<group>"; };
 		F60F7FDB2FC9B681000EA4E2 /* rotatemd11-agp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "rotatemd11-agp-profile.h"; sourceTree = "<group>"; };
@@ -510,6 +519,24 @@
 				F603CF8A2FCEC8F9005DF928 /* joystick-aircraft-profile.h */,
 			);
 			path = profiles;
+			sourceTree = "<group>";
+		};
+		F60D39BB2FD0D3B600C792EB /* profiles */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = profiles;
+			sourceTree = "<group>";
+		};
+		F60D39BF2FD0D3B600C792EB /* orion-throttle */ = {
+			isa = PBXGroup;
+			children = (
+				F60D39BB2FD0D3B600C792EB /* profiles */,
+				F60D39BC2FD0D3B600C792EB /* orion-throttle-aircraft-profile.h */,
+				F60D39BD2FD0D3B600C792EB /* product-orion-throttle.h */,
+				F60D39BE2FD0D3B600C792EB /* product-orion-throttle.cpp */,
+			);
+			path = "orion-throttle";
 			sourceTree = "<group>";
 		};
 		F61F8B2E2D059ED500E63C3F /* include */ = {
@@ -862,6 +889,8 @@
 				F6EBDC032FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp */,
 				F6EBDC062FC6C497005AFCBD /* xcrafts-erj-pdc-profile.h */,
 				F6EBDC072FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp */,
+				F60D39C22FD0D3C800C792EB /* fps748-pdc-profile.h */,
+				F60D39C32FD0D3C800C792EB /* fps748-pdc-profile.cpp */,
 			);
 			path = profiles;
 			sourceTree = "<group>";
@@ -889,6 +918,7 @@
 				F6FC2A152E5C5377009A40E2 /* pap3-mcp */,
 				F6EF56232F0AC43300AB61F1 /* pdc */,
 				F603CF7F2FCEC1D0005DF928 /* joystick */,
+				F60D39BF2FD0D3B600C792EB /* orion-throttle */,
 				F6E73EE02ED9CCA7000A8B6A /* ursa-minor-throttle */,
 			);
 			path = products;
@@ -1005,6 +1035,7 @@
 				F60ABAE62FBDF78D001C91EF /* xcrafts-erj-fcu-efis-profile.cpp in Sources */,
 				F633E3D92FBE25B100CBE019 /* zibo-fcu-efis-profile.cpp in Sources */,
 				F6B149522E4F04AE00FB8395 /* fps748-fmc-profile.cpp in Sources */,
+				F60D39C02FD0D3B600C792EB /* product-orion-throttle.cpp in Sources */,
 				F681E2232FC9E5AE0009D9FB /* stratosphere77w-fcu-efis-profile.cpp in Sources */,
 				E164E7F621BA6932F4BE9D64 /* sparky744-fmc-profile.cpp in Sources */,
 				F6A1493F2E4F04AE00FB8395 /* ff777-fmc-profile.cpp in Sources */,
@@ -1019,6 +1050,7 @@
 				F60F7FE12FC9B694000EA4E2 /* rotatemd11-ursa-minor-throttle-profile.cpp in Sources */,
 				F61F8B1E2D0456D700E63C3F /* main.cpp in Sources */,
 				F6C248462EBE498500617E89 /* plugins-menu.cpp in Sources */,
+				F60D39C52FD0D3C800C792EB /* fps748-pdc-profile.cpp in Sources */,
 				F6A77E722ED3514600061D03 /* toliss-agp-profile.cpp in Sources */,
 				F60ABACA2FBDA72B001C91EF /* zibo-tcas-profile.cpp in Sources */,
 				F6ADBA012FA72A0A00DCA201 /* laminar-citx-fmc-profile.cpp in Sources */,
@@ -1129,6 +1161,7 @@
 				F67FE8152E895BAC00C4243C /* laminar-a333-fcu-efis-profile.cpp in Sources */,
 				F60F7FDD2FC9B681000EA4E2 /* rotatemd11-agp-profile.cpp in Sources */,
 				F60ABAE52FBDF78D001C91EF /* xcrafts-erj-fcu-efis-profile.cpp in Sources */,
+				F60D39C12FD0D3B600C792EB /* product-orion-throttle.cpp in Sources */,
 				F6A149332E4F03A400FB8395 /* toliss-fmc-profile.cpp in Sources */,
 				F6A149342E4F03A400FB8395 /* laminar-a333-fmc-profile.cpp in Sources */,
 				F6A149412E4F04AE00FB8395 /* zibo-fmc-profile.cpp in Sources */,
@@ -1183,6 +1216,7 @@
 				F6A77E792ED3620600061D03 /* segment-display.cpp in Sources */,
 				F6F6F4E92EBF976E00321C19 /* ButtonIdentificationView.swift in Sources */,
 				F6AAEE242F261A790020CF32 /* zibo-ursa-minor-throttle-profile.cpp in Sources */,
+				F60D39C42FD0D3C800C792EB /* fps748-pdc-profile.cpp in Sources */,
 				F6AAEE252F261A790020CF32 /* ff777-ursa-minor-throttle-profile.cpp in Sources */,
 				F60F7FE22FC9B694000EA4E2 /* rotatemd11-ursa-minor-throttle-profile.cpp in Sources */,
 				F621F80D2F1C264A00DDB31E /* jf146-fcu-efis-profile.cpp in Sources */,

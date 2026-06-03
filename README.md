@@ -37,7 +37,7 @@ The matrix below shows device and aircraft compatibility. Devices are listed ver
 |--- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | **FMC (MCDU, PFP 3N/4/7)** | &check; | &check; | &check; | &check; | &check; | &check; | &nbsp; | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &check; | &nbsp; | &check; | &check; | &check; |
 | **3N PAP MCP** | &nbsp; | &check; | &check; | &check; | &nbsp; | &check; | &nbsp; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
-| **3N / 3M PDC** | &nbsp; | &check; | &check; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; |
+| **3N / 3M PDC** | &nbsp; | &check; | &check; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; |
 | **FCU (+ optional EFIS L+R)** | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &nbsp; | &check; | &check; | &check; | &check; | &check; | &nbsp; | &check; | &check; | &check; | &check; |
 | **32 ECAM** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; |
 | **32 AGP Metal** | &check; | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; |

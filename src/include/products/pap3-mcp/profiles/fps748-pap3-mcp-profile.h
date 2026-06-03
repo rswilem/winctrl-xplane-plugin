@@ -28,6 +28,7 @@ class FPS748PAP3MCPProfile : public PAP3MCPAircraftProfile {
         void buttonPressed(const PAP3MCPButtonDef *button, XPLMCommandPhase phase) override;
         void encoderRotated(const PAP3MCPEncoderDef *encoder, int8_t delta) override;
 
+        void handleBankAngleSwitch(uint8_t switchByte) override;
         void handleSwitchChanged(uint8_t byteOffset, uint8_t bitMask, bool state) override;
 };
 

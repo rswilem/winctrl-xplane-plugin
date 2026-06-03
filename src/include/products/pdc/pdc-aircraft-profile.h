@@ -12,6 +12,7 @@ enum class PDCDatarefType : unsigned char {
     EXECUTE_CMD_PHASED,
     SET_VALUE,
     SET_VALUE_USING_COMMANDS, // Format: "dataref_to_set,lower_value_cmd,raise_value_cmd"
+    SET_VALUE_MOMENTARY,      // Sets value on CommandBegin, 0 on CommandEnd
     ADD_MINIMUMS_REPEATING,
     ADD_BARO_REPEATING,
     ADD_RANGE_REPEATING

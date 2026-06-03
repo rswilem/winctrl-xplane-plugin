@@ -79,6 +79,9 @@ const std::vector<std::string> &XCraftsEjetsFCUEfisProfile::displayDatarefs() co
         "sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot",
         "sim/physics/metric_press",
         "XCrafts/ERJ/STD_visible",
+
+        "sim/cockpit2/autopilot/st55_nav",
+        "sim/cockpit2/autopilot/st55_vs",
     };
 
     return datarefs;
@@ -152,7 +155,13 @@ void XCraftsEjetsFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
 
     data.displayEnabled = true;
     data.displayTest = dr->getCached<bool>("XCrafts/ERJ/cockpit/annunciators_test");
-    data.displayEnabledWindowsFlag &= ~FCUDisplayData::Window::LevelChangeHeader;
+    data.displayEnabledWindowsFlag = FCUDisplayData::Window::All;
+    data.displayEnabledWindowsFlag &= ~FCUDisplayData::LevelChangeHeader;
+
+    if (!dr->getCached<bool>("sim/cockpit2/autopilot/st55_vs")) {
+        data.displayEnabledWindowsFlag &= ~FCUDisplayData::VerticalSpeedFPAHeader;
+        data.displayEnabledWindowsFlag &= ~FCUDisplayData::VerticalSpeedFPAValue;
+    }
 
     // Speed / Mach
     data.spdMach = dr->getCached<bool>("sim/cockpit/autopilot/airspeed_is_mach");
@@ -219,8 +228,8 @@ void XCraftsEjetsFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.fpaIndication = false;
     data.vsVerticalLine = data.vsMode && (data.verticalSpeed != "-----");
 
-    data.spdManaged = Dataref::getInstance()->getCached<int>("XCrafts/speed_knob_fms_man") == 1;
-    data.hdgManaged = false;
+    data.spdManaged = dr->getCached<bool>("XCrafts/speed_knob_fms_man");
+    data.hdgManaged = dr->getCached<bool>("sim/cockpit2/autopilot/st55_nav");
     data.altManaged = false;
 
     // EFIS baro display

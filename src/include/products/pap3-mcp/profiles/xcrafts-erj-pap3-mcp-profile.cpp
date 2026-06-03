@@ -33,7 +33,7 @@ XCraftsErjPAP3MCPProfile::XCraftsErjPAP3MCPProfile(ProductPAP3MCP *product) : PA
         product->setLedBrightness(PAP3MCPLed::AT_ARM, active == 1 ? 1 : 0);
     });
 
-    Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/LNAV_armed", [product](int armed) {
+    Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/autopilot/st55_nav", [product](int armed) {
         product->setLedBrightness(PAP3MCPLed::LNAV, armed == 1 ? 1 : 0);
     });
 
@@ -47,7 +47,7 @@ XCraftsErjPAP3MCPProfile::~XCraftsErjPAP3MCPProfile() {
     Dataref::getInstance()->unbind("sim/cockpit/autopilot/autopilot_mode");
     Dataref::getInstance()->unbind("XCrafts/ERJ/autothrottle_armed");
     Dataref::getInstance()->unbind("XCrafts/ERJ/autopilot/autothrottle_system_active");
-    Dataref::getInstance()->unbind("XCrafts/ERJ/LNAV_armed");
+    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/st55_nav");
     Dataref::getInstance()->unbind("XCrafts/ERJ/VNAV_armed");
 }
 
@@ -67,7 +67,7 @@ const std::vector<std::string> &XCraftsErjPAP3MCPProfile::displayDatarefs() cons
         "sim/cockpit/autopilot/autopilot_mode",
         "XCrafts/ERJ/autothrottle_armed",
         "XCrafts/ERJ/autopilot/autothrottle_system_active",
-        "XCrafts/ERJ/LNAV_armed",
+        "sim/cockpit2/autopilot/st55_nav",
         "XCrafts/ERJ/VNAV_armed",
         "XCrafts/ERJ/cockpit/annunciators_test",
     };
@@ -156,7 +156,7 @@ void XCraftsErjPAP3MCPProfile::updateDisplayData(PAP3MCPDisplayData &data) {
     data.ledCmdB = apEngaged;
     data.ledATArm = dr->getCached<int>("XCrafts/ERJ/autothrottle_armed") == 1 ||
                     dr->getCached<int>("XCrafts/ERJ/autopilot/autothrottle_system_active") == 1;
-    data.ledLNAV = dr->getCached<int>("XCrafts/ERJ/LNAV_armed") == 1;
+    data.ledLNAV = dr->getCached<int>("sim/cockpit2/autopilot/st55_nav") == 1;
     data.ledVNAV = dr->getCached<int>("XCrafts/ERJ/VNAV_armed") == 1;
 }
 

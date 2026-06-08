@@ -53,8 +53,6 @@ class USBDevice {
         void handleHIDValue(IOHIDValueRef value);
 #elif IBM
         USHORT outputReportByteLength = 0;
-        HANDLE writeThreadNativeHandle = INVALID_HANDLE_VALUE;
-        std::atomic<int64_t> writeStartTime{0};
         static void InputReportCallback(void *context, DWORD bytesRead, uint8_t *report);
 #elif LIN
         static void InputReportCallback(void *context, int bytesRead, uint8_t *report);
@@ -90,10 +88,6 @@ class USBDevice {
         int getDisplayUpdateFrameInterval(int minWaitFrames = 0);
 
         static USBDevice *Device(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t productId, std::string vendorName, std::string productName);
-
-#if IBM
-        void cancelStuckWriteIfNeeded(int thresholdMs);
-#endif
 };
 
 #endif

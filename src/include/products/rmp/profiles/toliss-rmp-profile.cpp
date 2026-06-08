@@ -5,16 +5,28 @@
 
 #include <cstdio>
 
-const char *TolissRMPProfile::comRadio() const {
+const char *TolissRMPProfile::rmpName() const {
     switch (product->deviceVariant) {
         case RMPDeviceVariant::VARIANT_CAPTAIN:
-            return "com1";
+            return "RMP1";
         case RMPDeviceVariant::VARIANT_STBY:
-            return "com3";
+            return "RMP3";
         case RMPDeviceVariant::VARIANT_FIRSTOFFICER:
-            return "com2";
+            return "RMP2";
     }
-    return "com1";
+    return "RMP1";
+}
+
+const char *TolissRMPProfile::sideName() const {
+    switch (product->deviceVariant) {
+        case RMPDeviceVariant::VARIANT_CAPTAIN:
+            return "Capt";
+        case RMPDeviceVariant::VARIANT_STBY:
+            return "RMP3";
+        case RMPDeviceVariant::VARIANT_FIRSTOFFICER:
+            return "Co";
+    }
+    return "Capt";
 }
 
 std::string TolissRMPProfile::formatFrequency(int hz) {
@@ -48,8 +60,8 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
         updateDisplays();
     });
 
-    std::string activeRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_frequency_hz_833";
-    std::string stbyRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_standby_frequency_hz_833";
+    std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
+    std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
 
     Dataref::getInstance()->monitorExistingDataref<int>(activeRef.c_str(), [this](int hz) {
         updateDisplays();
@@ -64,8 +76,8 @@ TolissRMPProfile::~TolissRMPProfile() {
     Dataref::getInstance()->unbind("AirbusFBW/PanelBrightnessLevel");
     Dataref::getInstance()->unbind("AirbusFBW/FCUAvail");
     Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    std::string activeRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_frequency_hz_833";
-    std::string stbyRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_standby_frequency_hz_833";
+    std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
+    std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
     Dataref::getInstance()->unbind(activeRef.c_str());
     Dataref::getInstance()->unbind(stbyRef.c_str());
 }
@@ -79,27 +91,27 @@ const std::unordered_map<uint16_t, RMPButtonDef> &TolissRMPProfile::buttonDefs()
 
     if (cache.find(product->deviceVariant) == cache.end()) {
         cache[product->deviceVariant] = {
-            {0, {"Flip frequencies", std::string("sim/radios/") + comRadio() + "_standy_flip"}},
-            {1, {"VHF 1", ""}},
-            {2, {"VHF 2", ""}},
-            {3, {"VHF 3", ""}},
+            {0, {"Flip frequencies", std::string("AirbusFBW/RMPSwap") + sideName()}},
+            {1, {"VHF 1", std::string("AirbusFBW/VHF1") + sideName()}},
+            {2, {"VHF 2", std::string("AirbusFBW/VHF2") + sideName()}},
+            {3, {"VHF 3", std::string("AirbusFBW/VHF3") + sideName()}},
             {4, {"LOAD", ""}},
-            {5, {"HF1", ""}},
-            {6, {"HF2", ""}},
-            {7, {"AM", ""}},
-            {8, {"Knob Large L", ""}},
-            {9, {"Knob Large R", ""}},
-            {10, {"Knob Small L", ""}},
-            {11, {"Knob Small R", ""}},
-            {12, {"Knob depress", ""}},
-            {13, {"NAV", ""}},
-            {14, {"VOR", ""}},
-            {15, {"ILS", ""}},
-            {16, {"GLS", ""}},
-            {17, {"MLS", ""}},
-            {18, {"ADF", ""}},
-            {19, {"Switch On", ""}},
-            {20, {"Switch Off", ""}},
+            {5, {"HF1", std::string("AirbusFBW/HF1") + sideName()}},
+            {6, {"HF2", std::string("AirbusFBW/HF2") + sideName()}},
+            {7, {"AM", std::string("AirbusFBW/AM") + sideName()}},
+            {8, {"NAV", std::string("AirbusFBW/") + rmpName() + "/BackupNavPress"}},
+            {9, {"VOR", std::string("AirbusFBW/") + rmpName() + "/BackupNavVORPress"}},
+            {10, {"ILS", std::string("AirbusFBW/") + rmpName() + "/BackupNavILSPress"}},
+            {11, {"GLS", std::string("AirbusFBW/") + rmpName() + "/BackupNavBFOPress"}},
+            {12, {"MLS", ""}},
+            {13, {"ADF", std::string("AirbusFBW/") + rmpName() + "/BackupNavADFPress"}},
+            {14, {"Knob Large L", std::string("AirbusFBW/") + rmpName() + "FreqDownLrg"}},
+            {15, {"Knob Large R", std::string("AirbusFBW/") + rmpName() + "FreqUpLrg"}},
+            {16, {"Knob Small L", std::string("AirbusFBW/") + rmpName() + "FreqDownSml"}},
+            {17, {"Knob Large R", std::string("AirbusFBW/") + rmpName() + "FreqUpSml"}},
+            {18, {"Knob depress", ""}},
+            {19, {"Switch On",  std::string("AirbusFBW/") + rmpName() + "Switch", RMPDatarefType::SET_VALUE, 1}},
+            {20, {"Switch Off", std::string("AirbusFBW/") + rmpName() + "Switch", RMPDatarefType::SET_VALUE, 0}},
         };
     }
 
@@ -134,8 +146,8 @@ void TolissRMPProfile::updateDisplays() {
         return;
     }
 
-    std::string activeRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_frequency_hz_833";
-    std::string stbyRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_standby_frequency_hz_833";
+    std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
+    std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
     int activeHz = Dataref::getInstance()->get<int>(activeRef.c_str());
     int stbyHz = Dataref::getInstance()->get<int>(stbyRef.c_str());
 

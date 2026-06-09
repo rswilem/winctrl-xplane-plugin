@@ -6,12 +6,14 @@
 #include "profiles/toliss-rmp-profile.h"
 #include "segment-display.h"
 
+#include <XPLMProcessing.h>
 #include <XPLMUtilities.h>
 
 ProductRMP::ProductRMP(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t productId, std::string vendorName, std::string productName, RMPDeviceVariant variant, uint8_t identifierByte) : USBDevice(hidDevice, vendorId, productId, vendorName, productName), identifierByte(identifierByte), deviceVariant(variant) {
     lastButtonStateLo = 0;
     lastButtonStateHi = 0;
     pressedButtonIndices = {};
+    lastUpdateCycle = 0;
 
     connect();
 }
@@ -55,6 +57,9 @@ bool ProductRMP::connect() {
         return false;
     }
 
+    lastUpdateCycle = 0;
+    lastLedBrightness.clear();
+
     setLedBrightness(RMPLed::BACKLIGHT, 128);
     setLedBrightness(RMPLed::LCD_BRIGHTNESS, 128);
     setLedBrightness(RMPLed::OVERALL_LEDS_BRIGHTNESS, 255);
@@ -97,11 +102,30 @@ void ProductRMP::update() {
 
     if (++displayUpdateFrameCounter >= getDisplayUpdateFrameInterval(12)) {
         displayUpdateFrameCounter = 0;
+        updateDisplays(false);
+    }
+}
 
-        if (profile) {
-            profile->updateDisplays();
+void ProductRMP::updateDisplays(bool force) {
+    if (!connected || !profile) {
+        return;
+    }
+
+    bool shouldUpdate = force;
+    auto datarefManager = Dataref::getInstance();
+    for (const std::string &dataref : profile->displayDatarefs()) {
+        if (!lastUpdateCycle || datarefManager->getCachedLastUpdate(dataref.c_str()) > lastUpdateCycle) {
+            shouldUpdate = true;
+            break;
         }
     }
+
+    if (!shouldUpdate) {
+        return;
+    }
+
+    profile->updateDisplays();
+    lastUpdateCycle = XPLMGetCycleNumber();
 }
 
 void ProductRMP::setAllLedsEnabled(bool enable) {
@@ -115,6 +139,13 @@ void ProductRMP::setAllLedsEnabled(bool enable) {
 }
 
 void ProductRMP::setLedBrightness(RMPLed led, uint8_t brightness) {
+    int ledInt = static_cast<int>(led);
+    auto it = lastLedBrightness.find(ledInt);
+    if (it != lastLedBrightness.end() && it->second == brightness) {
+        return;
+    }
+    lastLedBrightness[ledInt] = brightness;
+
     writeData({0x02, identifierByte, 0xBB, 0x00, 0x00, 0x03, 0x49, static_cast<uint8_t>(led), brightness, 0x00, 0x00, 0x00, 0x00, 0x00});
 }
 
@@ -124,27 +155,11 @@ void ProductRMP::parseSegment(const std::string &text, int expectedLength, std::
 
     for (size_t i = 0; i < text.length(); ++i) {
         char c = text[i];
-        if (c == ':' || c == '.') {
-            if (!digits.empty()) {
-                if (expectedLength >= 6) {
-                    // Standard: Enable bit for digit before (Left) and digit after (Right)
-
-                    if (c == ':') {
-                        localColonMask |= (1 << (digits.length() - 1)); // Upper Dot
-                    }
-
-                    localColonMask |= (1 << digits.length()); // Lower Dot
-                } else {
-                    // 4-Digit Displays: Enable bit for digit after (Right) and next digit (Right + 1)
-                    // The digit 'digits.length()' is the one we are about to add next.
-
-                    if (c == ':') {
-                        localColonMask |= (1 << digits.length()); // Upper Dot
-                    }
-
-                    localColonMask |= (1 << (digits.length() + 1)); // Lower Dot
-                }
-            }
+        if (c == '.' && !digits.empty()) {
+            localColonMask |= (1 << (digits.length() - 1));
+        } else if (c == '/') {
+            /* ToLiss datarefs use a C/course format for backup nav */
+            digits += '-';
         } else {
             digits += c;
         }
@@ -176,31 +191,24 @@ void ProductRMP::setDisplayText(const std::string &active, const std::string &st
         0x00, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     packet.resize(64, 0x00);
 
-    const int rowOffsets[8] = {25, 29, 33, 37, 41, 45, 49, 53};
+    const int byteOffset = 25;
 
     std::string allDigits;
     uint16_t colonMask = 0;
 
-    parseSegment(active, 6, allDigits, colonMask, 0);
-    parseSegment(stby,   6, allDigits, colonMask, 6);
+    /* Standby is first, Active is second */
+    parseSegment(stby,   6, allDigits, colonMask, 0);
+    parseSegment(active, 6, allDigits, colonMask, 6);
 
     for (int digitIndex = 0; digitIndex < 12; ++digitIndex) {
         char c = allDigits[digitIndex];
         uint8_t charMask = SegmentDisplay::getSegmentMask(c);
 
-        for (int segIndex = 0; segIndex < 7; ++segIndex) {
-            if (charMask & (1 << segIndex)) {
-                int byteOffset = rowOffsets[segIndex] + (digitIndex / 8);
-                int bitPos = digitIndex % 8;
-                packet[byteOffset] |= (1 << bitPos);
-            }
+        if (colonMask & (1 << digitIndex)) {
+            charMask |= 0x80;
         }
 
-        if (colonMask & (1 << digitIndex)) {
-            int byteOffset = rowOffsets[7] + (digitIndex / 8);
-            int bitPos = digitIndex % 8;
-            packet[byteOffset] |= (1 << bitPos);
-        }
+        packet[digitIndex + byteOffset] = charMask;
     }
 
     writeData(packet);

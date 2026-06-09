@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 #include <XPLMUtilities.h>
 
 class ProductRMP;
@@ -27,6 +28,7 @@ class RMPAircraftProfile {
         RMPAircraftProfile(ProductRMP *product) : product(product) {};
         virtual ~RMPAircraftProfile() = default;
 
+        virtual const std::vector<std::string> &displayDatarefs() const = 0;
         virtual const std::unordered_map<uint16_t, RMPButtonDef> &buttonDefs() const = 0;
         virtual void buttonPressed(const RMPButtonDef *button, XPLMCommandPhase phase) = 0;
 

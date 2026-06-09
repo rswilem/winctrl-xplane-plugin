@@ -4,17 +4,20 @@
 #include "rmp-aircraft-profile.h"
 
 #include <string>
+#include <vector>
 
 class TolissRMPProfile : public RMPAircraftProfile {
     private:
-        const char *comRadio() const;
-        static std::string formatFrequency(int hz);
+        std::vector<std::string> _displayDatarefs;
+        const char *rmpName() const;
+        const char *sideName() const;
 
     public:
         TolissRMPProfile(ProductRMP *product);
         ~TolissRMPProfile();
 
         static bool IsEligible();
+        const std::vector<std::string> &displayDatarefs() const override;
         const std::unordered_map<uint16_t, RMPButtonDef> &buttonDefs() const override;
 
         void buttonPressed(const RMPButtonDef *button, XPLMCommandPhase phase) override;

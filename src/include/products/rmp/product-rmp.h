@@ -5,6 +5,8 @@
 #include "usbdevice.h"
 
 #include <set>
+#include <string>
+#include <unordered_map>
 
 enum class RMPDeviceVariant : unsigned char {
     VARIANT_CAPTAIN = 0,
@@ -18,12 +20,12 @@ enum class RMPLed : int {
     OVERALL_LEDS_BRIGHTNESS = 2,
 
     _START = 3,
-    VHF1 = 3,
-    VHF2 = 4,
-    VHF3 = 5,
-    LOAD = 6,
-    HF1 = 7,
-    SEL = 8,
+    SEL = 3,
+    VHF1 = 4,
+    VHF2 = 5,
+    VHF3 = 6,
+    LOAD = 7,
+    HF1 = 8,
     HF2 = 9,
     AM = 10,
     NAV = 11,
@@ -45,6 +47,9 @@ class ProductRMP : public USBDevice {
         std::set<int> pressedButtonIndices;
         uint8_t packetNumber = 1;
 
+        int lastUpdateCycle = 0;
+        std::unordered_map<int, uint8_t> lastLedBrightness;
+
         void setProfileForCurrentAircraft();
         void parseSegment(const std::string &text, int expectedLength, std::string &outDigits, uint16_t &colonMask, int digitOffset);
 
@@ -59,6 +64,7 @@ class ProductRMP : public USBDevice {
         const char *activeProfileName() const override;
         bool connect() override;
         void update() override;
+        void updateDisplays(bool force = false);
         void blackout() override;
         void didReceiveData(int reportId, uint8_t *report, int reportLength) override;
         void didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, uint8_t count = 1) override;

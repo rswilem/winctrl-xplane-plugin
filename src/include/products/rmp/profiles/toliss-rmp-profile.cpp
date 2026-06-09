@@ -5,33 +5,40 @@
 
 #include <cstdio>
 
-const char *TolissRMPProfile::comRadio() const {
+const char *TolissRMPProfile::rmpName() const {
     switch (product->deviceVariant) {
         case RMPDeviceVariant::VARIANT_CAPTAIN:
-            return "com1";
+            return "RMP1";
         case RMPDeviceVariant::VARIANT_STBY:
-            return "com3";
+            return "RMP3";
         case RMPDeviceVariant::VARIANT_FIRSTOFFICER:
-            return "com2";
+            return "RMP2";
     }
-    return "com1";
+    return "RMP1";
 }
 
-std::string TolissRMPProfile::formatFrequency(int hz) {
-    if (hz <= 0) {
-        return "      ";
+const char *TolissRMPProfile::sideName() const {
+    switch (product->deviceVariant) {
+        case RMPDeviceVariant::VARIANT_CAPTAIN:
+            return "Capt";
+        case RMPDeviceVariant::VARIANT_STBY:
+            return "RMP3";
+        case RMPDeviceVariant::VARIANT_FIRSTOFFICER:
+            return "Co";
     }
-    int mhz = hz / 1000000;
-    int khz = (hz % 1000000) / 1000;
-    char buf[8];
-    std::snprintf(buf, sizeof(buf), "%3d.%03d", mhz, khz);
-    return std::string(buf);
+    return "Capt";
 }
 
 TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(product) {
+    _displayDatarefs = {
+        std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString",
+        std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString",
+        "sim/cockpit/electrical/avionics_on"
+    };
+
     Dataref::getInstance()->monitorExistingDataref<float>("AirbusFBW/PanelBrightnessLevel", [product](float brightness) {
-        bool hasEssentialBusPower = Dataref::getInstance()->get<bool>("AirbusFBW/FCUAvail");
-        bool hasPower = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on");
+        bool hasEssentialBusPower = Dataref::getInstance()->getCached<bool>("AirbusFBW/FCUAvail");
+        bool hasPower = Dataref::getInstance()->getCached<bool>("sim/cockpit/electrical/avionics_on");
         uint8_t backlightBrightness = hasPower ? brightness * 255 : 0;
 
         product->setLedBrightness(RMPLed::BACKLIGHT, backlightBrightness);
@@ -48,14 +55,31 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
         updateDisplays();
     });
 
-    std::string activeRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_frequency_hz_833";
-    std::string stbyRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_standby_frequency_hz_833";
+    std::string lightsRef = std::string("AirbusFBW/") + rmpName() + "Lights_Raw";
 
-    Dataref::getInstance()->monitorExistingDataref<int>(activeRef.c_str(), [this](int hz) {
+    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>(lightsRef.c_str(), [product](const std::vector<float> &brightness) {
+        product->setLedBrightness(RMPLed::VHF1, brightness[1] * 255);
+        product->setLedBrightness(RMPLed::VHF2, brightness[2] * 255);
+        product->setLedBrightness(RMPLed::VHF3, brightness[3] * 255);
+        product->setLedBrightness(RMPLed::HF1, brightness[4] * 255);
+        product->setLedBrightness(RMPLed::HF2, brightness[5] * 255);
+        product->setLedBrightness(RMPLed::AM, brightness[6] * 255);
+        product->setLedBrightness(RMPLed::VOR, brightness[7] * 255);
+        product->setLedBrightness(RMPLed::ILS, brightness[8] * 255);
+        product->setLedBrightness(RMPLed::ADF, brightness[10] * 255);
+        product->setLedBrightness(RMPLed::GLS, brightness[11] * 255);
+        product->setLedBrightness(RMPLed::SEL, brightness[12] * 255);
+        product->setLedBrightness(RMPLed::NAV, brightness[13] * 255);
+    });
+
+    std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
+    std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
+
+    Dataref::getInstance()->monitorExistingDataref<std::string>(activeRef.c_str(), [this](std::string s) {
         updateDisplays();
     });
 
-    Dataref::getInstance()->monitorExistingDataref<int>(stbyRef.c_str(), [this](int hz) {
+    Dataref::getInstance()->monitorExistingDataref<std::string>(stbyRef.c_str(), [this](std::string s) {
         updateDisplays();
     });
 }
@@ -64,8 +88,11 @@ TolissRMPProfile::~TolissRMPProfile() {
     Dataref::getInstance()->unbind("AirbusFBW/PanelBrightnessLevel");
     Dataref::getInstance()->unbind("AirbusFBW/FCUAvail");
     Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    std::string activeRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_frequency_hz_833";
-    std::string stbyRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_standby_frequency_hz_833";
+
+    std::string lightsRef = std::string("AirbusFBW/") + rmpName() + "Lights_Raw";
+    std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
+    std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
+    Dataref::getInstance()->unbind(lightsRef.c_str());
     Dataref::getInstance()->unbind(activeRef.c_str());
     Dataref::getInstance()->unbind(stbyRef.c_str());
 }
@@ -74,32 +101,36 @@ bool TolissRMPProfile::IsEligible() {
     return Dataref::getInstance()->exists("AirbusFBW/PanelBrightnessLevel");
 }
 
+const std::vector<std::string> &TolissRMPProfile::displayDatarefs() const {
+    return _displayDatarefs;
+}
+
 const std::unordered_map<uint16_t, RMPButtonDef> &TolissRMPProfile::buttonDefs() const {
     static std::unordered_map<RMPDeviceVariant, std::unordered_map<uint16_t, RMPButtonDef>> cache;
 
     if (cache.find(product->deviceVariant) == cache.end()) {
         cache[product->deviceVariant] = {
-            {0, {"Flip frequencies", std::string("sim/radios/") + comRadio() + "_standy_flip"}},
-            {1, {"VHF 1", ""}},
-            {2, {"VHF 2", ""}},
-            {3, {"VHF 3", ""}},
+            {0, {"Flip frequencies", std::string("AirbusFBW/RMPSwap") + sideName()}},
+            {1, {"VHF 1", std::string("AirbusFBW/VHF1") + sideName()}},
+            {2, {"VHF 2", std::string("AirbusFBW/VHF2") + sideName()}},
+            {3, {"VHF 3", std::string("AirbusFBW/VHF3") + sideName()}},
             {4, {"LOAD", ""}},
-            {5, {"HF1", ""}},
-            {6, {"HF2", ""}},
-            {7, {"AM", ""}},
-            {8, {"Knob Large L", ""}},
-            {9, {"Knob Large R", ""}},
-            {10, {"Knob Small L", ""}},
-            {11, {"Knob Small R", ""}},
-            {12, {"Knob depress", ""}},
-            {13, {"NAV", ""}},
-            {14, {"VOR", ""}},
-            {15, {"ILS", ""}},
-            {16, {"GLS", ""}},
-            {17, {"MLS", ""}},
-            {18, {"ADF", ""}},
-            {19, {"Switch On", ""}},
-            {20, {"Switch Off", ""}},
+            {5, {"HF1", std::string("AirbusFBW/HF1") + sideName()}},
+            {6, {"HF2", std::string("AirbusFBW/HF2") + sideName()}},
+            {7, {"AM", std::string("AirbusFBW/AM") + sideName()}},
+            {8, {"NAV", std::string("AirbusFBW/") + rmpName() + "/BackupNavPress"}},
+            {9, {"VOR", std::string("AirbusFBW/") + rmpName() + "/BackupNavVORPress"}},
+            {10, {"ILS", std::string("AirbusFBW/") + rmpName() + "/BackupNavILSPress"}},
+            {11, {"GLS", std::string("AirbusFBW/") + rmpName() + "/BackupNavBFOPress"}},
+            {12, {"MLS", ""}},
+            {13, {"ADF", std::string("AirbusFBW/") + rmpName() + "/BackupNavADFPress"}},
+            {14, {"Knob Large L", std::string("AirbusFBW/") + rmpName() + "FreqDownLrg"}},
+            {15, {"Knob Large R", std::string("AirbusFBW/") + rmpName() + "FreqUpLrg"}},
+            {16, {"Knob Small L", std::string("AirbusFBW/") + rmpName() + "FreqDownSml"}},
+            {17, {"Knob Large R", std::string("AirbusFBW/") + rmpName() + "FreqUpSml"}},
+            {18, {"Knob depress", ""}},
+            {19, {"Switch On",  std::string("AirbusFBW/") + rmpName() + "Switch", RMPDatarefType::SET_VALUE, 1}},
+            {20, {"Switch Off", std::string("AirbusFBW/") + rmpName() + "Switch", RMPDatarefType::SET_VALUE, 0}},
         };
     }
 
@@ -128,16 +159,16 @@ void TolissRMPProfile::updateDisplays() {
         return;
     }
 
-    bool hasPower = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on");
+    bool hasPower = Dataref::getInstance()->getCached<bool>("sim/cockpit/electrical/avionics_on");
     if (!hasPower) {
         product->setDisplayText("      ", "      ");
         return;
     }
 
-    std::string activeRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_frequency_hz_833";
-    std::string stbyRef = std::string("sim/cockpit2/radios/actuators/") + comRadio() + "_standby_frequency_hz_833";
-    int activeHz = Dataref::getInstance()->get<int>(activeRef.c_str());
-    int stbyHz = Dataref::getInstance()->get<int>(stbyRef.c_str());
+    std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
+    std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
+    std::string activeHz = Dataref::getInstance()->getCached<std::string>(activeRef.c_str());
+    std::string stbyHz = Dataref::getInstance()->getCached<std::string>(stbyRef.c_str());
 
-    product->setDisplayText(formatFrequency(activeHz), formatFrequency(stbyHz));
+    product->setDisplayText(activeHz, stbyHz);
 }

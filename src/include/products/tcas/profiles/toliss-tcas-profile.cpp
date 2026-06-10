@@ -9,6 +9,46 @@
 #include <cmath>
 
 TolissTCASProfile::TolissTCASProfile(ProductTCAS *product) : TCASAircraftProfile(product) {
+    buttons = {
+        {0, {"Keypad 1", "AirbusFBW/ATCCodeKey1", TCASDatarefType::EXECUTE_CMD_PHASED}},
+        {1, {"Keypad 2", "AirbusFBW/ATCCodeKey2", TCASDatarefType::EXECUTE_CMD_PHASED}},
+        {2, {"Keypad 3", "AirbusFBW/ATCCodeKey3", TCASDatarefType::EXECUTE_CMD_PHASED}},
+        {3, {"Keypad 4", "AirbusFBW/ATCCodeKey4", TCASDatarefType::EXECUTE_CMD_PHASED}},
+        {4, {"Keypad 5", "AirbusFBW/ATCCodeKey5", TCASDatarefType::EXECUTE_CMD_PHASED}},
+        {5, {"Keypad 6", "AirbusFBW/ATCCodeKey6", TCASDatarefType::EXECUTE_CMD_PHASED}},
+        {6, {"Keypad 7", "AirbusFBW/ATCCodeKey7", TCASDatarefType::EXECUTE_CMD_PHASED}},
+        {7, {"Keypad 0", "AirbusFBW/ATCCodeKey0", TCASDatarefType::EXECUTE_CMD_PHASED}},
+        {8, {"Keypad CLR", "AirbusFBW/ATCCodeKeyCLR", TCASDatarefType::EXECUTE_CMD_PHASED}},
+        {9, {"Ident", "sim/transponder/transponder_ident", TCASDatarefType::EXECUTE_CMD_PHASED}},
+        {10, {"XPDR STBY", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 0}},
+        {11, {"XPDR AUTO", "AirbusFBW/XPDRTCASMode", TCASDatarefType::SET_VALUE, 0}},
+        {12, {"XPDR ON", "AirbusFBW/XPDRTCASMode", TCASDatarefType::SET_VALUE, 1}},
+        {13, {"XPDR Unit 1", "AirbusFBW/XPDRSystem", TCASDatarefType::SET_VALUE, 1}},
+        {14, {"XPDR Unit 2", "AirbusFBW/XPDRSystem", TCASDatarefType::SET_VALUE, 2}},
+        {15, {"ALT RPTG OFF", ""}},
+        {16, {"ALT RPTG ON", ""}},
+        {17, {"TCAS TFC THRT", ""}},
+        {18, {"TCAS TFC ALL", "AirbusFBW/XPDRTCASAltSelect", TCASDatarefType::SET_VALUE, 1}},
+        {19, {"TCAS TFC ABV", "AirbusFBW/XPDRTCASAltSelect", TCASDatarefType::SET_VALUE, 0}},
+        {20, {"TCAS TFC BLW", "AirbusFBW/XPDRTCASAltSelect", TCASDatarefType::SET_VALUE, 2}},
+        {21, {"TCAS MODE STBY", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 0}},
+        {22, {"TCAS MODE TA", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 3}},
+        {23, {"TCAS MODE TA/RA", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 4}},
+    };
+
+    if (Dataref::getInstance()->getCached<std::string>("sim/aircraft/view/acf_ICAO") == "A339") {
+        buttons[11] = {"XPDR AUTO", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 1};
+        buttons[12] = {"XPDR ON", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 2};
+        buttons[15] = {"ALT RPTG OFF", "AirbusFBW/XPDRAltitude", TCASDatarefType::SET_VALUE, 0};
+        buttons[16] = {"ALT RPTG ON", "AirbusFBW/XPDRAltitude", TCASDatarefType::SET_VALUE, 1};
+        buttons[17] = {"TCAS TFC THRT", "AirbusFBW/XPDRTCASAltSelect", TCASDatarefType::SET_VALUE, -1};
+        buttons[18] = {"TCAS TFC ALL", "AirbusFBW/XPDRTCASAltSelect", TCASDatarefType::SET_VALUE, 0};
+        buttons[19] = {"TCAS TFC ABV", "AirbusFBW/XPDRTCASAltSelect", TCASDatarefType::SET_VALUE, 1};
+        buttons[21] = {"TCAS MODE STBY", "AirbusFBW/XPDRTCASMode", TCASDatarefType::SET_VALUE, 0};
+        buttons[22] = {"TCAS MODE TA", "AirbusFBW/XPDRTCASMode", TCASDatarefType::SET_VALUE, 1};
+        buttons[23] = {"TCAS MODE TA/RA", "AirbusFBW/XPDRTCASMode", TCASDatarefType::SET_VALUE, 2};
+    }
+
     Dataref::getInstance()->monitorExistingDataref<float>("AirbusFBW/PanelBrightnessLevel", [product](float brightness) {
         bool hasEssentialBusPower = Dataref::getInstance()->get<bool>("AirbusFBW/FCUAvail");
         bool hasPower = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on");
@@ -66,33 +106,6 @@ const std::vector<std::string> &TolissTCASProfile::displayDatarefs() const {
 }
 
 const std::unordered_map<uint16_t, TCASButtonDef> &TolissTCASProfile::buttonDefs() const {
-    static const std::unordered_map<uint16_t, TCASButtonDef> buttons = {
-        {0, {"Keypad 1", "AirbusFBW/ATCCodeKey1", TCASDatarefType::EXECUTE_CMD_PHASED}},
-        {1, {"Keypad 2", "AirbusFBW/ATCCodeKey2", TCASDatarefType::EXECUTE_CMD_PHASED}},
-        {2, {"Keypad 3", "AirbusFBW/ATCCodeKey3", TCASDatarefType::EXECUTE_CMD_PHASED}},
-        {3, {"Keypad 4", "AirbusFBW/ATCCodeKey4", TCASDatarefType::EXECUTE_CMD_PHASED}},
-        {4, {"Keypad 5", "AirbusFBW/ATCCodeKey5", TCASDatarefType::EXECUTE_CMD_PHASED}},
-        {5, {"Keypad 6", "AirbusFBW/ATCCodeKey6", TCASDatarefType::EXECUTE_CMD_PHASED}},
-        {6, {"Keypad 7", "AirbusFBW/ATCCodeKey7", TCASDatarefType::EXECUTE_CMD_PHASED}},
-        {7, {"Keypad 0", "AirbusFBW/ATCCodeKey0", TCASDatarefType::EXECUTE_CMD_PHASED}},
-        {8, {"Keypad CLR", "AirbusFBW/ATCCodeKeyCLR", TCASDatarefType::EXECUTE_CMD_PHASED}},
-        {9, {"Ident", "sim/transponder/transponder_ident", TCASDatarefType::EXECUTE_CMD_PHASED}},
-        {10, {"XPDR STBY", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 0}},
-        {11, {"XPDR AUTO", "AirbusFBW/XPDRTCASMode", TCASDatarefType::SET_VALUE, 0}},
-        {12, {"XPDR ON", "AirbusFBW/XPDRTCASMode", TCASDatarefType::SET_VALUE, 1}},
-        {13, {"XPDR Unit 1", "AirbusFBW/XPDRSystem", TCASDatarefType::SET_VALUE, 1}},
-        {14, {"XPDR Unit 2", "AirbusFBW/XPDRSystem", TCASDatarefType::SET_VALUE, 2}},
-        {15, {"ALT RPTG OFF", ""}},
-        {16, {"ALT RPTG ON", ""}},
-        {17, {"TCAS TFC THRT", ""}},
-        {18, {"TCAS TFC ALL", "AirbusFBW/XPDRTCASAltSelect", TCASDatarefType::SET_VALUE, 1}},
-        {19, {"TCAS TFC ABV", "AirbusFBW/XPDRTCASAltSelect", TCASDatarefType::SET_VALUE, 0}},
-        {20, {"TCAS TFC BLW", "AirbusFBW/XPDRTCASAltSelect", TCASDatarefType::SET_VALUE, 2}},
-        {21, {"TCAS MODE STBY", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 0}},
-        {22, {"TCAS MODE TA", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 3}},
-        {23, {"TCAS MODE TA/RA", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 4}},
-    };
-
     return buttons;
 }
 

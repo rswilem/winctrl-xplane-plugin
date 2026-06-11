@@ -21,6 +21,7 @@ ProductPDC::ProductPDC(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t pr
 }
 
 ProductPDC::~ProductPDC() {
+    AppState::getInstance()->cancelTasksForOwner(this);
     blackout();
 
     PluginsMenu::getInstance()->removeItem(menuItemId);
@@ -75,9 +76,9 @@ bool ProductPDC::connect() {
         std::vector<MenuItem>{
             {.name = "Identify", .content = [this](int menuId) {
                  setLedBrightness(PDCLed::BACKLIGHT, 255);
-                 AppState::getInstance()->executeAfter(1000, [this]() {
+                 AppState::getInstance()->executeAfter(1000, this, [this]() {
                      setLedBrightness(PDCLed::BACKLIGHT, 0);
-                     AppState::getInstance()->executeAfter(1000, [this]() {
+                     AppState::getInstance()->executeAfter(1000, this, [this]() {
                          setLedBrightness(PDCLed::BACKLIGHT, 128);
                      });
                  });

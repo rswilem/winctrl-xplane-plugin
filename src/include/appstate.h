@@ -9,6 +9,7 @@
 
 struct DelayedTask {
         std::string name;
+        void *owner;
         std::chrono::steady_clock::time_point runAt;
         std::function<void()> func;
 };
@@ -33,8 +34,9 @@ class AppState {
         void deinitialize();
         std::string getPluginDirectory();
 
-        void executeAfter(int milliseconds, std::function<void()> func);
-        void executeAfterDebounced(std::string taskName, int milliseconds, std::function<void()> func);
+        void executeAfter(int milliseconds, void *owner, std::function<void()> func);
+        void executeAfterDebounced(std::string taskName, int milliseconds, void *owner, std::function<void()> func);
+        void cancelTasksForOwner(void *owner);
 
         std::string readPreference(const std::string &key, const std::string &defaultValue);
         void writePreference(const std::string &key, const std::string &value);

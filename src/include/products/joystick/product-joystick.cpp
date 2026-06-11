@@ -14,6 +14,7 @@ ProductJoystick::ProductJoystick(HIDDeviceHandle hidDevice, uint16_t vendorId, u
 }
 
 ProductJoystick::~ProductJoystick() {
+    AppState::getInstance()->cancelTasksForOwner(this);
     blackout();
 
     PluginsMenu::getInstance()->removeItem(menuItemId);
@@ -79,7 +80,7 @@ bool ProductJoystick::connect() {
             {.name = "Identify", .content = [this](int menuId) {
                  setLedBrightness(255);
                  setVibration(128);
-                 AppState::getInstance()->executeAfter(2000, [this]() {
+                 AppState::getInstance()->executeAfter(2000, this, [this]() {
                      setLedBrightness(0);
                      setVibration(0);
                  });

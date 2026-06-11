@@ -7,6 +7,7 @@
 #include "usbcontroller.h"
 #include "usbdevice.h"
 
+#include <algorithm>
 #include <fstream>
 #include <XPLMProcessing.h>
 
@@ -130,12 +131,12 @@ void AppState::update() {
     }
 }
 
-void AppState::executeAfter(int milliseconds, std::function<void()> func) {
+void AppState::executeAfter(int milliseconds, void *owner, std::function<void()> func) {
     std::lock_guard<std::mutex> lock(taskQueueMutex);
-    taskQueue.push_back({"", std::chrono::steady_clock::now() + std::chrono::milliseconds(milliseconds), func});
+    taskQueue.push_back({"", owner, std::chrono::steady_clock::now() + std::chrono::milliseconds(milliseconds), func});
 }
 
-void AppState::executeAfterDebounced(std::string taskName, int milliseconds, std::function<void()> func) {
+void AppState::executeAfterDebounced(std::string taskName, int milliseconds, void *owner, std::function<void()> func) {
     auto now = std::chrono::steady_clock::now();
     std::lock_guard<std::mutex> lock(taskQueueMutex);
     auto it = std::find_if(taskQueue.begin(), taskQueue.end(), [&](const DelayedTask &t) {
@@ -144,10 +145,19 @@ void AppState::executeAfterDebounced(std::string taskName, int milliseconds, std
 
     if (it != taskQueue.end()) {
         it->runAt = now + std::chrono::milliseconds(milliseconds);
+        it->owner = owner;
         it->func = func;
     } else {
-        taskQueue.push_back({taskName, now + std::chrono::milliseconds(milliseconds), func});
+        taskQueue.push_back({taskName, owner, now + std::chrono::milliseconds(milliseconds), func});
     }
+}
+
+void AppState::cancelTasksForOwner(void *owner) {
+    std::lock_guard<std::mutex> lock(taskQueueMutex);
+    taskQueue.erase(
+        std::remove_if(taskQueue.begin(), taskQueue.end(),
+            [owner](const DelayedTask &t) { return t.owner == owner; }),
+        taskQueue.end());
 }
 
 std::string AppState::readPreference(const std::string &key, const std::string &defaultValue) {

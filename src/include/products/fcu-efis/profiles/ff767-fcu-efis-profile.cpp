@@ -169,7 +169,7 @@ FF767FCUEfisProfile::FF767FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/efis/isBaroStdL",
         [this, product](float animValue) {
-            AppState::getInstance()->executeAfterDebounced("cptStdChanged", 50, [this, product]() {
+            AppState::getInstance()->executeAfterDebounced("cptStdChanged", 50, this, [this, product]() {
                 isStdCaptain = !isStdCaptain;
 
                 float baroValue = Dataref::getInstance()->get<float>("1-sim/gauges/baroINHg1_left");
@@ -183,7 +183,7 @@ FF767FCUEfisProfile::FF767FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/efis/isBaroStdR",
         [this, product](float animValue) {
-            AppState::getInstance()->executeAfterDebounced("foStdChanged", 50, [this, product]() {
+            AppState::getInstance()->executeAfterDebounced("foStdChanged", 50, this, [this, product]() {
                 isStdFirstOfficer = !isStdFirstOfficer;
 
                 float baroValue = Dataref::getInstance()->get<float>("1-sim/gauges/baroINHg1_right");
@@ -197,6 +197,7 @@ FF767FCUEfisProfile::FF767FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
 }
 
 FF767FCUEfisProfile::~FF767FCUEfisProfile() {
+    AppState::getInstance()->cancelTasksForOwner(this);
     Dataref::getInstance()->unbind("lights/glareshield1_rhe");
     Dataref::getInstance()->unbind("1-sim/electrical/gpuAvailable");
     Dataref::getInstance()->unbind("sim/cockpit2/autopilot/autopilot_has_power");

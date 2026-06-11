@@ -25,6 +25,7 @@ ProductAGP::ProductAGP(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t pr
 }
 
 ProductAGP::~ProductAGP() {
+    AppState::getInstance()->cancelTasksForOwner(this);
     blackout();
 
     PluginsMenu::getInstance()->removeItem(menuItemId);
@@ -93,7 +94,7 @@ bool ProductAGP::connect() {
                  setLedBrightness(AGPLed::OVERALL_LEDS_BRIGHTNESS, 255);
                  setAllLedsEnabled(true);
 
-                 AppState::getInstance()->executeAfter(2000, [this]() {
+                 AppState::getInstance()->executeAfter(2000, this, [this]() {
                      setAllLedsEnabled(false);
                  });
              }},

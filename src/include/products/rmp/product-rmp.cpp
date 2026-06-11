@@ -19,6 +19,7 @@ ProductRMP::ProductRMP(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t pr
 }
 
 ProductRMP::~ProductRMP() {
+    AppState::getInstance()->cancelTasksForOwner(this);
     blackout();
 
     PluginsMenu::getInstance()->removeItem(menuItemId);
@@ -79,7 +80,7 @@ bool ProductRMP::connect() {
                  setLedBrightness(RMPLed::OVERALL_LEDS_BRIGHTNESS, 255);
                  setAllLedsEnabled(true);
 
-                 AppState::getInstance()->executeAfter(2000, [this]() {
+                 AppState::getInstance()->executeAfter(2000, this, [this]() {
                      setAllLedsEnabled(false);
                  });
              }},

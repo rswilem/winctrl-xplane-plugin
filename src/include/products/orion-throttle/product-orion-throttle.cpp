@@ -13,6 +13,7 @@ ProductOrionThrottle::ProductOrionThrottle(HIDDeviceHandle hidDevice, uint16_t v
 }
 
 ProductOrionThrottle::~ProductOrionThrottle() {
+    AppState::getInstance()->cancelTasksForOwner(this);
     blackout();
     PluginsMenu::getInstance()->removeItem(menuItemId);
 
@@ -49,7 +50,7 @@ bool ProductOrionThrottle::connect() {
         std::vector<MenuItem>{
             {.name = "Identify", .content = [this](int menuId) {
                  setVibration(128);
-                 AppState::getInstance()->executeAfter(2000, [this]() {
+                 AppState::getInstance()->executeAfter(2000, this, [this]() {
                      setVibration(0);
                  });
              }},

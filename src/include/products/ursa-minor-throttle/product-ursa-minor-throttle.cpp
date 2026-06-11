@@ -23,6 +23,7 @@ ProductUrsaMinorThrottle::ProductUrsaMinorThrottle(HIDDeviceHandle hidDevice, ui
 }
 
 ProductUrsaMinorThrottle::~ProductUrsaMinorThrottle() {
+    AppState::getInstance()->cancelTasksForOwner(this);
     blackout();
 
     PluginsMenu::getInstance()->removeItem(menuItemId);
@@ -87,7 +88,7 @@ bool ProductUrsaMinorThrottle::connect() {
                  setLedBrightness(UrsaMinorThrottleLed::BACKLIGHT, 128);
                  setLedBrightness(UrsaMinorThrottleLed::OVERALL_LEDS_AND_LCD_BRIGHTNESS, 255);
                  setAllLedsEnabled(true);
-                 AppState::getInstance()->executeAfter(2000, [this]() {
+                 AppState::getInstance()->executeAfter(2000, this, [this]() {
                      setAllLedsEnabled(false);
                  });
              }},

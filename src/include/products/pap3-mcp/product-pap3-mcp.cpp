@@ -38,6 +38,7 @@ ProductPAP3MCP::ProductPAP3MCP(HIDDeviceHandle hidDevice, uint16_t vendorId, uin
 }
 
 ProductPAP3MCP::~ProductPAP3MCP() {
+    AppState::getInstance()->cancelTasksForOwner(this);
     blackout();
 
     PluginsMenu::getInstance()->removeItem(menuItemId);
@@ -105,7 +106,7 @@ bool ProductPAP3MCP::connect() {
                      setLedBrightness(PAP3MCPLed::LCD_BACKLIGHT, 255);
                      setLedBrightness(PAP3MCPLed::OVERALL_LED_BRIGHTNESS, 255);
                      setAllLedsEnabled(true);
-                     AppState::getInstance()->executeAfter(2000, [this]() {
+                     AppState::getInstance()->executeAfter(2000, this, [this]() {
                          setLedBrightness(PAP3MCPLed::BACKLIGHT, 128);
                          setLedBrightness(PAP3MCPLed::LCD_BACKLIGHT, 128);
                          setLedBrightness(PAP3MCPLed::OVERALL_LED_BRIGHTNESS, 128);

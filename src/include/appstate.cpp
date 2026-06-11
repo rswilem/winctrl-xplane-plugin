@@ -7,6 +7,7 @@
 #include "usbcontroller.h"
 #include "usbdevice.h"
 
+#include <algorithm>
 #include <fstream>
 #include <XPLMProcessing.h>
 
@@ -72,7 +73,10 @@ void AppState::deinitialize() {
 
     pluginInitialized = false;
 
-    taskQueue.clear();
+    {
+        std::lock_guard<std::mutex> lock(taskQueueMutex);
+        taskQueue.clear();
+    }
 
     instance = nullptr;
 }
@@ -92,16 +96,29 @@ float AppState::Update(float inElapsedSinceLastCall, float inElapsedTimeSinceLas
 void AppState::update() {
     auto now = std::chrono::steady_clock::now();
 
-    for (size_t i = 0; i < taskQueue.size(); ++i) {
-        if (now >= taskQueue[i].runAt && taskQueue[i].func) {
-            taskQueue[i].func();
+    // Collect ready tasks under the lock, leaving non-ready tasks in the queue.
+    // Executing outside the lock lets callbacks safely call executeAfter without
+    // risk of reallocation invalidating the functor currently on the call stack.
+    std::vector<DelayedTask> readyTasks;
+    {
+        std::lock_guard<std::mutex> lock(taskQueueMutex);
+        std::vector<DelayedTask> remaining;
+        remaining.reserve(taskQueue.size());
+        for (auto &task : taskQueue) {
+            if (now >= task.runAt) {
+                readyTasks.push_back(std::move(task));
+            } else {
+                remaining.push_back(std::move(task));
+            }
         }
+        taskQueue = std::move(remaining);
     }
 
-    taskQueue.erase(std::remove_if(taskQueue.begin(), taskQueue.end(), [&](auto &task) {
-        return now >= task.runAt;
-    }),
-        taskQueue.end());
+    for (auto &task : readyTasks) {
+        if (task.func) {
+            task.func();
+        }
+    }
 
     if (!pluginInitialized) {
         return;
@@ -114,22 +131,33 @@ void AppState::update() {
     }
 }
 
-void AppState::executeAfter(int milliseconds, std::function<void()> func) {
-    taskQueue.push_back({"", std::chrono::steady_clock::now() + std::chrono::milliseconds(milliseconds), func});
+void AppState::executeAfter(int milliseconds, void *owner, std::function<void()> func) {
+    std::lock_guard<std::mutex> lock(taskQueueMutex);
+    taskQueue.push_back({"", owner, std::chrono::steady_clock::now() + std::chrono::milliseconds(milliseconds), func});
 }
 
-void AppState::executeAfterDebounced(std::string taskName, int milliseconds, std::function<void()> func) {
+void AppState::executeAfterDebounced(std::string taskName, int milliseconds, void *owner, std::function<void()> func) {
     auto now = std::chrono::steady_clock::now();
+    std::lock_guard<std::mutex> lock(taskQueueMutex);
     auto it = std::find_if(taskQueue.begin(), taskQueue.end(), [&](const DelayedTask &t) {
         return t.name == taskName;
     });
 
     if (it != taskQueue.end()) {
         it->runAt = now + std::chrono::milliseconds(milliseconds);
+        it->owner = owner;
         it->func = func;
     } else {
-        taskQueue.push_back({taskName, now + std::chrono::milliseconds(milliseconds), func});
+        taskQueue.push_back({taskName, owner, now + std::chrono::milliseconds(milliseconds), func});
     }
+}
+
+void AppState::cancelTasksForOwner(void *owner) {
+    std::lock_guard<std::mutex> lock(taskQueueMutex);
+    taskQueue.erase(
+        std::remove_if(taskQueue.begin(), taskQueue.end(),
+            [owner](const DelayedTask &t) { return t.owner == owner; }),
+        taskQueue.end());
 }
 
 std::string AppState::readPreference(const std::string &key, const std::string &defaultValue) {

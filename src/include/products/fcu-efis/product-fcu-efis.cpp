@@ -42,6 +42,7 @@ ProductFCUEfis::ProductFCUEfis(HIDDeviceHandle hidDevice, uint16_t vendorId, uin
 }
 
 ProductFCUEfis::~ProductFCUEfis() {
+    AppState::getInstance()->cancelTasksForOwner(this);
     blackout();
 
     PluginsMenu::getInstance()->removeItem(menuItemId);
@@ -152,7 +153,7 @@ bool ProductFCUEfis::connect() {
                      setLedBrightness(FCUEfisLed::EFISL_OVERALL_GREEN, 255);
                      setLedBrightness(FCUEfisLed::EFISR_OVERALL_GREEN, 255);
                      setAllLedsEnabled(true);
-                     AppState::getInstance()->executeAfter(2000, [this]() {
+                     AppState::getInstance()->executeAfter(2000, this, [this]() {
                          setAllLedsEnabled(false);
                      });
                  }},

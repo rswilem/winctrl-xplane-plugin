@@ -270,10 +270,11 @@ void ProductPAP3MCP::sendLCDDisplay(const std::string &speed, int heading, int a
             float mach = (spd < 1.0f) ? std::clamp(spd, 0.0f, 0.9999f) : std::clamp(spd / 100.0f, 0.0f, 0.9999f);
 
             if (displayData.machDigits >= 3) {
-                const int threeDigits = std::clamp(static_cast<int>(std::floor(mach * 1000.0f + 0.5f)), 0, 999);
-                drawDigit(G0, payload, SPD_HUNDREDS, (threeDigits / 100) % 10);
-                drawDigit(G0, payload, SPD_TENS,     (threeDigits / 10)  % 10);
-                drawDigit(G0, payload, SPD_UNITS,     threeDigits        % 10);
+                // "0.XX" — KILO=0, HUNDREDS+TENS hold the two decimal digits, dot between them
+                const int twoDigits = std::clamp(static_cast<int>(std::floor(mach * 100.0f + 0.5f)), 0, 99);
+                drawDigit(G0, payload, SPD_KILO,     0);
+                drawDigit(G0, payload, SPD_HUNDREDS, (twoDigits / 10) % 10);
+                drawDigit(G0, payload, SPD_TENS,      twoDigits        % 10);
             } else {
                 const int twoDigits = std::clamp(static_cast<int>(std::floor(mach * 100.0f + 0.5f)), 0, 99);
                 drawDigit(G0, payload, SPD_TENS,  (twoDigits / 10) % 10);

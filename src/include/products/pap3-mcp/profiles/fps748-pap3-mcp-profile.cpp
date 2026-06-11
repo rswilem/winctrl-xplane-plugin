@@ -204,13 +204,13 @@ void FPS748PAP3MCPProfile::updateDisplayData(PAP3MCPDisplayData &data) {
 
     data.displayEnabled = dm->getCached<bool>((altPrefix + "/Elec/bus_1_powered").c_str());
     data.displayTest = false;
-    data.showLabels = false;
+    data.showLabels = true;
 
     bool isMach = dm->getCached<float>((prefix + "/B748/systems/athr/MCPSPD_spdmach").c_str()) > 0.5f;
     data.digitA = isMach;
     data.machDigits = 3;
     float rawSpeed = dm->getCached<float>((prefix + "/B748/MCP/mcp_ias_mach_act").c_str());
-    data.speed = isMach ? rawSpeed : std::floor(rawSpeed);
+    data.speed = rawSpeed;
     data.speedVisible = dm->getCached<float>((prefix + "/B748/mcp/speed_is_blank").c_str()) < 0.5f;
 
     data.heading = static_cast<int>(dm->getCached<float>((prefix + "/B748/MCP/mcp_heading_bug_act").c_str()));
@@ -236,10 +236,9 @@ void FPS748PAP3MCPProfile::buttonPressed(const PAP3MCPButtonDef *button, XPLMCom
         auto dm = Dataref::getInstance();
         if (phase == xplm_CommandBegin) {
             bool st55On = dm->get<float>("sim/cockpit2/autopilot/st55_hdg") > 0.5f;
-            bool hdgAnnOn = dm->get<float>((prefix + "/B748/MCP/mcp_hdg_ann").c_str()) > 0.5f;
             if (st55On) {
                 dm->set<int>((prefix + "/B748/MCP/mcp_hdg_hold_sw").c_str(), 1);
-            } else if (hdgAnnOn) {
+            } else {
                 dm->set<int>((prefix + "/B748/MCP/mcp_hdg_select_sw").c_str(), 1);
             }
         } else if (phase == xplm_CommandEnd) {

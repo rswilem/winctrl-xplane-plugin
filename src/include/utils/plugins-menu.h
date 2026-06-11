@@ -32,6 +32,7 @@ class PluginsMenu {
         static PluginsMenu *instance;
 
         XPLMMenuID mainMenuId;
+        int mainMenuItemIndex;
         int nextItemId;
         std::map<int, std::pair<int, std::function<void(int)>>> menuCallbacks; // itemId -> (itemIndex, callback)
         std::map<int, std::string> itemNames;                                  // itemId -> name
@@ -55,6 +56,7 @@ class PluginsMenu {
         void uncheckSubmenuSiblings(int itemId);
         bool isItemChecked(int itemIndex);
         void clearAllItems();
+        void teardown();
 };
 
 #endif

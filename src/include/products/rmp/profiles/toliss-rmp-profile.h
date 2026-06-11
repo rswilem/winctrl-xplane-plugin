@@ -11,6 +11,7 @@ class TolissRMPProfile : public RMPAircraftProfile {
         std::vector<std::string> _displayDatarefs;
         const char *rmpName() const;
         const char *sideName() const;
+        const char *swapCommand() const;
 
     public:
         TolissRMPProfile(ProductRMP *product);

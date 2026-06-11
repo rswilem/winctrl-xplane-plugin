@@ -8,7 +8,7 @@
 
 PluginsMenu *PluginsMenu::instance = nullptr;
 
-PluginsMenu::PluginsMenu() : mainMenuId(nullptr), nextItemId(0) {
+PluginsMenu::PluginsMenu() : mainMenuId(nullptr), mainMenuItemIndex(-1), nextItemId(0) {
 }
 
 PluginsMenu::~PluginsMenu() {
@@ -25,8 +25,8 @@ PluginsMenu *PluginsMenu::getInstance() {
 
 void PluginsMenu::ensureMenuExists() {
     if (mainMenuId == nullptr) {
-        int item = XPLMAppendMenuItem(XPLMFindPluginsMenu(), FRIENDLY_NAME, nullptr, 1);
-        mainMenuId = XPLMCreateMenu(FRIENDLY_NAME, XPLMFindPluginsMenu(), item, handleMenuAction, this);
+        mainMenuItemIndex = XPLMAppendMenuItem(XPLMFindPluginsMenu(), FRIENDLY_NAME, nullptr, 1);
+        mainMenuId = XPLMCreateMenu(FRIENDLY_NAME, XPLMFindPluginsMenu(), mainMenuItemIndex, handleMenuAction, this);
     }
 }
 
@@ -362,6 +362,25 @@ void PluginsMenu::clearAllItems() {
             addPersistentItem(name, callbackOrSubmenu);
         }
     }
+}
+
+void PluginsMenu::teardown() {
+    if (mainMenuId != nullptr) {
+        XPLMDestroyMenu(mainMenuId);
+        if (mainMenuItemIndex >= 0) {
+            XPLMRemoveMenuItem(XPLMFindPluginsMenu(), mainMenuItemIndex);
+            mainMenuItemIndex = -1;
+        }
+        mainMenuId = nullptr;
+    }
+
+    menuCallbacks.clear();
+    itemNames.clear();
+    persistentItems.clear();
+    submenus.clear();
+    itemToMenuId.clear();
+    submenuChildren.clear();
+    nextItemId = 0;
 }
 
 void PluginsMenu::handleMenuAction(void *mRef, void *iRef) {

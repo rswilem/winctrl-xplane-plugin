@@ -116,7 +116,7 @@ PLUGIN_API int XPluginStart(char *name, char *sig, char *desc) {
 
 PLUGIN_API void XPluginStop(void) {
     USBController::getInstance()->disconnectAllDevices();
-    PluginsMenu::getInstance()->clearAllItems();
+    PluginsMenu::getInstance()->teardown();
     AppState::getInstance()->deinitialize();
     Logger::getInstance()->info("Plugin stopped\n");
 }

@@ -49,6 +49,8 @@ class ProductRMP : public USBDevice {
 
         int lastUpdateCycle = 0;
         std::unordered_map<int, uint8_t> lastLedBrightness;
+        std::string cachedActiveDisplay;
+        std::string cachedStbyDisplay;
 
         void setProfileForCurrentAircraft();
         void parseSegment(const std::string &text, int expectedLength, std::string &outDigits, uint16_t &colonMask, int digitOffset);
@@ -58,7 +60,7 @@ class ProductRMP : public USBDevice {
         ~ProductRMP();
 
         const unsigned char identifierByte;
-        const RMPDeviceVariant deviceVariant;
+        RMPDeviceVariant deviceVariant;
 
         const char *classIdentifier() override;
         const char *activeProfileName() const override;
@@ -69,6 +71,7 @@ class ProductRMP : public USBDevice {
         void didReceiveData(int reportId, uint8_t *report, int reportLength) override;
         void didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, uint8_t count = 1) override;
 
+        void setDeviceVariant(RMPDeviceVariant variant);
         void setAllLedsEnabled(bool enabled);
         void setLedBrightness(RMPLed led, uint8_t brightness);
         void setDisplayText(const std::string &active, const std::string &stby);

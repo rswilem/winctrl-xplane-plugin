@@ -14,7 +14,7 @@ echo "Updating compatibility matrix in README.md..."
 # Device display names (pipe-separated: flag|key|display_name)
 # flag: 0 = normal, 1 = always show checkmark, 2 = hide from matrix
 DEVICE_NAMES="
-1|ursa-minor-joystick|URSA MINOR Airline Joystick L+R
+1|joystick|Joystick (URSA MINOR Airline L+R, ORION Joystick Base II)
 0|fmc|FMC (MCDU, PFP 3N/4/7)
 0|pap3-mcp|3N PAP MCP
 0|pdc|3N / 3M PDC

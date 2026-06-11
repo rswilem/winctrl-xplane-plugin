@@ -71,7 +71,8 @@ namespace pap3mcp::lcd {
     inline constexpr uint8_t OFF_38 = 0x38;
 
     // Dots
-    inline constexpr uint8_t DOT_SPD = 0x04;
+    inline constexpr uint8_t DOT_SPD_KILO = 0x08; // Decimal point between KILO and HUNDREDS (for MACH "0.XXX" / ".XXX")
+    inline constexpr uint8_t DOT_SPD = 0x04;      // Decimal point between HUNDREDS and TENS
     inline constexpr uint8_t DOT_CPT_CRS = 0x20;
     inline constexpr uint8_t DOT_HDG = 0x08;
     inline constexpr uint8_t DOT_ALT = 0x01;

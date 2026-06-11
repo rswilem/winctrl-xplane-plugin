@@ -31,9 +31,12 @@ ProductRMP::~ProductRMP() {
 
 const char *ProductRMP::classIdentifier() {
     switch (deviceVariant) {
-        case RMPDeviceVariant::VARIANT_CAPTAIN:      return "RMP (Captain)";
-        case RMPDeviceVariant::VARIANT_STBY:         return "RMP (Stby)";
-        case RMPDeviceVariant::VARIANT_FIRSTOFFICER: return "RMP (First Officer)";
+        case RMPDeviceVariant::VARIANT_CAPTAIN:
+            return "RMP (Captain)";
+        case RMPDeviceVariant::VARIANT_STBY:
+            return "RMP (Stby)";
+        case RMPDeviceVariant::VARIANT_FIRSTOFFICER:
+            return "RMP (First Officer)";
     }
     return "RMP";
 }
@@ -80,6 +83,23 @@ bool ProductRMP::connect() {
                      setAllLedsEnabled(false);
                  });
              }},
+            {.name = "Variant", .content = std::vector<MenuItem>{
+                                    {.name = "RMP1 (Captain)", .checked = deviceVariant == RMPDeviceVariant::VARIANT_CAPTAIN, .content = [this](int menuId) {
+                                         setDeviceVariant(RMPDeviceVariant::VARIANT_CAPTAIN);
+                                         PluginsMenu::getInstance()->uncheckSubmenuSiblings(menuId);
+                                         PluginsMenu::getInstance()->setItemChecked(menuId, true);
+                                     }},
+                                    {.name = "RMP2 (First Officer)", .checked = deviceVariant == RMPDeviceVariant::VARIANT_FIRSTOFFICER, .content = [this](int menuId) {
+                                         setDeviceVariant(RMPDeviceVariant::VARIANT_FIRSTOFFICER);
+                                         PluginsMenu::getInstance()->uncheckSubmenuSiblings(menuId);
+                                         PluginsMenu::getInstance()->setItemChecked(menuId, true);
+                                     }},
+                                    {.name = "RMP3 (Stby/Center)", .checked = deviceVariant == RMPDeviceVariant::VARIANT_STBY, .content = [this](int menuId) {
+                                         setDeviceVariant(RMPDeviceVariant::VARIANT_STBY);
+                                         PluginsMenu::getInstance()->uncheckSubmenuSiblings(menuId);
+                                         PluginsMenu::getInstance()->setItemChecked(menuId, true);
+                                     }},
+                                }},
         });
 
     return true;
@@ -126,6 +146,25 @@ void ProductRMP::updateDisplays(bool force) {
 
     profile->updateDisplays();
     lastUpdateCycle = XPLMGetCycleNumber();
+}
+
+void ProductRMP::setDeviceVariant(RMPDeviceVariant variant) {
+    if (deviceVariant == variant) {
+        return;
+    }
+
+    if (profile) {
+        delete profile;
+        profile = nullptr;
+        profileReady = false;
+    }
+
+    deviceVariant = variant;
+    cachedActiveDisplay.clear();
+    cachedStbyDisplay.clear();
+
+    setProfileForCurrentAircraft();
+    updateDisplays(true);
 }
 
 void ProductRMP::setAllLedsEnabled(bool enable) {
@@ -185,6 +224,12 @@ void ProductRMP::parseSegment(const std::string &text, int expectedLength, std::
 }
 
 void ProductRMP::setDisplayText(const std::string &active, const std::string &stby) {
+    if (active == cachedActiveDisplay && stby == cachedStbyDisplay) {
+        return;
+    }
+    cachedActiveDisplay = active;
+    cachedStbyDisplay = stby;
+
     std::vector<uint8_t> packet = {
         0xF0, 0x00, packetNumber, 0x35, identifierByte,
         0xBB, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00,
@@ -197,7 +242,7 @@ void ProductRMP::setDisplayText(const std::string &active, const std::string &st
     uint16_t colonMask = 0;
 
     /* Standby is first, Active is second */
-    parseSegment(stby,   6, allDigits, colonMask, 0);
+    parseSegment(stby, 6, allDigits, colonMask, 0);
     parseSegment(active, 6, allDigits, colonMask, 6);
 
     for (int digitIndex = 0; digitIndex < 12; ++digitIndex) {

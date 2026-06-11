@@ -8,6 +8,7 @@
 class TolissTCASProfile : public TCASAircraftProfile {
     private:
         bool isAnnunTest();
+        std::unordered_map<uint16_t, TCASButtonDef> buttons;
 
     public:
         TolissTCASProfile(ProductTCAS *product);

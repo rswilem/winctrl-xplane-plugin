@@ -36,11 +36,11 @@ JAR330FCUEfisProfile::JAR330FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAir
         product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, screenBrightness);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/battery_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/battery_on");
 
@@ -49,8 +49,7 @@ JAR330FCUEfisProfile::JAR330FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAir
 }
 
 JAR330FCUEfisProfile::~JAR330FCUEfisProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/battery_on");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool JAR330FCUEfisProfile::IsEligible() {

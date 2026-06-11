@@ -16,41 +16,35 @@ FlightFactor777FMCProfile::FlightFactor777FMCProfile(ProductFMC *product) : FMCA
     Dataref::getInstance()->monitorExistingDataref<float>(("1-sim/" + cdu + "/brt").c_str(), [product, cdu](float brightness) {
         uint8_t target = Dataref::getInstance()->get<bool>(("1-sim/" + cdu + "/ok").c_str()) ? brightness * 255 : 0;
         product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, target);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lights/aisle", [product, cdu](float brightness) {
         uint8_t target = Dataref::getInstance()->get<bool>(("1-sim/" + cdu + "/ok").c_str()) ? brightness * 255 : 0;
         product->setLedBrightness(FMCLed::BACKLIGHT, target);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>(("1-sim/" + cdu + "/ok").c_str(), [cdu](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref(("1-sim/" + cdu + "/brt").c_str());
         Dataref::getInstance()->executeChangedCallbacksForDataref("1-sim/ckpt/lights/aisle");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/ckpt/lamps/cduCptAct", [product](bool enabled) {
         product->setLedBrightness(FMCLed::PFP_EXEC, enabled ? 1 : 0);
         product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/ckpt/lamps/cduCptMSG", [product](bool enabled) {
         product->setLedBrightness(FMCLed::PFP_MSG, enabled ? 1 : 0);
         product->setLedBrightness(FMCLed::MCDU_MCDU, enabled ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/ckpt/lamps/cduCptOFST", [product](bool enabled) {
         product->setLedBrightness(FMCLed::PFP_OFST, enabled ? 1 : 0);
-    });
+    }, this);
 }
 
 FlightFactor777FMCProfile::~FlightFactor777FMCProfile() {
-    const std::string cdu = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? "cduL" : (product->deviceVariant == FMCDeviceVariant::VARIANT_FIRSTOFFICER ? "cduR" : "cduC");
-    Dataref::getInstance()->unbind(("1-sim/" + cdu + "/brt").c_str());
-    Dataref::getInstance()->unbind("1-sim/ckpt/lights/aisle");
-    Dataref::getInstance()->unbind(("1-sim/" + cdu + "/ok").c_str());
-    Dataref::getInstance()->unbind("1-sim/ckpt/lamps/cduCptAct");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lamps/cduCptMSG");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lamps/cduCptOFST");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool FlightFactor777FMCProfile::IsEligible() {

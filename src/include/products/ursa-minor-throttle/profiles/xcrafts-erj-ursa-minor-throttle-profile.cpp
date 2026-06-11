@@ -16,7 +16,7 @@ XCraftsErjUrsaMinorThrottleProfile::XCraftsErjUrsaMinorThrottleProfile(ProductUr
         product->setLedBrightness(UrsaMinorThrottleLed::BACKLIGHT, target);
         product->setLedBrightness(UrsaMinorThrottleLed::OVERALL_LEDS_AND_LCD_BRIGHTNESS, target);
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("sim/cockpit2/annunciators/engine_fires", [product](const std::vector<float> &fires) {
         if (fires.size() < 2) {
@@ -24,17 +24,15 @@ XCraftsErjUrsaMinorThrottleProfile::XCraftsErjUrsaMinorThrottleProfile(ProductUr
         }
         product->setLedBrightness(UrsaMinorThrottleLed::ENG_1_FIRE, fires[0] > std::numeric_limits<float>::epsilon() ? 1 : 0);
         product->setLedBrightness(UrsaMinorThrottleLed::ENG_2_FIRE, fires[1] > std::numeric_limits<float>::epsilon() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("sim/flightmodel/controls/vstab2_rud1def", [this](float) {
         updateDisplays();
-    });
+    }, this);
 }
 
 XCraftsErjUrsaMinorThrottleProfile::~XCraftsErjUrsaMinorThrottleProfile() {
-    Dataref::getInstance()->unbind("XCrafts/panel_brt_1");
-    Dataref::getInstance()->unbind("sim/cockpit2/annunciators/engine_fires");
-    Dataref::getInstance()->unbind("sim/flightmodel/controls/vstab2_rud1def");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool XCraftsErjUrsaMinorThrottleProfile::IsEligible() {

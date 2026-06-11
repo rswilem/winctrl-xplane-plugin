@@ -17,17 +17,17 @@ TolissAGPProfile::TolissAGPProfile(ProductAGP *product) : AGPAircraftProfile(pro
         product->setLedBrightness(AGPLed::BACKLIGHT, backlightBrightness);
         product->setLedBrightness(AGPLed::LCD_BRIGHTNESS, hasEssentialBusPower ? 255 : 0);
         product->setLedBrightness(AGPLed::OVERALL_LEDS_BRIGHTNESS, hasEssentialBusPower ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/FCUAvail", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/PanelBrightnessLevel");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/AnnunMode");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/PanelBrightnessLevel");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/AnnunMode");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("AirbusFBW/AnnunMode", [this, product](int annunMode) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/TerrainSelectedND1");
@@ -36,21 +36,21 @@ TolissAGPProfile::TolissAGPProfile(ProductAGP *product) : AGPAircraftProfile(pro
 
         product->setLedBrightness(AGPLed::LDG_GEAR_LEVER_RED, isAnnunTest() ? 255 : 0);
         updateDisplays();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/TerrainSelectedND1", [this, product](bool enabled) {
         if (product->terrainNDPreference == AGPTerrainNDPreference::CAPTAIN) {
             bool hasPower = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on");
             product->setLedBrightness(AGPLed::TERRAIN_ON, hasPower && (enabled || isAnnunTest()) ? 1 : 0);
         }
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/TerrainSelectedND2", [this, product](bool enabled) {
         if (product->terrainNDPreference == AGPTerrainNDPreference::FIRST_OFFICER) {
             bool hasPower = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on");
             product->setLedBrightness(AGPLed::TERRAIN_ON, hasPower && (enabled || isAnnunTest()) ? 1 : 0);
         }
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/OHPLightsATA32_Raw", [this, product](const std::vector<float> &panelLights) {
         if (panelLights.size() < 18) {
@@ -72,16 +72,11 @@ TolissAGPProfile::TolissAGPProfile(ProductAGP *product) : AGPAircraftProfile(pro
         product->setLedBrightness(AGPLed::AUTOBRK_MED_DECEL, panelLights[15] > std::numeric_limits<float>::epsilon() ? 1 : 0);
         product->setLedBrightness(AGPLed::AUTOBRK_MAX_ON, panelLights[16] > std::numeric_limits<float>::epsilon() ? 1 : 0);
         product->setLedBrightness(AGPLed::AUTOBRK_MAX_DECEL, panelLights[17] > std::numeric_limits<float>::epsilon() ? 1 : 0);
-    });
+    }, this);
 }
 
 TolissAGPProfile::~TolissAGPProfile() {
-    Dataref::getInstance()->unbind("AirbusFBW/PanelBrightnessLevel");
-    Dataref::getInstance()->unbind("AirbusFBW/FCUAvail");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    Dataref::getInstance()->unbind("AirbusFBW/TerrainSelectedND1");
-    Dataref::getInstance()->unbind("AirbusFBW/TerrainSelectedND2");
-    Dataref::getInstance()->unbind("AirbusFBW/OHPLightsATA32_Raw");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool TolissAGPProfile::IsEligible() {

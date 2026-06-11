@@ -16,11 +16,11 @@ RotateMD11AGPProfile::RotateMD11AGPProfile(ProductAGP *product) : AGPAircraftPro
         product->setLedBrightness(AGPLed::BACKLIGHT, backlight);
         product->setLedBrightness(AGPLed::LCD_BRIGHTNESS, hasPower ? 255 : 0);
         product->setLedBrightness(AGPLed::OVERALL_LEDS_BRIGHTNESS, hasPower ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("Rotate/aircraft/systems/light_fgs_panel_brt_ratio", [](float) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/elec_dc_batt_bus_pwrd");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/annun_test_signal", [](int) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/gear_down_l_lt");
@@ -30,7 +30,7 @@ RotateMD11AGPProfile::RotateMD11AGPProfile(ProductAGP *product) : AGPAircraftPro
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/gear_disag_f_lt");
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/gear_disag_r_lt");
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/controls/auto_brake");
-    });
+    }, this);
 
     auto gearGreenHandler = [product](int) {
         bool annunTest = Dataref::getInstance()->getCached<int>("Rotate/aircraft/systems/annun_test_signal") == 1;
@@ -53,32 +53,23 @@ RotateMD11AGPProfile::RotateMD11AGPProfile(ProductAGP *product) : AGPAircraftPro
         product->setLedBrightness(AGPLed::LDG_GEAR_LEVER_RED, (disL || disF || disR) ? 1 : 0);
     };
 
-    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_down_l_lt", gearGreenHandler);
-    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_down_f_lt", gearGreenHandler);
-    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_down_r_lt", gearGreenHandler);
-    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_disag_l_lt", gearUnlkHandler);
-    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_disag_f_lt", gearUnlkHandler);
-    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_disag_r_lt", gearUnlkHandler);
+    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_down_l_lt", gearGreenHandler, this);
+    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_down_f_lt", gearGreenHandler, this);
+    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_down_r_lt", gearGreenHandler, this);
+    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_disag_l_lt", gearUnlkHandler, this);
+    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_disag_f_lt", gearUnlkHandler, this);
+    Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/gear_disag_r_lt", gearUnlkHandler, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/controls/auto_brake", [product](int mode) {
         bool annunTest = Dataref::getInstance()->getCached<int>("Rotate/aircraft/systems/annun_test_signal") == 1;
         product->setLedBrightness(AGPLed::AUTOBRK_LO_ON, (mode == 1 || annunTest) ? 1 : 0);
         product->setLedBrightness(AGPLed::AUTOBRK_MED_ON, (mode == 2 || annunTest) ? 1 : 0);
         product->setLedBrightness(AGPLed::AUTOBRK_MAX_ON, (mode == 3 || annunTest) ? 1 : 0);
-    });
+    }, this);
 }
 
 RotateMD11AGPProfile::~RotateMD11AGPProfile() {
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/elec_dc_batt_bus_pwrd");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/light_fgs_panel_brt_ratio");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/annun_test_signal");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/gear_down_l_lt");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/gear_down_f_lt");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/gear_down_r_lt");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/gear_disag_l_lt");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/gear_disag_f_lt");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/gear_disag_r_lt");
-    Dataref::getInstance()->unbind("Rotate/aircraft/controls/auto_brake");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool RotateMD11AGPProfile::IsEligible() {

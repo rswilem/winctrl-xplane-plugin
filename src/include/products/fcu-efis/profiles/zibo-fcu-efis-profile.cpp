@@ -36,11 +36,11 @@ ZiboFCUEfisProfile::ZiboFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraf
         product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, screenBrightness);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/panel_brightness_ratio");
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/avionics_on");
 
@@ -48,23 +48,23 @@ ZiboFCUEfisProfile::ZiboFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraf
     Dataref::getInstance()->monitorExistingDataref<int>("laminar/B738/autopilot/cmd_a_status", [product](int status) {
         // Status 1 = engaged and active
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, status == 1 ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("laminar/B738/autopilot/cmd_b_status", [product](int status) {
         // Status 1 = engaged and active
         product->setLedBrightness(FCUEfisLed::AP2_GREEN, status == 1 ? 255 : 0);
-    });
+    }, this);
 
     // Monitor autothrottle arm - Zibo uses its own status dataref
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/autothrottle_status1", [product](float status) {
         // Status > 0 means armed
         product->setLedBrightness(FCUEfisLed::ATHR_GREEN, status > 0 ? 255 : 0);
-    });
+    }, this);
 
     // Monitor approach mode
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/autopilot/approach_status", [product](int status) {
         product->setLedBrightness(FCUEfisLed::APPR_GREEN, status > 0 ? 255 : 0);
-    });
+    }, this);
 
     // Monitor localizer mode
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit/autopilot/autopilot_state", [product](int state) {
@@ -72,52 +72,39 @@ ZiboFCUEfisProfile::ZiboFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraf
         bool locActive = (state & (1 << 10)) != 0;
 
         product->setLedBrightness(FCUEfisLed::LOC_GREEN, locActive ? 255 : 0);
-    });
+    }, this);
 
     // EFIS Right (FO) button LEDs
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/EFIS/EFIS_weather_on_copilot", [product](int on) {
         product->setLedBrightness(FCUEfisLed::EFISR_WPT_GREEN, on ? 255 : 0);
-    });
+    }, this);
 
     // EFIS Left (Captain) button LEDs
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/EFIS/EFIS_weather_on_pilot", [product](int on) {
         product->setLedBrightness(FCUEfisLed::EFISL_WPT_GREEN, on ? 255 : 0);
-    });
+    }, this);
 
     // Monitor flight director
     Dataref::getInstance()->monitorExistingDataref<int>("laminar/B738/autopilot/flight_director_pos", [product](int fdOn) {
         product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, fdOn > 0 ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("laminar/B738/autopilot/flight_director_fo_pos", [product](int fdOn) {
         product->setLedBrightness(FCUEfisLed::EFISR_FD_GREEN, fdOn > 0 ? 255 : 0);
-    });
+    }, this);
 
     // Monitor barometer unit display state for proper display updates
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B738/EFIS_control/capt/baro_in_hpa", [](double hpaMode) {
         // Trigger display update when barometer mode changes
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B738/EFIS_control/fo/baro_in_hpa", [](double hpaMode) {
         // Trigger display update when barometer mode changes
-    });
+    }, this);
 }
 
 ZiboFCUEfisProfile::~ZiboFCUEfisProfile() {
-    // Unbind monitored datarefs
-    Dataref::getInstance()->unbind("sim/cockpit2/electrical/panel_brightness_ratio");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/cmd_a_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/cmd_b_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/autothrottle_status1");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/approach_status");
-    Dataref::getInstance()->unbind("sim/cockpit/autopilot/autopilot_state");
-    Dataref::getInstance()->unbind("sim/cockpit2/EFIS/EFIS_weather_on_copilot");
-    Dataref::getInstance()->unbind("sim/cockpit2/EFIS/EFIS_weather_on_pilot");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/flight_director_pos");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/flight_director_fo_pos");
-    Dataref::getInstance()->unbind("laminar/B738/EFIS_control/capt/baro_in_hpa");
-    Dataref::getInstance()->unbind("laminar/B738/EFIS_control/fo/baro_in_hpa");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool ZiboFCUEfisProfile::IsEligible() {

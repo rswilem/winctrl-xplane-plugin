@@ -22,7 +22,7 @@ ZiboFMCProfile::ZiboFMCProfile(ProductFMC *product) : FMCAircraftProfile(product
 
         uint8_t target = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on") ? screenBrightness[product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? 10 : 11] * 255 : 0;
         product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, target);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("laminar/B738/electric/panel_brightness", [product](const std::vector<float> &panelBrightness) {
         if (panelBrightness.size() < 4) {
@@ -31,30 +31,26 @@ ZiboFMCProfile::ZiboFMCProfile(ProductFMC *product) : FMCAircraftProfile(product
 
         uint8_t target = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on") ? panelBrightness[3] * 255 : 0;
         product->setLedBrightness(FMCLed::BACKLIGHT, target);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("laminar/B738/electric/panel_brightness");
         Dataref::getInstance()->executeChangedCallbacksForDataref("laminar/B738/electric/instrument_brightness");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("laminar/B738/fmc/fmc_message", [product](bool enabled) {
         product->setLedBrightness(FMCLed::PFP_MSG, enabled ? 1 : 0);
         product->setLedBrightness(FMCLed::MCDU_MCDU, enabled ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("laminar/B738/indicators/fmc_exec_lights", [product](bool enabled) {
         product->setLedBrightness(FMCLed::PFP_EXEC, enabled ? 1 : 0);
         product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
-    });
+    }, this);
 }
 
 ZiboFMCProfile::~ZiboFMCProfile() {
-    Dataref::getInstance()->unbind("laminar/B738/electric/instrument_brightness");
-    Dataref::getInstance()->unbind("laminar/B738/electric/panel_brightness");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    Dataref::getInstance()->unbind("laminar/B738/fmc/fmc_message");
-    Dataref::getInstance()->unbind("laminar/B738/indicators/fmc_exec_lights");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool ZiboFMCProfile::IsEligible() {

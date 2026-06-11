@@ -19,16 +19,15 @@ Laminar737PAP3MCPProfile::Laminar737PAP3MCPProfile(ProductPAP3MCP *product) : PA
             product->setLedBrightness(PAP3MCPLed::LCD_BACKLIGHT, target);
             product->forceStateSync();
         }
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit2/autopilot/autopilot_has_power", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
-    });
+    }, this);
 }
 
 Laminar737PAP3MCPProfile::~Laminar737PAP3MCPProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/autopilot_has_power");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool Laminar737PAP3MCPProfile::IsEligible() {

@@ -15,50 +15,43 @@ Strato77WPAP3MCPProfile::Strato77WPAP3MCPProfile(ProductPAP3MCP *product) : PAP3
         product->setLedBrightness(PAP3MCPLed::LCD_BACKLIGHT, powered ? 180 : 0);
         product->setLedBrightness(PAP3MCPLed::OVERALL_LED_BRIGHTNESS, powered ? 180 : 0);
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/mcp/ap_on", [product](int engaged) {
         product->setLedBrightness(PAP3MCPLed::CMD_A, engaged ? 1 : 0);
         product->setLedBrightness(PAP3MCPLed::CMD_B, engaged ? 1 : 0);
         product->setLedBrightness(PAP3MCPLed::MA_CAPT, engaged ? 1 : 0);
         product->setLedBrightness(PAP3MCPLed::MA_FO, engaged ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/mcp/at_arm", [product](int armed) {
         product->setLedBrightness(PAP3MCPLed::AT_ARM, armed ? 1 : 0);
         product->setATSolenoid(armed > 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/mcp/spd_hold", [product](int on) {
         product->setLedBrightness(PAP3MCPLed::SPEED, on ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/mcp/flch", [product](int on) {
         product->setLedBrightness(PAP3MCPLed::LVL_CHG, on ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/mcp/hdg_sel_eng", [product](int on) {
         product->setLedBrightness(PAP3MCPLed::HDG_SEL, on ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/mcp/althold", [product](int on) {
         product->setLedBrightness(PAP3MCPLed::ALT_HLD, on ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/mcp/vshold", [product](int on) {
         product->setLedBrightness(PAP3MCPLed::VS, on ? 1 : 0);
-    });
+    }, this);
 }
 
 Strato77WPAP3MCPProfile::~Strato77WPAP3MCPProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/autopilot_has_power");
-    Dataref::getInstance()->unbind("Strato/777/mcp/ap_on");
-    Dataref::getInstance()->unbind("Strato/777/mcp/at_arm");
-    Dataref::getInstance()->unbind("Strato/777/mcp/spd_hold");
-    Dataref::getInstance()->unbind("Strato/777/mcp/flch");
-    Dataref::getInstance()->unbind("Strato/777/mcp/hdg_sel_eng");
-    Dataref::getInstance()->unbind("Strato/777/mcp/althold");
-    Dataref::getInstance()->unbind("Strato/777/mcp/vshold");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool Strato77WPAP3MCPProfile::IsEligible() {

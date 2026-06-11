@@ -15,7 +15,7 @@ Strato77WFMCProfile::Strato77WFMCProfile(ProductFMC *product) : FMCAircraftProfi
         uint8_t target = powered ? 200 : 0;
         product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, target);
         product->setLedBrightness(FMCLed::BACKLIGHT, target);
-    });
+    }, this);
 
     // FMC activity (EXEC light) — array: [0]=left, [1]=right, [2]=center
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("Strato/777/cdu_fmc_act", [product](std::vector<float> act) {
@@ -25,13 +25,12 @@ Strato77WFMCProfile::Strato77WFMCProfile(ProductFMC *product) : FMCAircraftProfi
         bool active = (int)act.size() > idx && act[idx] > 0.5f;
         product->setLedBrightness(FMCLed::PFP_EXEC, active ? 1 : 0);
         product->setLedBrightness(FMCLed::MCDU_STATUS, active ? 1 : 0);
-    });
+    }, this);
 
 }
 
 Strato77WFMCProfile::~Strato77WFMCProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/autopilot_has_power");
-    Dataref::getInstance()->unbind("Strato/777/cdu_fmc_act");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool Strato77WFMCProfile::IsEligible() {

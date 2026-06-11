@@ -17,38 +17,33 @@ XCraftsErjPAP3MCPProfile::XCraftsErjPAP3MCPProfile(ProductPAP3MCP *product) : PA
         product->setLedBrightness(PAP3MCPLed::LCD_BACKLIGHT, target);
         product->setLedBrightness(PAP3MCPLed::OVERALL_LED_BRIGHTNESS, target);
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit/autopilot/autopilot_mode", [product](int mode) {
         bool engaged = (mode == 2);
         product->setLedBrightness(PAP3MCPLed::CMD_A, engaged ? 1 : 0);
         product->setLedBrightness(PAP3MCPLed::CMD_B, engaged ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/autothrottle_armed", [product](int armed) {
         product->setLedBrightness(PAP3MCPLed::AT_ARM, armed == 1 ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/autopilot/autothrottle_system_active", [product](int active) {
         product->setLedBrightness(PAP3MCPLed::AT_ARM, active == 1 ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/autopilot/st55_nav", [product](int armed) {
         product->setLedBrightness(PAP3MCPLed::LNAV, armed == 1 ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/VNAV_armed", [product](int armed) {
         product->setLedBrightness(PAP3MCPLed::VNAV, armed == 1 ? 1 : 0);
-    });
+    }, this);
 }
 
 XCraftsErjPAP3MCPProfile::~XCraftsErjPAP3MCPProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
-    Dataref::getInstance()->unbind("sim/cockpit/autopilot/autopilot_mode");
-    Dataref::getInstance()->unbind("XCrafts/ERJ/autothrottle_armed");
-    Dataref::getInstance()->unbind("XCrafts/ERJ/autopilot/autothrottle_system_active");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/st55_nav");
-    Dataref::getInstance()->unbind("XCrafts/ERJ/VNAV_armed");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool XCraftsErjPAP3MCPProfile::IsEligible() {

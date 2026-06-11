@@ -36,11 +36,11 @@ Laminar737FCUEfisProfile::Laminar737FCUEfisProfile(ProductFCUEfis *product) : FC
         product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, screenBrightness);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/panel_brightness_ratio");
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/avionics_on");
 
@@ -48,23 +48,23 @@ Laminar737FCUEfisProfile::Laminar737FCUEfisProfile(ProductFCUEfis *product) : FC
     Dataref::getInstance()->monitorExistingDataref<int>("laminar/B738/autopilot/cmd_a_status", [product](int status) {
         // Status 2 = engaged and active
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, status == 1 ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("laminar/B738/autopilot/cmd_b_status", [product](int status) {
         // Status 2 = engaged and active
         product->setLedBrightness(FCUEfisLed::AP2_GREEN, status == 1 ? 255 : 0);
-    });
+    }, this);
 
     // Monitor autothrottle arm - 0=disarmed, 1=armed
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/autopilot/autothrottle_arm", [product](int armed) {
         // Light on when armed (1)
         product->setLedBrightness(FCUEfisLed::ATHR_GREEN, armed ? 255 : 0);
-    });
+    }, this);
 
     // Monitor approach mode
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/autopilot/approach_status", [product](int status) {
         product->setLedBrightness(FCUEfisLed::APPR_GREEN, status > 0 ? 255 : 0);
-    });
+    }, this);
 
     // Monitor localizer mode
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit/autopilot/autopilot_state", [product](int state) {
@@ -72,47 +72,29 @@ Laminar737FCUEfisProfile::Laminar737FCUEfisProfile(ProductFCUEfis *product) : FC
         bool locActive = (state & (1 << 10)) != 0;
 
         product->setLedBrightness(FCUEfisLed::LOC_GREEN, locActive ? 255 : 0);
-    });
+    }, this);
 
     // EFIS Right (FO) button LEDs
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/EFIS/EFIS_weather_on_copilot", [product](int on) {
         product->setLedBrightness(FCUEfisLed::EFISR_WPT_GREEN, on ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/EFIS/EFIS_tcas_on_copilot", [product](int on) {
         product->setLedBrightness(FCUEfisLed::EFISR_ARPT_GREEN, on ? 255 : 0);
-    });
+    }, this);
 
     // EFIS Left (Captain) button LEDs
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/EFIS/EFIS_weather_on_pilot", [product](int on) {
         product->setLedBrightness(FCUEfisLed::EFISL_WPT_GREEN, on ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/EFIS/EFIS_tcas_on_pilot", [product](int on) {
         product->setLedBrightness(FCUEfisLed::EFISL_ARPT_GREEN, on ? 255 : 0);
-    });
+    }, this);
 }
 
 Laminar737FCUEfisProfile::~Laminar737FCUEfisProfile() {
-    // Unbind all datarefs
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/airspeed_dial_kts_mach");
-    Dataref::getInstance()->unbind("sim/cockpit/autopilot/airspeed_is_mach");
-    Dataref::getInstance()->unbind("sim/cockpit/autopilot/heading_mag");
-    Dataref::getInstance()->unbind("sim/cockpit/autopilot/altitude");
-    Dataref::getInstance()->unbind("sim/cockpit/autopilot/vertical_velocity");
-    Dataref::getInstance()->unbind("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot");
-    Dataref::getInstance()->unbind("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot");
-    Dataref::getInstance()->unbind("sim/cockpit2/electrical/panel_brightness_ratio");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/cmd_a_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/cmd_b_status");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/autothrottle_arm");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/approach_status");
-    Dataref::getInstance()->unbind("sim/cockpit/autopilot/autopilot_state");
-    Dataref::getInstance()->unbind("sim/cockpit2/EFIS/EFIS_weather_on_copilot");
-    Dataref::getInstance()->unbind("sim/cockpit2/EFIS/EFIS_tcas_on_copilot");
-    Dataref::getInstance()->unbind("sim/cockpit2/EFIS/EFIS_weather_on_pilot");
-    Dataref::getInstance()->unbind("sim/cockpit2/EFIS/EFIS_tcas_on_pilot");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool Laminar737FCUEfisProfile::IsEligible() {

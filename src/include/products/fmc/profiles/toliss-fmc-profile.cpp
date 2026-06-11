@@ -22,7 +22,7 @@ TolissFMCProfile::TolissFMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
         bool hasPower = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on");
         uint8_t backlightBrightness = hasPower ? brightness[product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? 0 : 1] * 255 : 0;
         product->setLedBrightness(FMCLed::BACKLIGHT, backlightBrightness);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/DUBrightness", [product](const std::vector<float> &brightness) {
         if (brightness.size() < 8) {
@@ -51,21 +51,21 @@ TolissFMCProfile::TolissFMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
         }
 
         product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, screenBrightness);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/DUBrightness");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/MCDUIntegBrightness_Raw");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit2/radios/actuators/com1_power", [product](bool enabled) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/DUBrightness");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/MCDUIntegBrightness_Raw");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("AirbusFBW/AnnunMode", [this, product](int annunMode) {
         product->setAllLedsEnabled(annunMode == 2);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/DUSelfTestTimeLeft", [this, product](const std::vector<float> &selfTestSecondsRemaining) {
         if (selfTestSecondsRemaining.size() < 8) {
@@ -122,7 +122,7 @@ TolissFMCProfile::TolissFMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
             product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, flashSteps[selfTestDisplayHelper][1]);
             selfTestDisplayHelper++;
         }
-    });
+    }, this);
 
     Dataref::getInstance()->bindExistingCommand("AirbusFBW/MCDU1KeyClear", [this, product](XPLMCommandPhase phase) {
         if (phase == xplm_CommandBegin && product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN) {
@@ -138,13 +138,7 @@ TolissFMCProfile::TolissFMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
 }
 
 TolissFMCProfile::~TolissFMCProfile() {
-    Dataref::getInstance()->unbind("AirbusFBW/MCDUIntegBrightness_Raw");
-    Dataref::getInstance()->unbind("AirbusFBW/DUBrightness");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    Dataref::getInstance()->unbind("sim/cockpit2/radios/actuators/com1_power");
-    Dataref::getInstance()->unbind("AirbusFBW/DUSelfTestTimeLeft");
-    Dataref::getInstance()->unbind("AirbusFBW/MCDU1KeyClear");
-    Dataref::getInstance()->unbind("AirbusFBW/MCDU2KeyClear");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool TolissFMCProfile::IsEligible() {

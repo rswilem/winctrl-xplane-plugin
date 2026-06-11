@@ -15,34 +15,30 @@ RotateMD11UrsaMinorThrottleProfile::RotateMD11UrsaMinorThrottleProfile(ProductUr
         product->setLedBrightness(UrsaMinorThrottleLed::BACKLIGHT, backlight);
         product->setLedBrightness(UrsaMinorThrottleLed::OVERALL_LEDS_AND_LCD_BRIGHTNESS, hasPower ? 255 : 0);
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("Rotate/aircraft/systems/light_fgs_panel_brt_ratio", [](float) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/elec_dc_batt_bus_pwrd");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/annun_test_signal", [](int) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/fire_eng_1_alert_lt");
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/fire_eng_3_alert_lt");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/fire_eng_1_alert_lt", [product](int lit) {
         bool annunTest = Dataref::getInstance()->getCached<int>("Rotate/aircraft/systems/annun_test_signal") == 1;
         product->setLedBrightness(UrsaMinorThrottleLed::ENG_1_FIRE, (lit || annunTest) ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/fire_eng_3_alert_lt", [product](int lit) {
         bool annunTest = Dataref::getInstance()->getCached<int>("Rotate/aircraft/systems/annun_test_signal") == 1;
         product->setLedBrightness(UrsaMinorThrottleLed::ENG_2_FIRE, (lit || annunTest) ? 1 : 0);
-    });
+    }, this);
 }
 
 RotateMD11UrsaMinorThrottleProfile::~RotateMD11UrsaMinorThrottleProfile() {
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/elec_dc_batt_bus_pwrd");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/light_fgs_panel_brt_ratio");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/annun_test_signal");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/fire_eng_1_alert_lt");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/fire_eng_3_alert_lt");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool RotateMD11UrsaMinorThrottleProfile::IsEligible() {

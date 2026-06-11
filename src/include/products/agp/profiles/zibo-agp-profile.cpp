@@ -16,51 +16,43 @@ ZiboAGPProfile::ZiboAGPProfile(ProductAGP *product) : AGPAircraftProfile(product
         product->setLedBrightness(AGPLed::BACKLIGHT, hasPower ? backlightBrightness : 0);
         product->setLedBrightness(AGPLed::LCD_BRIGHTNESS, hasPower ? 255 : 0);
         product->setLedBrightness(AGPLed::OVERALL_LEDS_BRIGHTNESS, hasPower ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/battery_on", [](bool) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("laminar/B738/electric/instrument_brightness");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/annunciator/left_gear_safe", [product](float gearSafe) {
         product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_CENTER, gearSafe > 0.0f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/annunciator/nose_gear_safe", [product](float gearSafe) {
         product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_CENTER, gearSafe > 0.0f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/annunciator/right_gear_safe", [product](float gearSafe) {
         product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_CENTER, gearSafe > 0.0f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/annunciator/left_gear_transit", [product](float gearTransit) {
         product->setLedBrightness(AGPLed::LDG_GEAR_UNLK_LEFT, gearTransit > 0.0f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/annunciator/nose_gear_transit", [product](float gearTransit) {
         product->setLedBrightness(AGPLed::LDG_GEAR_UNLK_CENTER, gearTransit > 0.0f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/annunciator/right_gear_transit", [product](float gearTransit) {
         product->setLedBrightness(AGPLed::LDG_GEAR_UNLK_RIGHT, gearTransit > 0.0f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("laminar/B738/gpws/draw_terrain_flag", [product](bool terrainOn) {
         product->setLedBrightness(AGPLed::TERRAIN_ON, terrainOn ? 1 : 0);
-    });
+    }, this);
 }
 
 ZiboAGPProfile::~ZiboAGPProfile() {
-    Dataref::getInstance()->unbind("laminar/B738/electric/instrument_brightness");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/battery_on");
-    Dataref::getInstance()->unbind("laminar/B738/annunciator/left_gear_safe");
-    Dataref::getInstance()->unbind("laminar/B738/annunciator/nose_gear_safe");
-    Dataref::getInstance()->unbind("laminar/B738/annunciator/right_gear_safe");
-    Dataref::getInstance()->unbind("laminar/B738/annunciator/left_gear_transit");
-    Dataref::getInstance()->unbind("laminar/B738/annunciator/nose_gear_transit");
-    Dataref::getInstance()->unbind("laminar/B738/annunciator/right_gear_transit");
-    Dataref::getInstance()->unbind("laminar/B738/gpws/draw_terrain_flag");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool ZiboAGPProfile::IsEligible() {

@@ -35,45 +35,37 @@ JF146FCUEfisProfile::JF146FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
         product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, screenBrightness);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/battery_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/panel_brightness_ratio");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/annunciators/autopilot", [product](int status) {
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, status == 1 ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("thranda/TMS/tmsPwr", [product](int status) {
         product->setLedBrightness(FCUEfisLed::ATHR_GREEN, status == 1 ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("thranda/autopilot/FD_Show_Pilot", [product](int status) {
         product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, status == 1 ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/autopilot/glideslope_status", [product](int status) {
         product->setLedBrightness(FCUEfisLed::APPR_GREEN, status > 0 ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("thranda/TCAS/AnnLtA", [product](const std::vector<float> &lights) {
         // Ensure cache is updated and trigger display update if needed
         product->forceStateSync();
-    });
+    }, this);
 }
 
 // destructor, unbinds stuff it used so remember to put the ones you use in here
 JF146FCUEfisProfile::~JF146FCUEfisProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/electrical/panel_brightness_ratio");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/battery_on");
-    Dataref::getInstance()->unbind("sim/cockpit2/annunciators/autopilot");
-    Dataref::getInstance()->unbind("thranda/autopilot/FD_Show_Pilot");
-    Dataref::getInstance()->unbind("thranda/TMS/tmsPwr");
-    Dataref::getInstance()->unbind("thranda/engine/Magneto2R");
-    Dataref::getInstance()->unbind("thranda/electrical/AvionicsBus");
-    Dataref::getInstance()->unbind("thranda/TCAS/AnnLtA");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/glideslope_status");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool JF146FCUEfisProfile::IsEligible() {

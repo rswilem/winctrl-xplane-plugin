@@ -13,21 +13,17 @@ FPS748TCASProfile::FPS748TCASProfile(ProductTCAS *product) : TCASAircraftProfile
         product->setLedBrightness(TCASLed::BACKLIGHT, backlight);
         product->setLedBrightness(TCASLed::LCD_BRIGHTNESS, hasPower ? 255 : 0);
         product->setLedBrightness(TCASLed::OVERALL_LEDS_BRIGHTNESS, hasPower ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>((altPrefix + "/Elec/bus_1_powered").c_str(), [altPrefix](bool) {
         Dataref::getInstance()->executeChangedCallbacksForDataref((altPrefix + "/LGT/glaresheld_sw").c_str());
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref((altPrefix + "/Elec/bus_1_powered").c_str());
 }
 
 FPS748TCASProfile::~FPS748TCASProfile() {
-    bool isSSG = IsSSGVersion();
-    std::string altPrefix = isSSG ? "ssg" : "FPS";
-
-    Dataref::getInstance()->unbind((altPrefix + "/LGT/glaresheld_sw").c_str());
-    Dataref::getInstance()->unbind((altPrefix + "/Elec/bus_1_powered").c_str());
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool FPS748TCASProfile::IsSSGVersion() {

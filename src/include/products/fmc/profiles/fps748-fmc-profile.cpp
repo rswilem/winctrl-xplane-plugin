@@ -22,11 +22,11 @@ FPS748FMCProfile::FPS748FMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
         uint8_t target = Dataref::getInstance()->get<bool>((alternatePrefix + "/Elec/bus_1_powered").c_str()) ? brightness * 255 : 0;
         product->setLedBrightness(FMCLed::BACKLIGHT, target);
         product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, target);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>((alternatePrefix + "/Elec/bus_1_powered").c_str(), [alternatePrefix](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref((alternatePrefix + "/LGT/mcdu_brt_sw").c_str());
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>((prefix + "/UFMC/Exec_Light_on_Pilot").c_str(), [product](bool enabled) {
         if (product->deviceVariant != FMCDeviceVariant::VARIANT_CAPTAIN) {
@@ -35,7 +35,7 @@ FPS748FMCProfile::FPS748FMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
 
         product->setLedBrightness(FMCLed::PFP_EXEC, enabled ? 1 : 0);
         product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<bool>((prefix + "/UFMC/Exec_Light_on_Copilot").c_str(), [product](bool enabled) {
         if (product->deviceVariant != FMCDeviceVariant::VARIANT_FIRSTOFFICER) {
             return;
@@ -43,7 +43,7 @@ FPS748FMCProfile::FPS748FMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
 
         product->setLedBrightness(FMCLed::PFP_EXEC, enabled ? 1 : 0);
         product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref((alternatePrefix + "/Elec/bus_1_powered").c_str());
 }
@@ -53,11 +53,7 @@ FPS748FMCProfile::~FPS748FMCProfile() {
     std::string prefix = isSSG ? "SSG" : "FPS";
     std::string alternatePrefix = isSSG ? "ssg" : "FPS";
 
-    Dataref::getInstance()->unbind((alternatePrefix + "/LGT/mcdu_brt_sw").c_str());
-    Dataref::getInstance()->unbind((alternatePrefix + "/Elec/bus_1_powered").c_str());
-    Dataref::getInstance()->unbind((prefix + "/UFMC/Exec_Light_on_Pilot").c_str());
-    Dataref::getInstance()->unbind((prefix + "/UFMC/Exec_Light_on_Copilot").c_str());
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool FPS748FMCProfile::IsSSGVersion() { // The older, V2.0 SSG 748

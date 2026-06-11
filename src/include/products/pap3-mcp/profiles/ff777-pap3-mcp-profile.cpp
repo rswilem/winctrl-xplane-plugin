@@ -26,73 +26,61 @@ FF777PAP3MCPProfile::FF777PAP3MCPProfile(ProductPAP3MCP *product) : PAP3MCPAircr
         product->setLedBrightness(PAP3MCPLed::OVERALL_LED_BRIGHTNESS, ledBrightness);
 
         product->forceStateSync();
-    });
+    }, this);
 
     // We abuse the GPU hatch dataref to trigger an update when the UI is closed.
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/anim/hatchGPU", [product](bool gpuHatchOpen) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("1-sim/output/mcp/ok");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit2/autopilot/autopilot_has_power", [](bool hasPower) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("1-sim/ckpt/lights/glareshield");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/output/mcp/ok", [product](bool hasPower) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("1-sim/ckpt/lights/glareshield");
-    });
+    }, this);
 
     // Monitor LEDs - FlightFactor 777 lamp glow datarefs
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lampsGlow/mcpVNAV", [product](float status) {
         product->setLedBrightness(PAP3MCPLed::VNAV, status > 0.5f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lampsGlow/mcpFLCH", [product](float status) {
         product->setLedBrightness(PAP3MCPLed::LVL_CHG, status > 0.5f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lampsGlow/mcpLNAV", [product](float status) {
         product->setLedBrightness(PAP3MCPLed::LNAV, status > 0.5f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lampsGlow/mcpLOC", [product](float status) {
         product->setLedBrightness(PAP3MCPLed::VORLOC, status > 0.5f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lampsGlow/mcpAPP", [product](float status) {
         product->setLedBrightness(PAP3MCPLed::APP, status > 0.5f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lampsGlow/mcpAltHOLD", [product](float status) {
         product->setLedBrightness(PAP3MCPLed::ALT_HLD, status > 0.5f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lampsGlow/mcpVS", [product](float status) {
         product->setLedBrightness(PAP3MCPLed::VS, status > 0.5f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lampsGlow/mcpCaptAP", [product](float status) {
         product->setLedBrightness(PAP3MCPLed::CMD_A, status > 0.5f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/ckpt/lampsGlow/mcpAT", [product](float status) {
         product->setLedBrightness(PAP3MCPLed::AT_ARM, status > 0.5f ? 1 : 0);
-    });
+    }, this);
 }
 
 FF777PAP3MCPProfile::~FF777PAP3MCPProfile() {
-    Dataref::getInstance()->unbind("1-sim/ckpt/lights/glareshield");
-    Dataref::getInstance()->unbind("1-sim/anim/hatchGPU");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/autopilot_has_power");
-    Dataref::getInstance()->unbind("1-sim/output/mcp/ok");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/mcpVNAV");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/mcpFLCH");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/mcpLNAV");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/mcpLOC");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/mcpAPP");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/mcpAltHOLD");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/mcpVS");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/mcpCaptAP");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/mcpAT");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool FF777PAP3MCPProfile::IsEligible() {

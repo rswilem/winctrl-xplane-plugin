@@ -28,75 +28,61 @@ SparkyB744FCUEfisProfile::SparkyB744FCUEfisProfile(ProductFCUEfis *product) : FC
         product->setLedBrightness(FCUEfisLed::EFISL_OVERALL_GREEN, powered ? 255 : 0);
 
         product->forceStateSync();
-    });
+    }, this);
 
     // MCP engagement LEDs
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/cmd_L_mode/status", [product](double engaged) {
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, engaged > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/cmd_R_mode/status", [product](double engaged) {
         product->setLedBrightness(FCUEfisLed::AP2_GREEN, engaged > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autothrottle/armed", [product](double armed) {
         product->setLedBrightness(FCUEfisLed::ATHR_GREEN, armed > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/nav_status", [product](double status) {
         product->setLedBrightness(FCUEfisLed::LOC_GREEN, status > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/glideslope_status", [product](double status) {
         product->setLedBrightness(FCUEfisLed::APPR_GREEN, status > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/lnav_state", [product](double state) {
         product->setLedBrightness(FCUEfisLed::EXPED_GREEN, state > 0.5 ? 1 : 0);
-    });
+    }, this);
 
     // EFIS Left (captain) LEDs
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/AFDS/status_annun_pilot", [product](double on) {
         product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, on > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/nd/data/capt/wpt", [product](double on) {
         product->setLedBrightness(FCUEfisLed::EFISL_WPT_GREEN, on > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/nd/data/capt/vor_ndb", [product](double on) {
         product->setLedBrightness(FCUEfisLed::EFISL_VORD_GREEN, on > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/nd/data/capt/apt", [product](double on) {
         product->setLedBrightness(FCUEfisLed::EFISL_ARPT_GREEN, on > 0.5 ? 1 : 0);
-    });
+    }, this);
 
     // EFIS Right (FO) LEDs
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/AFDS/status_annun_copilot", [product](double on) {
         product->setLedBrightness(FCUEfisLed::EFISR_FD_GREEN, on > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/nd/data/fo/wpt", [product](double on) {
         product->setLedBrightness(FCUEfisLed::EFISR_WPT_GREEN, on > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/nd/data/fo/vor_ndb", [product](double on) {
         product->setLedBrightness(FCUEfisLed::EFISR_VORD_GREEN, on > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/nd/data/fo/apt", [product](double on) {
         product->setLedBrightness(FCUEfisLed::EFISR_ARPT_GREEN, on > 0.5 ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/avionics_on");
 }
 
 SparkyB744FCUEfisProfile::~SparkyB744FCUEfisProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/cmd_L_mode/status");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/cmd_R_mode/status");
-    Dataref::getInstance()->unbind("laminar/B747/autothrottle/armed");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/nav_status");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/glideslope_status");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/lnav_state");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/AFDS/status_annun_pilot");
-    Dataref::getInstance()->unbind("laminar/B747/nd/data/capt/wpt");
-    Dataref::getInstance()->unbind("laminar/B747/nd/data/capt/vor_ndb");
-    Dataref::getInstance()->unbind("laminar/B747/nd/data/capt/apt");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/AFDS/status_annun_copilot");
-    Dataref::getInstance()->unbind("laminar/B747/nd/data/fo/wpt");
-    Dataref::getInstance()->unbind("laminar/B747/nd/data/fo/vor_ndb");
-    Dataref::getInstance()->unbind("laminar/B747/nd/data/fo/apt");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool SparkyB744FCUEfisProfile::IsEligible() {

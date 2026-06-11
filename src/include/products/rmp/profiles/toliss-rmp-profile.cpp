@@ -58,16 +58,16 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
         product->setLedBrightness(RMPLed::BACKLIGHT, backlightBrightness);
         product->setLedBrightness(RMPLed::LCD_BRIGHTNESS, available ? 255 : 0);
         product->setLedBrightness(RMPLed::OVERALL_LEDS_BRIGHTNESS, available ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>(rmpAvailRef.c_str(), [](int available) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/PanelBrightnessLevel");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [this](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/PanelBrightnessLevel");
         updateDisplays();
-    });
+    }, this);
 
     std::string lightsRef = std::string("AirbusFBW/") + rmpName() + "Lights_Raw";
 
@@ -84,32 +84,22 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
         product->setLedBrightness(RMPLed::GLS, brightness[11] * 255);
         product->setLedBrightness(RMPLed::SEL, brightness[12] * 255);
         product->setLedBrightness(RMPLed::NAV, brightness[13] * 255);
-    });
+    }, this);
 
     std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
     std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
 
     Dataref::getInstance()->monitorExistingDataref<std::string>(activeRef.c_str(), [this](std::string s) {
         updateDisplays();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<std::string>(stbyRef.c_str(), [this](std::string s) {
         updateDisplays();
-    });
+    }, this);
 }
 
 TolissRMPProfile::~TolissRMPProfile() {
-    Dataref::getInstance()->unbind("AirbusFBW/PanelBrightnessLevel");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-
-    std::string rmpAvailRef = std::string("AirbusFBW/") + rmpName() + "Available";
-    std::string lightsRef = std::string("AirbusFBW/") + rmpName() + "Lights_Raw";
-    std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
-    std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
-    Dataref::getInstance()->unbind(rmpAvailRef.c_str());
-    Dataref::getInstance()->unbind(lightsRef.c_str());
-    Dataref::getInstance()->unbind(activeRef.c_str());
-    Dataref::getInstance()->unbind(stbyRef.c_str());
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool TolissRMPProfile::IsEligible() {

@@ -21,17 +21,15 @@ FF777JoystickProfile::FF777JoystickProfile(USBDevice *product) : JoystickAircraf
         if (!hasPower) {
             joystick->setVibration(0);
         }
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("laminar/B738/electric/panel_brightness");
-    });
+    }, this);
 }
 
 FF777JoystickProfile::~FF777JoystickProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    Dataref::getInstance()->unbind("laminar/B738/electric/panel_brightness");
-    Dataref::getInstance()->unbind("sim/flightmodel/failures/onground_any");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool FF777JoystickProfile::IsEligible() {

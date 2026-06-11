@@ -32,22 +32,22 @@ RotateMD11FCUEfisProfile::RotateMD11FCUEfisProfile(ProductFCUEfis *product) : FC
         product->setLedBrightness(FCUEfisLed::EFISL_OVERALL_GREEN, ledBrightness);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("Rotate/aircraft/systems/light_fgs_panel_brt_ratio", [](float) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/elec_dc_batt_bus_pwrd");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("Rotate/aircraft/systems/afs_appr_engaged", [this, product](bool engaged) {
         bool landArmed = Dataref::getInstance()->getCached<bool>("Rotate/aircraft/systems/afs_land_armed");
         product->setLedBrightness(FCUEfisLed::LOC_GREEN, engaged || isAnnunTest() ? 1 : 0);
         product->setLedBrightness(FCUEfisLed::APPR_GREEN, landArmed || engaged || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("Rotate/aircraft/systems/afs_land_armed", [this, product](bool armed) {
         bool apprEngaged = Dataref::getInstance()->getCached<bool>("Rotate/aircraft/systems/afs_appr_engaged");
         product->setLedBrightness(FCUEfisLed::APPR_GREEN, armed || apprEngaged || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/annun_test_signal", [this, product](int) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/afs_ap_engaged");
@@ -55,7 +55,7 @@ RotateMD11FCUEfisProfile::RotateMD11FCUEfisProfile(ProductFCUEfis *product) : FC
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/afs_at_engaged");
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/afs_appr_engaged");
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/afs_land_armed");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<std::vector<int>>("Rotate/aircraft/systems/gcp_baro_inhg_hpa_mode", [this, product](const std::vector<int> &mode) {
         if (mode.size() >= 2) {
@@ -63,36 +63,25 @@ RotateMD11FCUEfisProfile::RotateMD11FCUEfisProfile(ProductFCUEfis *product) : FC
             isBaroHpaFo = (mode[1] == 1);
             product->updateDisplays();
         }
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("Rotate/aircraft/controls/baro_qfe_qnh_l", [this, product](bool isQnh) {
         isQfeCapt = !isQnh;
         product->updateDisplays();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("Rotate/aircraft/controls/baro_qfe_qnh_r", [this, product](bool isQnh) {
         isQfeFo = !isQnh;
         product->updateDisplays();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Rotate/aircraft/systems/du_1_show_cross", [product](int) {
         product->forceStateSync();
-    });
+    }, this);
 }
 
 RotateMD11FCUEfisProfile::~RotateMD11FCUEfisProfile() {
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/elec_dc_batt_bus_pwrd");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/light_fgs_panel_brt_ratio");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/afs_ap_engaged");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/afs_cws_engaged");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/afs_at_engaged");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/afs_appr_engaged");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/afs_land_armed");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/annun_test_signal");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/gcp_baro_inhg_hpa_mode");
-    Dataref::getInstance()->unbind("Rotate/aircraft/controls/baro_qfe_qnh_l");
-    Dataref::getInstance()->unbind("Rotate/aircraft/controls/baro_qfe_qnh_r");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/du_1_show_cross");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool RotateMD11FCUEfisProfile::IsEligible() {

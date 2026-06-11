@@ -37,90 +37,90 @@ FF350FCUEfisProfile::FF350FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
         product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, screenBrightness);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/AP1Engage", [this, product](bool engaged) {
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, engaged || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/AP2Engage", [this, product](bool engaged) {
         product->setLedBrightness(FCUEfisLed::AP2_GREEN, engaged || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("AirbusFBW/ATHRmode", [this, product](int mode) {
         product->setLedBrightness(FCUEfisLed::ATHR_GREEN, mode > 0 || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/LOCilluminated", [this, product](bool illuminated) {
         product->setLedBrightness(FCUEfisLed::LOC_GREEN, illuminated || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/APPRilluminated", [this, product](bool illuminated) {
         product->setLedBrightness(FCUEfisLed::APPR_GREEN, illuminated || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("AirbusFBW/APVerticalMode", [this, product](int vsMode) {
         bool expedEnabled = vsMode >= 0 && vsMode & 0b00010000;
         product->setLedBrightness(FCUEfisLed::EXPED_GREEN, expedEnabled || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     // Monitor EFIS Right (Captain) LED states
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/FD2Engage", [this, product](bool engaged) {
         product->setLedBrightness(FCUEfisLed::EFISR_FD_GREEN, engaged || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/ILSonFO", [this, product](bool on) {
         product->setLedBrightness(FCUEfisLed::EFISR_LS_GREEN, on || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/NDShowCSTRFO", [this, product](bool show) {
         product->setLedBrightness(FCUEfisLed::EFISR_CSTR_GREEN, show || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/NDShowWPTFO", [this, product](bool show) {
         product->setLedBrightness(FCUEfisLed::EFISR_WPT_GREEN, show || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/NDShowVORDFO", [this, product](bool show) {
         product->setLedBrightness(FCUEfisLed::EFISR_VORD_GREEN, show || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/NDShowNDBFO", [this, product](bool show) {
         product->setLedBrightness(FCUEfisLed::EFISR_NDB_GREEN, show || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/NDShowARPTFO", [this, product](bool show) {
         product->setLedBrightness(FCUEfisLed::EFISR_ARPT_GREEN, show || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     // Monitor EFIS Left (First Officer) LED states
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/FD1Engage", [this, product](bool engaged) {
         product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, engaged || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/ILSonCapt", [this, product](bool on) {
         product->setLedBrightness(FCUEfisLed::EFISL_LS_GREEN, on || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/NDShowCSTRCapt", [this, product](bool show) {
         product->setLedBrightness(FCUEfisLed::EFISL_CSTR_GREEN, show || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/NDShowWPTCapt", [this, product](bool show) {
         product->setLedBrightness(FCUEfisLed::EFISL_WPT_GREEN, show || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/NDShowVORDCapt", [this, product](bool show) {
         product->setLedBrightness(FCUEfisLed::EFISL_VORD_GREEN, show || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/NDShowNDBCapt", [this, product](bool show) {
         product->setLedBrightness(FCUEfisLed::EFISL_NDB_GREEN, show || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/NDShowARPTCapt", [this, product](bool show) {
         product->setLedBrightness(FCUEfisLed::EFISL_ARPT_GREEN, show || isAnnunTest() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("AirbusFBW/AnnunMode", [this](int annunMode) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/SupplLightLevelRehostats");
@@ -147,43 +147,15 @@ FF350FCUEfisProfile::FF350FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/NDShowVORDCapt");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/NDShowNDBCapt");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/NDShowARPTCapt");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/FCUAvail", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/SupplLightLevelRehostats");
-    });
+    }, this);
 }
 
 FF350FCUEfisProfile::~FF350FCUEfisProfile() {
-    Dataref::getInstance()->unbind("AirbusFBW/SupplLightLevelRehostats");
-    Dataref::getInstance()->unbind("AirbusFBW/FCUAvail");
-    Dataref::getInstance()->unbind("AirbusFBW/AnnunMode");
-
-    // Unbind FCU datarefs
-    Dataref::getInstance()->unbind("AirbusFBW/AP1Engage");
-    Dataref::getInstance()->unbind("AirbusFBW/AP2Engage");
-    Dataref::getInstance()->unbind("AirbusFBW/ATHRmode");
-    Dataref::getInstance()->unbind("AirbusFBW/LOCilluminated");
-    Dataref::getInstance()->unbind("AirbusFBW/APPRilluminated");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/altitude_hold_armed"); //OK????
-
-    // Unbind EFIS Right datarefs
-    Dataref::getInstance()->unbind("AirbusFBW/FD2Engage");
-    Dataref::getInstance()->unbind("AirbusFBW/ILSonFO");
-    Dataref::getInstance()->unbind("AirbusFBW/NDShowCSTRFO");
-    Dataref::getInstance()->unbind("AirbusFBW/NDShowWPTFO");
-    Dataref::getInstance()->unbind("AirbusFBW/NDShowVORDFO");
-    Dataref::getInstance()->unbind("AirbusFBW/NDShowNDBFO");
-    Dataref::getInstance()->unbind("AirbusFBW/NDShowARPTFO");
-
-    // Unbind EFIS Left datarefs
-    Dataref::getInstance()->unbind("AirbusFBW/FD1Engage");
-    Dataref::getInstance()->unbind("AirbusFBW/ILSonCapt");
-    Dataref::getInstance()->unbind("AirbusFBW/NDShowCSTRCapt");
-    Dataref::getInstance()->unbind("AirbusFBW/NDShowWPTCapt");
-    Dataref::getInstance()->unbind("AirbusFBW/NDShowVORDCapt");
-    Dataref::getInstance()->unbind("AirbusFBW/NDShowNDBCapt");
-    Dataref::getInstance()->unbind("AirbusFBW/NDShowARPTCapt");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool FF350FCUEfisProfile::IsEligible() {

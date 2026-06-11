@@ -3,6 +3,7 @@
 #include "appstate.h"
 #include "config.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <XPLMDisplay.h>
@@ -55,7 +56,7 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
     unbind(ref);
 
     XPLMDataRef handle = nullptr;
-    boundRefs[ref] = {handle, value, {[changeCallback](DataRefValueType newValue) -> bool {
+    boundRefs[ref] = {handle, value, {{nullptr, [changeCallback](DataRefValueType newValue) -> bool {
                           if (!changeCallback) {
                               return true;
                           } else if constexpr (std::is_same_v<T, std::string>) {
@@ -76,7 +77,7 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
                               }
                           }
                           return false;
-                      }}};
+                      }}}};
 
     if constexpr ((std::is_same_v<T, int>) || (std::is_same_v<T, bool>) ) {
         handle = XPLMRegisterDataAccessor(
@@ -214,22 +215,22 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
     boundRefs[ref].handle = handle;
 }
 
-template void Dataref::monitorExistingDataref<int>(const char *ref, DatarefMonitorChangedCallback<int> changeCallback);
+template void Dataref::monitorExistingDataref<int>(const char *ref, DatarefMonitorChangedCallback<int> changeCallback, void *owner);
 template void Dataref::monitorExistingDataref<bool>(
-    const char *ref, DatarefMonitorChangedCallback<bool> changeCallback);
+    const char *ref, DatarefMonitorChangedCallback<bool> changeCallback, void *owner);
 template void Dataref::monitorExistingDataref<float>(
-    const char *ref, DatarefMonitorChangedCallback<float> changeCallback);
+    const char *ref, DatarefMonitorChangedCallback<float> changeCallback, void *owner);
 template void Dataref::monitorExistingDataref<double>(
-    const char *ref, DatarefMonitorChangedCallback<double> changeCallback);
+    const char *ref, DatarefMonitorChangedCallback<double> changeCallback, void *owner);
 template void Dataref::monitorExistingDataref<std::string>(
-    const char *ref, DatarefMonitorChangedCallback<std::string> changeCallback);
+    const char *ref, DatarefMonitorChangedCallback<std::string> changeCallback, void *owner);
 template void Dataref::monitorExistingDataref<std::vector<float>>(
-    const char *ref, DatarefMonitorChangedCallback<std::vector<float>> changeCallback);
+    const char *ref, DatarefMonitorChangedCallback<std::vector<float>> changeCallback, void *owner);
 template void Dataref::monitorExistingDataref<std::vector<int>>(
-    const char *ref, DatarefMonitorChangedCallback<std::vector<int>> changeCallback);
+    const char *ref, DatarefMonitorChangedCallback<std::vector<int>> changeCallback, void *owner);
 
 template<typename T>
-void Dataref::monitorExistingDataref(const char *ref, DatarefMonitorChangedCallback<T> changeCallback) {
+void Dataref::monitorExistingDataref(const char *ref, DatarefMonitorChangedCallback<T> changeCallback, void *owner) {
     if constexpr (std::is_same_v<T, std::string>) {
         set<T>(ref, "", true);
     } else if constexpr (std::is_same_v<T, std::vector<float>>) {
@@ -261,9 +262,9 @@ void Dataref::monitorExistingDataref(const char *ref, DatarefMonitorChangedCallb
     };
 
     if (boundRefs.find(ref) != boundRefs.end()) {
-        boundRefs[ref].changeCallbacks.push_back(callback);
+        boundRefs[ref].changeCallbacks.push_back({owner, callback});
     } else {
-        boundRefs[ref] = {0, nullptr, {callback}};
+        boundRefs[ref] = {0, nullptr, {{owner, callback}}};
     }
 }
 
@@ -368,8 +369,23 @@ bool Dataref::exists(const char *ref) {
 void Dataref::executeChangedCallbacksForDataref(const char *ref) {
     auto it = boundRefs.find(ref);
     if (it != boundRefs.end()) {
-        for (auto callback : boundRefs[ref].changeCallbacks) {
-            callback(cachedValues[ref].value);
+        for (auto &tc : it->second.changeCallbacks) {
+            tc.func(cachedValues[ref].value);
+        }
+    }
+}
+
+void Dataref::unbindAll(void *owner) {
+    for (auto it = boundRefs.begin(); it != boundRefs.end();) {
+        auto &cbs = it->second.changeCallbacks;
+        cbs.erase(std::remove_if(cbs.begin(), cbs.end(),
+                      [owner](const TaggedCallback &tc) { return tc.owner == owner; }),
+            cbs.end());
+        // Remove monitor-only entries that now have no callbacks
+        if (cbs.empty() && !it->second.handle) {
+            it = boundRefs.erase(it);
+        } else {
+            ++it;
         }
     }
 }

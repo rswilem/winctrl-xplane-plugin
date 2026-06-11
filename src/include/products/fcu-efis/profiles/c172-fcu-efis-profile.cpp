@@ -28,30 +28,25 @@ C172FCUEfisProfile::C172FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraf
         product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, target);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/physics/metric_press", [product](bool isMetric) {
         product->updateDisplays();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit2/autopilot/servos_on", [product](bool isAutopilotEngaged) {
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, isAutopilotEngaged ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/autopilot/heading_mode", [this, product](int headingMode) {
         product->setLedBrightness(FCUEfisLed::LOC_GREEN, headingMode == 2);
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
 }
 
 C172FCUEfisProfile::~C172FCUEfisProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/battery_on");
-    Dataref::getInstance()->unbind("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot");
-    Dataref::getInstance()->unbind("sim/physics/metric_press");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/servos_on");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/heading_mode");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool C172FCUEfisProfile::IsEligible() {

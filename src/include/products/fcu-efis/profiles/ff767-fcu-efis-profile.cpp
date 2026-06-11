@@ -33,90 +33,90 @@ FF767FCUEfisProfile::FF767FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
             product->setLedBrightness(FCUEfisLed::EFISL_OVERALL_GREEN, hasPower ? ledBrightness : 0);
 
             product->forceStateSync();
-        });
+        }, this);
 
     // We abuse the GPU dataref to trigger an update when the UI is closed.
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/electrical/gpuAvailable",
         [product](bool gpuDispo) {
             Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/autopilot/autopilot_has_power");
-        });
+        }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit2/autopilot/autopilot_has_power",
         [product](bool hasPower) {
             Dataref::getInstance()->executeChangedCallbacksForDataref("lights/glareshield1_rhe");
-        });
+        }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/AP/lnavButton", [this, product](bool engaged) {
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, engaged || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/AP/vnavButton", [this, product](bool engaged) {
         product->setLedBrightness(FCUEfisLed::AP2_GREEN, engaged || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/AP/atSwitcher", [this, product](bool armed) {
         product->setLedBrightness(FCUEfisLed::ATHR_GREEN, !armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/AP/locButton", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::LOC_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/AP/appButton", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::APPR_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/AP/cmd_L_Button", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EXPED_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/AP/cmd_C_Button", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EXPED_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/AP/cmd_R_Button", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EXPED_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/efis/ctrlPanel/1/map4", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EFISL_CSTR_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/efis/ctrlPanel/2/map4", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EFISR_CSTR_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/efis/ctrlPanel/1/map5", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EFISL_WPT_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/efis/ctrlPanel/2/map5", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EFISR_WPT_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/efis/ctrlPanel/1/map2", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EFISL_VORD_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/efis/ctrlPanel/2/map2", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EFISR_VORD_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/efis/ctrlPanel/1/map3", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EFISL_ARPT_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/efis/ctrlPanel/2/map3", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EFISR_ARPT_GREEN, armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/AP/desengageLever", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EFISL_LS_GREEN, !armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/AP/desengageLever", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::EFISR_LS_GREEN, !armed || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/AP/fd1Switcher", [this, product](bool on) {
         product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, !on || isTestMode() ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/AP/fd2Switcher", [this, product](bool on) {
         product->setLedBrightness(FCUEfisLed::EFISR_FD_GREEN, !on || isTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/ckpt/lampsGlow/cptCAUTION",
         [this, product](bool isCaution) {
@@ -126,7 +126,7 @@ FF767FCUEfisProfile::FF767FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
             product->setLedBrightness(FCUEfisLed::EFISL_VORD_GREEN, isCaution || isWarning || isTestMode() ? 1 : 0);
             product->setLedBrightness(FCUEfisLed::EFISL_NDB_GREEN, isCaution || isWarning || isTestMode() ? 1 : 0);
             product->setLedBrightness(FCUEfisLed::EFISL_ARPT_GREEN, isCaution || isWarning || isTestMode() ? 1 : 0);
-        });
+        }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/ckpt/lampsGlow/foCAUTION",
         [this, product](bool isCaution) {
@@ -136,17 +136,17 @@ FF767FCUEfisProfile::FF767FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
             product->setLedBrightness(FCUEfisLed::EFISR_VORD_GREEN, isCaution || isWarning || isTestMode() ? 1 : 0);
             product->setLedBrightness(FCUEfisLed::EFISR_NDB_GREEN, isCaution || isWarning || isTestMode() ? 1 : 0);
             product->setLedBrightness(FCUEfisLed::EFISR_ARPT_GREEN, isCaution || isWarning || isTestMode() ? 1 : 0);
-        });
+        }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/ckpt/lampsGlow/cptWARNING",
         [this, product](bool on) {
             Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/warnings/annunciators/master_caution");
-        });
+        }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/ckpt/lampsGlow/foWARNING",
         [this, product](bool on) {
             Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/warnings/annunciators/master_caution");
-        });
+        }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("1-sim/testPanel/test1Button",
         [this, product](int isTest) {
@@ -165,7 +165,7 @@ FF767FCUEfisProfile::FF767FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
             Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/warnings/annunciators/master_warning");
             //Dataref::getInstance()->executeChangedCallbacksForDataref("1-sim/ckpt/lampsGlow/foWARNING");
             Dataref::getInstance()->executeChangedCallbacksForDataref("1-sim/comm/AP/ap_disc"); //OK
-        });
+        }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/efis/isBaroStdL",
         [this, product](float animValue) {
@@ -179,7 +179,7 @@ FF767FCUEfisProfile::FF767FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
 
                 product->updateDisplays();
             });
-        });
+        }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("1-sim/efis/isBaroStdR",
         [this, product](float animValue) {
@@ -193,35 +193,11 @@ FF767FCUEfisProfile::FF767FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
 
                 product->updateDisplays();
             });
-        });
+        }, this);
 }
 
 FF767FCUEfisProfile::~FF767FCUEfisProfile() {
-    Dataref::getInstance()->unbind("lights/glareshield1_rhe");
-    Dataref::getInstance()->unbind("1-sim/electrical/gpuAvailable");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/autopilot_has_power");
-
-    Dataref::getInstance()->unbind("1-sim/AP/lnavButton");
-    Dataref::getInstance()->unbind("1-sim/AP/vnavButton");
-    Dataref::getInstance()->unbind("1-sim/AP/eprButton");
-    Dataref::getInstance()->unbind("1-sim/AP/locButton");
-    Dataref::getInstance()->unbind("1-sim/AP/appButton");
-    Dataref::getInstance()->unbind("1-sim/AP/cmd_L_Button");
-    Dataref::getInstance()->unbind("1-sim/AP/cmd_C_Button");
-    Dataref::getInstance()->unbind("1-sim/AP/cmd_R_Button");
-    Dataref::getInstance()->unbind("1-sim/efis/ctrlPanel/1/map2");
-    Dataref::getInstance()->unbind("1-sim/efis/ctrlPanel/2/map2");
-    Dataref::getInstance()->unbind("1-sim/efis/ctrlPanel/1/map3");
-    Dataref::getInstance()->unbind("1-sim/efis/ctrlPanel/2/map3");
-    Dataref::getInstance()->unbind("1-sim/efis/ctrlPanel/1/map4");
-    Dataref::getInstance()->unbind("1-sim/efis/ctrlPanel/2/map4");
-    Dataref::getInstance()->unbind("1-sim/efis/ctrlPanel/1/map5");
-    Dataref::getInstance()->unbind("1-sim/efis/ctrlPanel/2/map5");
-
-    //Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/cptCAUTION");
-    //Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/foCAUTION");
-    Dataref::getInstance()->unbind("sim/cockpit/warnings/annunciators/master_caution");
-    Dataref::getInstance()->unbind("sim/cockpit/warnings/annunciators/master_warning");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool FF767FCUEfisProfile::IsEligible() {

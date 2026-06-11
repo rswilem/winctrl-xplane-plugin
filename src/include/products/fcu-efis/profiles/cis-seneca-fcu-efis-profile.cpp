@@ -28,33 +28,27 @@ CISSenecaFCUEfisProfile::CISSenecaFCUEfisProfile(ProductFCUEfis *product) : FCUE
         product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, target);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("CIS/PA34/instruments/altimeter/HpA", [product](bool isHpa) {
         product->updateDisplays();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("CIS/PA34/autopilot/ap_light", [product](bool isAutopilotEngaged) {
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, isAutopilotEngaged ? 1 : 0);
         product->setLedBrightness(FCUEfisLed::AP2_GREEN, isAutopilotEngaged ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit2/annunciators/flight_director", [product](bool enabled) {
         product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, enabled ? 1 : 0);
         product->setLedBrightness(FCUEfisLed::EFISR_FD_GREEN, enabled ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
 }
 
 CISSenecaFCUEfisProfile::~CISSenecaFCUEfisProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/battery_on");
-    Dataref::getInstance()->unbind("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/servos_on");
-    Dataref::getInstance()->unbind("CIS/PA34/autopilot/ap_light");
-    Dataref::getInstance()->unbind("sim/cockpit2/annunciators/flight_director");
-    Dataref::getInstance()->unbind("CIS/PA34/instruments/altimeter/HpA");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool CISSenecaFCUEfisProfile::IsEligible() {

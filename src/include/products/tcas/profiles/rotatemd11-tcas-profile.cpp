@@ -16,16 +16,15 @@ RotateMD11TCASProfile::RotateMD11TCASProfile(ProductTCAS *product) : TCASAircraf
         product->setLedBrightness(TCASLed::BACKLIGHT, backlight);
         product->setLedBrightness(TCASLed::LCD_BRIGHTNESS, hasPower ? 255 : 0);
         product->setLedBrightness(TCASLed::OVERALL_LEDS_BRIGHTNESS, hasPower ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("Rotate/aircraft/systems/light_fgs_panel_brt_ratio", [](float) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/elec_dc_batt_bus_pwrd");
-    });
+    }, this);
 }
 
 RotateMD11TCASProfile::~RotateMD11TCASProfile() {
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/elec_dc_batt_bus_pwrd");
-    Dataref::getInstance()->unbind("Rotate/aircraft/systems/light_fgs_panel_brt_ratio");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool RotateMD11TCASProfile::IsEligible() {

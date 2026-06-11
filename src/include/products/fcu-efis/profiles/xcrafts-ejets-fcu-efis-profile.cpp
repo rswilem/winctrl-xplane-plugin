@@ -22,7 +22,7 @@ XCraftsEjetsFCUEfisProfile::XCraftsEjetsFCUEfisProfile(ProductFCUEfis *product) 
         product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, target);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit/autopilot/autopilot_mode", [this, product](int mode) {
         bool engaged = (mode == 2);
@@ -30,34 +30,29 @@ XCraftsEjetsFCUEfisProfile::XCraftsEjetsFCUEfisProfile(ProductFCUEfis *product) 
         product->setLedBrightness(FCUEfisLed::AP2_GREEN, (engaged || isAnnunTest()) ? 1 : 0);
         product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, (engaged || isAnnunTest()) ? 1 : 0);
         product->setLedBrightness(FCUEfisLed::EFISR_FD_GREEN, (engaged || isAnnunTest()) ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/autothrottle_armed", [this, product](int armed) {
         product->setLedBrightness(FCUEfisLed::ATHR_GREEN, (armed == 1 || isAnnunTest()) ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/autopilot/autothrottle_system_active", [this, product](int active) {
         product->setLedBrightness(FCUEfisLed::ATHR_GREEN, (active == 1 || isAnnunTest()) ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/autopilot/st55_apr", [this, product](int active) {
         product->setLedBrightness(FCUEfisLed::APPR_GREEN, (active == 1 || isAnnunTest()) ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("XCrafts/ERJ/cockpit/annunciators_test", [this](bool) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/autopilot/autopilot_mode");
         Dataref::getInstance()->executeChangedCallbacksForDataref("XCrafts/ERJ/autothrottle_armed");
         Dataref::getInstance()->executeChangedCallbacksForDataref("XCrafts/ERJ/autopilot/autothrottle_system_active");
-    });
+    }, this);
 }
 
 XCraftsEjetsFCUEfisProfile::~XCraftsEjetsFCUEfisProfile() {
-    Dataref::getInstance()->unbind("XCrafts/panel_brt_1");
-    Dataref::getInstance()->unbind("sim/cockpit/autopilot/autopilot_mode");
-    Dataref::getInstance()->unbind("XCrafts/ERJ/autothrottle_armed");
-    Dataref::getInstance()->unbind("XCrafts/ERJ/autopilot/autothrottle_system_active");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/st55_apr");
-    Dataref::getInstance()->unbind("XCrafts/ERJ/cockpit/annunciators_test");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool XCraftsEjetsFCUEfisProfile::IsEligible() {

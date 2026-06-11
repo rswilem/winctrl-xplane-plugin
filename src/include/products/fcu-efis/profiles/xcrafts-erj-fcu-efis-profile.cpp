@@ -32,30 +32,27 @@ XCraftsErjFCUEfisProfile::XCraftsErjFCUEfisProfile(ProductFCUEfis *product) : FC
         product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, screenBrightness);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit/autopilot/autopilot_mode", [product](int mode) {
         bool engaged = (mode == 2);
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, engaged ? 1 : 0);
         product->setLedBrightness(FCUEfisLed::AP2_GREEN, engaged ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/autopilot/flight_director_mode", [product](int fdMode) {
         bool engaged = (fdMode == 1);
         product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, engaged ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit2/autopilot/flight_director2_mode", [product](int fdMode) {
         bool engaged = (fdMode == 1);
         product->setLedBrightness(FCUEfisLed::EFISR_FD_GREEN, engaged ? 1 : 0);
-    });
+    }, this);
 }
 
 XCraftsErjFCUEfisProfile::~XCraftsErjFCUEfisProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
-    Dataref::getInstance()->unbind("sim/cockpit/autopilot/autopilot_mode");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/flight_director_mode");
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/flight_director2_mode");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool XCraftsErjFCUEfisProfile::IsEligible() {

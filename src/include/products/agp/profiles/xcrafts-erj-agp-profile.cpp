@@ -19,35 +19,31 @@ XCraftsErjAGPProfile::XCraftsErjAGPProfile(ProductAGP *product) : AGPAircraftPro
         product->setLedBrightness(AGPLed::BACKLIGHT, hasPower ? backlightBrightness : 0);
         product->setLedBrightness(AGPLed::LCD_BRIGHTNESS, hasPower ? 255 : 0);
         product->setLedBrightness(AGPLed::OVERALL_LEDS_BRIGHTNESS, hasPower ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/battery_on", [](bool) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("sim/cockpit/switches/gear_handle_status", [product](int gearStatus) {
         product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_CENTER, gearStatus == 1 ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/MFD1/WX_TERR_status", [product](int terrainStatus) {
         if (product->terrainNDPreference == AGPTerrainNDPreference::CAPTAIN) {
             product->setLedBrightness(AGPLed::TERRAIN_ON, terrainStatus == 2 ? 1 : 0);
         }
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("XCrafts/ERJ/MFD2/WX_TERR_status", [product](int terrainStatus) {
         if (product->terrainNDPreference == AGPTerrainNDPreference::FIRST_OFFICER) {
             product->setLedBrightness(AGPLed::TERRAIN_ON, terrainStatus == 2 ? 1 : 0);
         }
-    });
+    }, this);
 }
 
 XCraftsErjAGPProfile::~XCraftsErjAGPProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/battery_on");
-    Dataref::getInstance()->unbind("sim/cockpit/switches/gear_handle_status");
-    Dataref::getInstance()->unbind("XCrafts/ERJ/MFD1/WX_TERR_status");
-    Dataref::getInstance()->unbind("XCrafts/ERJ/MFD2/WX_TERR_status");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool XCraftsErjAGPProfile::IsEligible() {

@@ -14,18 +14,17 @@ XCraftsERJTCASProfile::XCraftsERJTCASProfile(ProductTCAS *product) : TCASAircraf
         product->setLedBrightness(TCASLed::BACKLIGHT, backlight);
         product->setLedBrightness(TCASLed::LCD_BRIGHTNESS, hasPower ? 255 : 0);
         product->setLedBrightness(TCASLed::OVERALL_LEDS_BRIGHTNESS, hasPower ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/battery_on", [](bool) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/panel_brightness_ratio");
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/battery_on");
 }
 
 XCraftsERJTCASProfile::~XCraftsERJTCASProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/electrical/panel_brightness_ratio");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/battery_on");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool XCraftsERJTCASProfile::IsEligible() {

@@ -17,48 +17,40 @@ FF777UrsaMinorThrottleProfile::FF777UrsaMinorThrottleProfile(ProductUrsaMinorThr
 
         updateDisplays();
         product->forceStateSync();
-    });
+    }, this);
 
     // We abuse the GPU hatch dataref to trigger an update when the UI is closed.
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/anim/hatchGPU", [product](bool gpuHatchOpen) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("1-sim/output/mcp/ok");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/output/mcp/ok", [product](bool hasPower) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("1-sim/ckpt/lights/glareshield");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("sim/flightmodel/controls/vstab2_rud1def", [this, product](float trimPosition) {
         updateDisplays();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/ckpt/lampsGlow/cutoffLeftLGT", [this, product](bool isOn) {
         product->setLedBrightness(UrsaMinorThrottleLed::ENG_1_FAULT, isOn ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/ckpt/lampsGlow/cutoffRightLGT", [this, product](bool isOn) {
         product->setLedBrightness(UrsaMinorThrottleLed::ENG_2_FAULT, isOn ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/ckpt/lampsGlow/engLeftFireDISCH", [this, product](bool isOn) {
         product->setLedBrightness(UrsaMinorThrottleLed::ENG_1_FIRE, isOn ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("1-sim/ckpt/lampsGlow/engRightFireDISCH", [this, product](bool isOn) {
         product->setLedBrightness(UrsaMinorThrottleLed::ENG_2_FIRE, isOn ? 1 : 0);
-    });
+    }, this);
 }
 
 FF777UrsaMinorThrottleProfile::~FF777UrsaMinorThrottleProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lights/glareshield");
-    Dataref::getInstance()->unbind("1-sim/anim/hatchGPU");
-    Dataref::getInstance()->unbind("1-sim/output/mcp/ok");
-    Dataref::getInstance()->unbind("sim/flightmodel/controls/vstab2_rud1def");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/cutoffLeftLGT");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/cutoffRightLGT");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/engLeftFireDISCH");
-    Dataref::getInstance()->unbind("1-sim/ckpt/lampsGlow/engRightFireDISCH");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool FF777UrsaMinorThrottleProfile::IsEligible() {

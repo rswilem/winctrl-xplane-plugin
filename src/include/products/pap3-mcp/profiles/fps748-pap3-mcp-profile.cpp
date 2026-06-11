@@ -19,55 +19,55 @@ FPS748PAP3MCPProfile::FPS748PAP3MCPProfile(ProductPAP3MCP *product) : PAP3MCPAir
         product->setLedBrightness(PAP3MCPLed::LCD_BACKLIGHT, hasPower ? 180 : 0);
         product->setLedBrightness(PAP3MCPLed::OVERALL_LED_BRIGHTNESS, hasPower ? 180 : 0);
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>((altPrefix + "/Elec/bus_1_powered").c_str(), [altPrefix](bool) {
         Dataref::getInstance()->executeChangedCallbacksForDataref((altPrefix + "/LGT/glaresheld_sw").c_str());
-    });
+    }, this);
 
     // MCP mode LEDs — use _ann (annunciator) datarefs, not _act
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_n1_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::N1, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_speed_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::SPEED, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_vnav_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::VNAV, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_level_change_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::LVL_CHG, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>("sim/cockpit2/autopilot/st55_hdg", [product](float v) {
         product->setLedBrightness(PAP3MCPLed::HDG_SEL, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_lnav_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::LNAV, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_vor_loc_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::VORLOC, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_app_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::APP, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_alt_hold_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::ALT_HLD, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_vs_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::VS, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_a_comm_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::CMD_A, v > 0.5f ? 1 : 0);
         product->setLedBrightness(PAP3MCPLed::MA_CAPT, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_b_comm_ann").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::CMD_B, v > 0.5f ? 1 : 0);
         product->setLedBrightness(PAP3MCPLed::MA_FO, v > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_at_arm_act").c_str(), [product](float v) {
         product->setLedBrightness(PAP3MCPLed::AT_ARM, v > 0.5f ? 1 : 0);
         product->setATSolenoid(v > 0.5f);
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref((altPrefix + "/Elec/bus_1_powered").c_str());
 
@@ -88,25 +88,7 @@ FPS748PAP3MCPProfile::FPS748PAP3MCPProfile(ProductPAP3MCP *product) : PAP3MCPAir
 }
 
 FPS748PAP3MCPProfile::~FPS748PAP3MCPProfile() {
-    bool isSSG = IsSSGVersion();
-    std::string prefix = isSSG ? "SSG" : "FPS";
-    std::string altPrefix = isSSG ? "ssg" : "FPS";
-
-    Dataref::getInstance()->unbind((altPrefix + "/LGT/glaresheld_sw").c_str());
-    Dataref::getInstance()->unbind((altPrefix + "/Elec/bus_1_powered").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_n1_ann").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_speed_ann").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_vnav_ann").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_level_change_ann").c_str());
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/st55_hdg");
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_lnav_ann").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_vor_loc_ann").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_app_ann").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_alt_hold_ann").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_vs_ann").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_a_comm_ann").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_b_comm_ann").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_at_arm_act").c_str());
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool FPS748PAP3MCPProfile::IsSSGVersion() {

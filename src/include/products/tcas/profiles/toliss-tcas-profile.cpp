@@ -57,24 +57,24 @@ TolissTCASProfile::TolissTCASProfile(ProductTCAS *product) : TCASAircraftProfile
         product->setLedBrightness(TCASLed::BACKLIGHT, backlightBrightness);
         product->setLedBrightness(TCASLed::LCD_BRIGHTNESS, hasEssentialBusPower ? 255 : 0);
         product->setLedBrightness(TCASLed::OVERALL_LEDS_BRIGHTNESS, hasEssentialBusPower ? 255 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("AirbusFBW/FCUAvail", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/PanelBrightnessLevel");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/AnnunMode");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/PanelBrightnessLevel");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/AnnunMode");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("AirbusFBW/AnnunMode", [this, product](int annunMode) {
         // Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/OHPLightsATA32_Raw");
 
         product->setLedBrightness(TCASLed::ATC_FAIL, isAnnunTest() ? 255 : 0);
         updateDisplays();
-    });
+    }, this);
 
     // Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/OHPLightsATA32_Raw", [this, product](const std::vector<float> &panelLights) {
     //     if (panelLights.size() < 18) {
@@ -85,10 +85,7 @@ TolissTCASProfile::TolissTCASProfile(ProductTCAS *product) : TCASAircraftProfile
 }
 
 TolissTCASProfile::~TolissTCASProfile() {
-    Dataref::getInstance()->unbind("AirbusFBW/PanelBrightnessLevel");
-    Dataref::getInstance()->unbind("AirbusFBW/FCUAvail");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    Dataref::getInstance()->unbind("AirbusFBW/OHPLightsATA32_Raw");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool TolissTCASProfile::IsEligible() {

@@ -14,70 +14,57 @@ SparkyB744PAP3MCPProfile::SparkyB744PAP3MCPProfile(ProductPAP3MCP *product) : PA
         product->setLedBrightness(PAP3MCPLed::LCD_BACKLIGHT, powered ? 180 : 0);
         product->setLedBrightness(PAP3MCPLed::OVERALL_LED_BRIGHTNESS, powered ? 180 : 0);
         product->forceStateSync();
-    });
+    }, this);
 
     // MCP mode LEDs
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/FMA/active_pitch_mode", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::N1, v > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/FMA/autothrottle_mode", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::SPEED, v > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/vnav_state", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::VNAV, v > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/ias_mach/window_open", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::LVL_CHG, v > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/FMA/active_roll_mode", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::HDG_SEL, v > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/lnav_state", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::LNAV, v > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/nav_status", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::VORLOC, v > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/glideslope_status", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::APP, v > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/vert_spd/window_open", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::ALT_HLD, v < 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/vvi_fpm", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::VS, std::abs(v) > 10.0 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/cmd_L_mode/status", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::CMD_A, v > 0.5 ? 1 : 0);
         product->setLedBrightness(PAP3MCPLed::MA_CAPT, v > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autopilot/cmd_R_mode/status", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::CMD_B, v > 0.5 ? 1 : 0);
         product->setLedBrightness(PAP3MCPLed::MA_FO, v > 0.5 ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<double>("laminar/B747/autothrottle/armed", [product](double v) {
         product->setLedBrightness(PAP3MCPLed::AT_ARM, v > 0.5 ? 1 : 0);
         product->setATSolenoid(v > 0.5);
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/avionics_on");
 }
 
 SparkyB744PAP3MCPProfile::~SparkyB744PAP3MCPProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/FMA/active_pitch_mode");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/FMA/autothrottle_mode");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/vnav_state");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/ias_mach/window_open");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/FMA/active_roll_mode");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/lnav_state");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/nav_status");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/glideslope_status");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/vert_spd/window_open");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/vvi_fpm");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/cmd_L_mode/status");
-    Dataref::getInstance()->unbind("laminar/B747/autopilot/cmd_R_mode/status");
-    Dataref::getInstance()->unbind("laminar/B747/autothrottle/armed");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool SparkyB744PAP3MCPProfile::IsEligible() {

@@ -33,92 +33,71 @@ FPS748FCUEfisProfile::FPS748FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAir
         product->setLedBrightness(FCUEfisLed::EFISL_OVERALL_GREEN, hasPower ? 255 : 0);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>((altPrefix + "/Elec/bus_1_powered").c_str(), [altPrefix](bool powered) {
         Dataref::getInstance()->executeChangedCallbacksForDataref((altPrefix + "/LGT/glaresheld_sw").c_str());
-    });
+    }, this);
 
     // MCP engagement LEDs
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_a_cmd_act").c_str(), [product](float engaged) {
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, engaged > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_b_cmd_act").c_str(), [product](float engaged) {
         product->setLedBrightness(FCUEfisLed::AP2_GREEN, engaged > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_at_arm_act").c_str(), [product](float armed) {
         product->setLedBrightness(FCUEfisLed::ATHR_GREEN, armed > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_vor_loc_act").c_str(), [product](float armed) {
         product->setLedBrightness(FCUEfisLed::LOC_GREEN, armed > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_app_act").c_str(), [product](float armed) {
         product->setLedBrightness(FCUEfisLed::APPR_GREEN, armed > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_lnav_act").c_str(), [product](float engaged) {
         product->setLedBrightness(FCUEfisLed::EXPED_GREEN, engaged > 0.5f ? 1 : 0);
-    });
+    }, this);
 
     // EFIS Left (captain) LEDs
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_plt_fd_act").c_str(), [product](float on) {
         product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, on > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/ND/show_waypoint_pilot").c_str(), [product](float on) {
         product->setLedBrightness(FCUEfisLed::EFISL_WPT_GREEN, on > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/ND/show_VOR_pilot").c_str(), [product](float on) {
         product->setLedBrightness(FCUEfisLed::EFISL_VORD_GREEN, on > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/ND/show_NDB_pilot").c_str(), [product](float on) {
         product->setLedBrightness(FCUEfisLed::EFISL_NDB_GREEN, on > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/ND/show_airport_pilot").c_str(), [product](float on) {
         product->setLedBrightness(FCUEfisLed::EFISL_ARPT_GREEN, on > 0.5f ? 1 : 0);
-    });
+    }, this);
 
     // EFIS Right (FO) LEDs
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/MCP/mcp_cplt_fd_act").c_str(), [product](float on) {
         product->setLedBrightness(FCUEfisLed::EFISR_FD_GREEN, on > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/ND/show_waypoint_copilot").c_str(), [product](float on) {
         product->setLedBrightness(FCUEfisLed::EFISR_WPT_GREEN, on > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/ND/show_VOR_copilot").c_str(), [product](float on) {
         product->setLedBrightness(FCUEfisLed::EFISR_VORD_GREEN, on > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/ND/show_NDB_copilot").c_str(), [product](float on) {
         product->setLedBrightness(FCUEfisLed::EFISR_NDB_GREEN, on > 0.5f ? 1 : 0);
-    });
+    }, this);
     Dataref::getInstance()->monitorExistingDataref<float>((prefix + "/B748/ND/show_airport_copilot").c_str(), [product](float on) {
         product->setLedBrightness(FCUEfisLed::EFISR_ARPT_GREEN, on > 0.5f ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref((altPrefix + "/Elec/bus_1_powered").c_str());
 }
 
 FPS748FCUEfisProfile::~FPS748FCUEfisProfile() {
-    bool isSSG = IsSSGVersion();
-    std::string prefix = isSSG ? "SSG" : "FPS";
-    std::string altPrefix = isSSG ? "ssg" : "FPS";
-
-    Dataref::getInstance()->unbind((altPrefix + "/LGT/glaresheld_sw").c_str());
-    Dataref::getInstance()->unbind((altPrefix + "/Elec/bus_1_powered").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_a_cmd_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_b_cmd_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_at_arm_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_vor_loc_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_app_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_lnav_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_plt_fd_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/ND/show_waypoint_pilot").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/ND/show_VOR_pilot").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/ND/show_NDB_pilot").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/ND/show_airport_pilot").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/MCP/mcp_cplt_fd_act").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/ND/show_waypoint_copilot").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/ND/show_VOR_copilot").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/ND/show_NDB_copilot").c_str());
-    Dataref::getInstance()->unbind((prefix + "/B748/ND/show_airport_copilot").c_str());
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool FPS748FCUEfisProfile::IsSSGVersion() {

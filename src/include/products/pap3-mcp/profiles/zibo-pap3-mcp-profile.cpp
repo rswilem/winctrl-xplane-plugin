@@ -29,13 +29,13 @@ ZiboPAP3MCPProfile::ZiboPAP3MCPProfile(ProductPAP3MCP *product) : PAP3MCPAircraf
         product->setLedBrightness(PAP3MCPLed::OVERALL_LED_BRIGHTNESS, ledBrightness);
 
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [product](bool hasPower) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("laminar/B738/electric/panel_brightness");
 
         product->setLedBrightness(PAP3MCPLed::LCD_BACKLIGHT, hasPower ? 180 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("laminar/B738/dspl_light_test", [this](std::vector<float> displayTest) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("laminar/B738/electric/panel_brightness");
@@ -57,110 +57,87 @@ ZiboPAP3MCPProfile::ZiboPAP3MCPProfile(ProductPAP3MCP *product) : PAP3MCPAircraf
         Dataref::getInstance()->executeChangedCallbacksForDataref("laminar/B738/autopilot/autothrottle_status1");
         Dataref::getInstance()->executeChangedCallbacksForDataref("laminar/B738/autopilot/master_capt_status");
         Dataref::getInstance()->executeChangedCallbacksForDataref("laminar/B738/autopilot/master_fo_status");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("laminar/B738/electric/main_bus", [product](bool hasPower) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/avionics_on");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/n1_status1", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::N1, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/speed_status1", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::SPEED, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/vnav_status1", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::VNAV, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/lvl_chg_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::LVL_CHG, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/hdg_sel_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::HDG_SEL, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/lnav_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::LNAV, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/vorloc_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::VORLOC, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/app_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::APP, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/alt_hld_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::ALT_HLD, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/vs_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::VS, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/cmd_a_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::CMD_A, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/cws_a_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::CWS_A, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/cmd_b_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::CMD_B, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/cws_b_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::CWS_B, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/autothrottle_status1", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::AT_ARM, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/master_capt_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::MA_CAPT, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/autopilot/master_fo_status", [this, product](float status) {
         product->setLedBrightness(PAP3MCPLed::MA_FO, status > 0.5f || isDisplayTestMode() ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("laminar/B738/autopilot/autothrottle_arm_pos", [product](bool armed) {
         product->setATSolenoid(armed);
-    });
+    }, this);
 }
 
 ZiboPAP3MCPProfile::~ZiboPAP3MCPProfile() {
-    Dataref::getInstance()->unbind("laminar/B738/electric/instrument_brightness");
-    Dataref::getInstance()->unbind("laminar/B738/electric/panel_brightness");
-    Dataref::getInstance()->unbind("laminar/B738/electric/main_bus");
-    Dataref::getInstance()->unbind("sim/cockpit/electrical/avionics_on");
-    Dataref::getInstance()->unbind("laminar/B738/dspl_light_test");
-
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/n1_status1");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/speed_status1");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/vnav_status1");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/lvl_chg_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/hdg_sel_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/lnav_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/vorloc_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/app_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/alt_hld_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/vs_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/cmd_a_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/cws_a_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/cmd_b_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/cws_b_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/autothrottle_status1");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/autothrottle_arm_pos");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/master_capt_status");
-    Dataref::getInstance()->unbind("laminar/B738/autopilot/master_fo_status");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool ZiboPAP3MCPProfile::IsEligible() {

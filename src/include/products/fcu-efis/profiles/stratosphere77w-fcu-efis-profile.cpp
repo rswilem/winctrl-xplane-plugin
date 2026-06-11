@@ -24,60 +24,52 @@ Strato77WFCUEfisProfile::Strato77WFCUEfisProfile(ProductFCUEfis *product) : FCUE
         product->setLedBrightness(FCUEfisLed::EFISR_OVERALL_GREEN, powered ? 255 : 0);
         product->setLedBrightness(FCUEfisLed::EFISL_OVERALL_GREEN, powered ? 255 : 0);
         product->forceStateSync();
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/mcp/ap_on", [product](int engaged) {
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, engaged ? 1 : 0);
         product->setLedBrightness(FCUEfisLed::AP2_GREEN, engaged ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/mcp/at_arm", [product](int armed) {
         product->setLedBrightness(FCUEfisLed::ATHR_GREEN, armed ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/mcp/flt_dir_pilot", [product](int on) {
         product->setLedBrightness(FCUEfisLed::EFISL_FD_GREEN, on ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/mcp/flt_dir_copilot", [product](int on) {
         product->setLedBrightness(FCUEfisLed::EFISR_FD_GREEN, on ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/cockpit/lights/caut_cap", [product](int on) {
         bool warn = Dataref::getInstance()->getCached<bool>("Strato/777/cockpit/lights/warn_cap");
         product->setLedBrightness(FCUEfisLed::EFISL_WPT_GREEN, on || warn ? 1 : 0);
         product->setLedBrightness(FCUEfisLed::EFISL_VORD_GREEN, on || warn ? 1 : 0);
         product->setLedBrightness(FCUEfisLed::EFISL_ARPT_GREEN, on || warn ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/cockpit/lights/caut_fo", [product](int on) {
         bool warn = Dataref::getInstance()->getCached<bool>("Strato/777/cockpit/lights/warn_fo");
         product->setLedBrightness(FCUEfisLed::EFISR_WPT_GREEN, on || warn ? 1 : 0);
         product->setLedBrightness(FCUEfisLed::EFISR_VORD_GREEN, on || warn ? 1 : 0);
         product->setLedBrightness(FCUEfisLed::EFISR_ARPT_GREEN, on || warn ? 1 : 0);
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/cockpit/lights/warn_cap", [product](int on) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("Strato/777/cockpit/lights/caut_cap");
-    });
+    }, this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("Strato/777/cockpit/lights/warn_fo", [product](int on) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("Strato/777/cockpit/lights/caut_fo");
-    });
+    }, this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/autopilot/autopilot_has_power");
 }
 
 Strato77WFCUEfisProfile::~Strato77WFCUEfisProfile() {
-    Dataref::getInstance()->unbind("sim/cockpit2/autopilot/autopilot_has_power");
-    Dataref::getInstance()->unbind("Strato/777/mcp/ap_on");
-    Dataref::getInstance()->unbind("Strato/777/mcp/at_arm");
-    Dataref::getInstance()->unbind("Strato/777/mcp/flt_dir_pilot");
-    Dataref::getInstance()->unbind("Strato/777/mcp/flt_dir_copilot");
-    Dataref::getInstance()->unbind("Strato/777/cockpit/lights/caut_cap");
-    Dataref::getInstance()->unbind("Strato/777/cockpit/lights/caut_fo");
-    Dataref::getInstance()->unbind("Strato/777/cockpit/lights/warn_cap");
-    Dataref::getInstance()->unbind("Strato/777/cockpit/lights/warn_fo");
+    Dataref::getInstance()->unbindAll(this);
 }
 
 bool Strato77WFCUEfisProfile::IsEligible() {

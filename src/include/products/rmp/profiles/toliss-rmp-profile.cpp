@@ -64,9 +64,8 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/PanelBrightnessLevel");
     });
 
-    Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [this](bool poweredOn) {
+    Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/PanelBrightnessLevel");
-        updateDisplays();
     });
 
     std::string lightsRef = std::string("AirbusFBW/") + rmpName() + "Lights_Raw";
@@ -86,16 +85,6 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
         product->setLedBrightness(RMPLed::NAV, brightness[13] * 255);
     });
 
-    std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
-    std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
-
-    Dataref::getInstance()->monitorExistingDataref<std::string>(activeRef.c_str(), [this](std::string s) {
-        updateDisplays();
-    });
-
-    Dataref::getInstance()->monitorExistingDataref<std::string>(stbyRef.c_str(), [this](std::string s) {
-        updateDisplays();
-    });
 }
 
 TolissRMPProfile::~TolissRMPProfile() {
@@ -104,12 +93,8 @@ TolissRMPProfile::~TolissRMPProfile() {
 
     std::string rmpAvailRef = std::string("AirbusFBW/") + rmpName() + "Available";
     std::string lightsRef = std::string("AirbusFBW/") + rmpName() + "Lights_Raw";
-    std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
-    std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
     Dataref::getInstance()->unbind(rmpAvailRef.c_str());
     Dataref::getInstance()->unbind(lightsRef.c_str());
-    Dataref::getInstance()->unbind(activeRef.c_str());
-    Dataref::getInstance()->unbind(stbyRef.c_str());
 }
 
 bool TolissRMPProfile::IsEligible() {

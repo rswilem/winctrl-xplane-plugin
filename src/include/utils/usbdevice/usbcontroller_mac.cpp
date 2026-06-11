@@ -77,6 +77,7 @@ void USBController::destroy() {
     devices.clear();
 
     if (hidManager) {
+        IOHIDManagerUnscheduleFromRunLoop(hidManager, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
         IOHIDManagerClose(hidManager, kIOHIDOptionsTypeNone);
         CFRelease(hidManager);
         hidManager = nullptr;
@@ -134,15 +135,15 @@ void USBController::DeviceAddedCallback(void *context, IOReturn result, void *se
     productNameStr.erase(0, productNameStr.find_first_not_of(" \t\n\r"));
     productNameStr.erase(productNameStr.find_last_not_of(" \t\n\r") + 1);
 
+    CFRetain(device);
     AppState::getInstance()->executeAfter(0, [self, device, vendorId, productId, vendorNameStr, productNameStr]() {
-        if (self->deviceExistsWithHIDDevice(device)) {
-            return;
+        if (!self->deviceExistsWithHIDDevice(device)) {
+            USBDevice *newDevice = USBDevice::Device(device, vendorId, productId, vendorNameStr, productNameStr);
+            if (newDevice) {
+                self->devices.push_back(newDevice);
+            }
         }
-
-        USBDevice *newDevice = USBDevice::Device(device, vendorId, productId, vendorNameStr, productNameStr);
-        if (newDevice) {
-            self->devices.push_back(newDevice);
-        }
+        CFRelease(device);
     });
 }
 

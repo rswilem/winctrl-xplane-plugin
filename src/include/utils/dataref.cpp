@@ -57,27 +57,27 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
 
     XPLMDataRef handle = nullptr;
     boundRefs[ref] = {handle, value, {{nullptr, [changeCallback](DataRefValueType newValue) -> bool {
-                          if (!changeCallback) {
-                              return true;
-                          } else if constexpr (std::is_same_v<T, std::string>) {
-                              if (std::holds_alternative<std::string>(newValue)) {
-                                  return changeCallback(std::get<std::string>(newValue));
-                              }
-                          } else if constexpr (std::is_same_v<T, int> || std::is_same_v<T, bool>) {
-                              if (std::holds_alternative<int>(newValue)) {
-                                  return changeCallback(std::get<int>(newValue));
-                              }
-                          } else if constexpr (std::is_same_v<T, float>) {
-                              if (std::holds_alternative<float>(newValue)) {
-                                  return changeCallback(std::get<float>(newValue));
-                              }
-                          } else if constexpr (std::is_same_v<T, double>) {
-                              if (std::holds_alternative<double>(newValue)) {
-                                  return changeCallback(std::get<double>(newValue));
-                              }
-                          }
-                          return false;
-                      }}}};
+                                           if (!changeCallback) {
+                                               return true;
+                                           } else if constexpr (std::is_same_v<T, std::string>) {
+                                               if (std::holds_alternative<std::string>(newValue)) {
+                                                   return changeCallback(std::get<std::string>(newValue));
+                                               }
+                                           } else if constexpr (std::is_same_v<T, int> || std::is_same_v<T, bool>) {
+                                               if (std::holds_alternative<int>(newValue)) {
+                                                   return changeCallback(std::get<int>(newValue));
+                                               }
+                                           } else if constexpr (std::is_same_v<T, float>) {
+                                               if (std::holds_alternative<float>(newValue)) {
+                                                   return changeCallback(std::get<float>(newValue));
+                                               }
+                                           } else if constexpr (std::is_same_v<T, double>) {
+                                               if (std::holds_alternative<double>(newValue)) {
+                                                   return changeCallback(std::get<double>(newValue));
+                                               }
+                                           }
+                                           return false;
+                                       }}}};
 
     if constexpr ((std::is_same_v<T, int>) || (std::is_same_v<T, bool>) ) {
         handle = XPLMRegisterDataAccessor(
@@ -192,6 +192,9 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
             nullptr, // Float array
             [](void *inRefcon, void *outValue, int inOffset, int inMaxLength) -> int {
                 T value = *static_cast<T *>(inRefcon);
+                if (!outValue) {
+                    return static_cast<int>(value.length());
+                }
                 strncpy(static_cast<char *>(outValue), value.c_str(), inMaxLength);
                 return static_cast<int>(value.length());
             },
@@ -296,7 +299,7 @@ void Dataref::unbind(const char *ref) {
     }
 
     //    refs.erase(ref);
-    //    cachedValues.erase(ref);
+    cachedValues.erase(ref);
 }
 
 void Dataref::clearCache() {
@@ -379,7 +382,9 @@ void Dataref::unbindAll(void *owner) {
     for (auto it = boundRefs.begin(); it != boundRefs.end();) {
         auto &cbs = it->second.changeCallbacks;
         cbs.erase(std::remove_if(cbs.begin(), cbs.end(),
-                      [owner](const TaggedCallback &tc) { return tc.owner == owner; }),
+                      [owner](const TaggedCallback &tc) {
+                          return tc.owner == owner;
+                      }),
             cbs.end());
         // Remove monitor-only entries that now have no callbacks
         if (cbs.empty() && !it->second.handle) {

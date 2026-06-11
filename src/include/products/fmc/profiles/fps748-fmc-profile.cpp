@@ -22,11 +22,13 @@ FPS748FMCProfile::FPS748FMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
         uint8_t target = Dataref::getInstance()->get<bool>((alternatePrefix + "/Elec/bus_1_powered").c_str()) ? brightness * 255 : 0;
         product->setLedBrightness(FMCLed::BACKLIGHT, target);
         product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, target);
-    }, this);
+    },
+        this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>((alternatePrefix + "/Elec/bus_1_powered").c_str(), [alternatePrefix](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref((alternatePrefix + "/LGT/mcdu_brt_sw").c_str());
-    }, this);
+    },
+        this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>((prefix + "/UFMC/Exec_Light_on_Pilot").c_str(), [product](bool enabled) {
         if (product->deviceVariant != FMCDeviceVariant::VARIANT_CAPTAIN) {
@@ -35,7 +37,8 @@ FPS748FMCProfile::FPS748FMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
 
         product->setLedBrightness(FMCLed::PFP_EXEC, enabled ? 1 : 0);
         product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
-    }, this);
+    },
+        this);
     Dataref::getInstance()->monitorExistingDataref<bool>((prefix + "/UFMC/Exec_Light_on_Copilot").c_str(), [product](bool enabled) {
         if (product->deviceVariant != FMCDeviceVariant::VARIANT_FIRSTOFFICER) {
             return;
@@ -43,7 +46,8 @@ FPS748FMCProfile::FPS748FMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
 
         product->setLedBrightness(FMCLed::PFP_EXEC, enabled ? 1 : 0);
         product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
-    }, this);
+    },
+        this);
 
     Dataref::getInstance()->executeChangedCallbacksForDataref((alternatePrefix + "/Elec/bus_1_powered").c_str());
 }
@@ -345,7 +349,7 @@ void FPS748FMCProfile::buttonPressed(const FMCButtonDef *button, XPLMCommandPhas
             if (pos != std::string::npos) {
                 std::string cdu2Dataref = button->dataref;
                 cdu2Dataref.replace(pos, 4, "cdu2");
-                datarefManager->set<double>(button->dataref.c_str(), phase == xplm_CommandBegin ? value : 0.0);
+                datarefManager->set<double>(cdu2Dataref.c_str(), phase == xplm_CommandBegin ? value : 0.0);
             }
         }
     } else if (phase == xplm_CommandBegin && button->datarefType == FMCDatarefType::ADJUST_VALUE) {

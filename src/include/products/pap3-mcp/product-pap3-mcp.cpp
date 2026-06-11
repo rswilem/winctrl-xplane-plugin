@@ -62,6 +62,7 @@ void ProductPAP3MCP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (Strato77WPAP3MCPProfile::IsEligible()) {
         profile = new Strato77WPAP3MCPProfile(this);
+        profileReady = true;
     } else if (FF777PAP3MCPProfile::IsEligible()) {
         profile = new FF777PAP3MCPProfile(this);
         profileReady = true;
@@ -274,13 +275,13 @@ void ProductPAP3MCP::sendLCDDisplay(const std::string &speed, int heading, int a
             if (displayData.machDigits >= 3) {
                 // "0.XX" — KILO=0, HUNDREDS+TENS hold the two decimal digits, dot between them
                 const int twoDigits = std::clamp(static_cast<int>(std::floor(mach * 100.0f + 0.5f)), 0, 99);
-                drawDigit(G0, payload, SPD_KILO,     0);
+                drawDigit(G0, payload, SPD_KILO, 0);
                 drawDigit(G0, payload, SPD_HUNDREDS, (twoDigits / 10) % 10);
-                drawDigit(G0, payload, SPD_TENS,      twoDigits        % 10);
+                drawDigit(G0, payload, SPD_TENS, twoDigits % 10);
             } else {
                 const int twoDigits = std::clamp(static_cast<int>(std::floor(mach * 100.0f + 0.5f)), 0, 99);
-                drawDigit(G0, payload, SPD_TENS,  (twoDigits / 10) % 10);
-                drawDigit(G0, payload, SPD_UNITS,  twoDigits        % 10);
+                drawDigit(G0, payload, SPD_TENS, (twoDigits / 10) % 10);
+                drawDigit(G0, payload, SPD_UNITS, twoDigits % 10);
             }
 
             setFlag(payload, OFF_36, LBL_IAS, displayData.showLabels && false);

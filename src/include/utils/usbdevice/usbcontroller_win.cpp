@@ -29,7 +29,9 @@ USBController::USBController() {
     monitorThread = std::thread([this]() {
         while (!shouldShutdown) {
             std::unique_lock<std::mutex> lock(monitorMutex);
-            monitorCV.wait_for(lock, std::chrono::seconds(5), [this] { return shouldShutdown.load(); });
+            monitorCV.wait_for(lock, std::chrono::seconds(5), [this] {
+                return shouldShutdown.load();
+            });
             lock.unlock();
             if (!shouldShutdown) {
                 checkForDeviceChanges();
@@ -90,6 +92,8 @@ USBDevice *USBController::createDeviceFromHandle(HANDLE hidDevice, const std::st
 
     if (device) {
         devicePaths[device] = devicePath;
+    } else {
+        CloseHandle(hidDevice);
     }
     return device;
 }

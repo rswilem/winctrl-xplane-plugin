@@ -260,8 +260,8 @@ const std::vector<std::string> &FF767FCUEfisProfile::displayDatarefs() const {
         "1-sim/gauges/baroHPa1_right",
         "sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot",
         "sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot",
-        "1-sim/ckpt/cptHsiStdButton/anim"
-        "1-sim/ckpt/foHsiStdButton/anim"
+        "1-sim/ckpt/cptHsiStdButton/anim",
+        "1-sim/ckpt/foHsiStdButton/anim",
 
         "1-sim/efis/isBaroHpaL", // 0=inHg,1=hPa
         "1-sim/efis/isBaroHpaR",
@@ -275,14 +275,14 @@ const std::vector<std::string> &FF767FCUEfisProfile::displayDatarefs() const {
         "1-sim/testPanel/test1Button",
 
         // ND Display options
-        "1-sim/ckpt/cptHsiWptButton/anim"
-        "1-sim/ckpt/cptHsiStaButton/anim"
-        "1-sim/ckpt/cptHsiDataButton/anim"
-        "1-sim/ckpt/cptHsiArptButton/anim"
-        "1-sim/ckpt/foHsiWptButton/anim"
-        "1-sim/ckpt/foHsiStaButton/anim"
-        "1-sim/ckpt/foHsiDataButton/anim"
-        "1-sim/ckpt/foHsiArptButton/anim"
+        "1-sim/ckpt/cptHsiWptButton/anim",
+        "1-sim/ckpt/cptHsiStaButton/anim",
+        "1-sim/ckpt/cptHsiDataButton/anim",
+        "1-sim/ckpt/cptHsiArptButton/anim",
+        "1-sim/ckpt/foHsiWptButton/anim",
+        "1-sim/ckpt/foHsiStaButton/anim",
+        "1-sim/ckpt/foHsiDataButton/anim",
+        "1-sim/ckpt/foHsiArptButton/anim",
 
     };
 

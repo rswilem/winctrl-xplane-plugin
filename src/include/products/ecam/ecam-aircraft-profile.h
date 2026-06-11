@@ -1,7 +1,7 @@
 #ifndef ECAM_AIRCRAFT_PROFILE_H
 #define ECAM_AIRCRAFT_PROFILE_H
 
-#include "owner-cleanup.h"
+#include "profile-cleanup.h"
 
 #include <string>
 #include <unordered_map>
@@ -22,7 +22,7 @@ class ECAMAircraftProfile {
     public:
         ECAMAircraftProfile(ProductECAM *product) : product(product) {};
         virtual ~ECAMAircraftProfile() {
-            cleanupOwner(this);
+            cleanupProfile(this);
         }
 
         virtual const std::unordered_map<uint16_t, ECAMButtonDef> &buttonDefs() const = 0;

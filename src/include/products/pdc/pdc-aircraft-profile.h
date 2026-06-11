@@ -1,7 +1,7 @@
 #ifndef PDC_AIRCRAFT_PROFILE_H
 #define PDC_AIRCRAFT_PROFILE_H
 
-#include "owner-cleanup.h"
+#include "profile-cleanup.h"
 
 #include <string>
 #include <unordered_map>
@@ -54,7 +54,7 @@ class PDCAircraftProfile {
     public:
         PDCAircraftProfile(ProductPDC *product) : product(product) {};
         virtual ~PDCAircraftProfile() {
-            cleanupOwner(this);
+            cleanupProfile(this);
         }
 
         virtual const std::unordered_map<PDCButtonIndex3N3M, PDCButtonDef> &buttonDefs() const = 0;

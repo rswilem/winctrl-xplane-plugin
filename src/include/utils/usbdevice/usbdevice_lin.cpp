@@ -20,8 +20,8 @@ USBDevice::USBDevice(HIDDeviceHandle aHidDevice, uint16_t aVendorId, uint16_t aP
     hidDevice(aHidDevice), vendorId(aVendorId), productId(aProductId), vendorName(aVendorName), productName(aProductName), connected(false) {}
 
 USBDevice::~USBDevice() {
-    // Safety net for the owner contract: purge any task still scheduled with
-    // this device as owner, in case a derived class forgot to.
+    // Device destructor calls cancelTasksForOwner as a fallback in case a
+    // derived product class forgot. Profile destructors call cleanupProfile.
     AppState::getInstance()->cancelTasksForOwner(this);
     disconnect();
 }

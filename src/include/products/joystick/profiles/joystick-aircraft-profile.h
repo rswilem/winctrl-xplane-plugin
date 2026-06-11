@@ -1,7 +1,7 @@
 #ifndef JOYSTICK_AIRCRAFT_PROFILE_H
 #define JOYSTICK_AIRCRAFT_PROFILE_H
 
-#include "owner-cleanup.h"
+#include "profile-cleanup.h"
 
 #include <string>
 #include <vector>
@@ -15,7 +15,7 @@ class JoystickAircraftProfile {
     public:
         JoystickAircraftProfile(USBDevice *product) : product(product) {};
         virtual ~JoystickAircraftProfile() {
-            cleanupOwner(this);
+            cleanupProfile(this);
         }
 
         virtual void update() {};

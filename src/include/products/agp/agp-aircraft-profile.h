@@ -1,7 +1,7 @@
 #ifndef AGP_AIRCRAFT_PROFILE_H
 #define AGP_AIRCRAFT_PROFILE_H
 
-#include "owner-cleanup.h"
+#include "profile-cleanup.h"
 
 #include <string>
 #include <unordered_map>
@@ -30,7 +30,7 @@ class AGPAircraftProfile {
     public:
         AGPAircraftProfile(ProductAGP *product) : product(product) {};
         virtual ~AGPAircraftProfile() {
-            cleanupOwner(this);
+            cleanupProfile(this);
         }
 
         virtual const std::unordered_map<uint16_t, AGPButtonDef> &buttonDefs() const = 0;

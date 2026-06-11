@@ -1,7 +1,7 @@
 #ifndef RMP_AIRCRAFT_PROFILE_H
 #define RMP_AIRCRAFT_PROFILE_H
 
-#include "owner-cleanup.h"
+#include "profile-cleanup.h"
 
 #include <string>
 #include <unordered_map>
@@ -29,7 +29,7 @@ class RMPAircraftProfile {
     public:
         RMPAircraftProfile(ProductRMP *product) : product(product) {};
         virtual ~RMPAircraftProfile() {
-            cleanupOwner(this);
+            cleanupProfile(this);
         }
 
         virtual const std::vector<std::string> &displayDatarefs() const = 0;

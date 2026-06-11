@@ -1,7 +1,7 @@
 #ifndef FCUEFIS_AIRCRAFT_PROFILE_H
 #define FCUEFIS_AIRCRAFT_PROFILE_H
 
-#include "owner-cleanup.h"
+#include "profile-cleanup.h"
 
 #include "segment-display.h"
 
@@ -226,7 +226,7 @@ class FCUEfisAircraftProfile {
         FCUEfisAircraftProfile(ProductFCUEfis *product) :
             product(product) {};
         virtual ~FCUEfisAircraftProfile() {
-            cleanupOwner(this);
+            cleanupProfile(this);
         }
 
         virtual const std::vector<std::string> &displayDatarefs() const = 0;

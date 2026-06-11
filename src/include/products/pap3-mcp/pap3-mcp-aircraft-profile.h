@@ -1,7 +1,7 @@
 #ifndef PAP3MCP_AIRCRAFT_PROFILE_H
 #define PAP3MCP_AIRCRAFT_PROFILE_H
 
-#include "owner-cleanup.h"
+#include "profile-cleanup.h"
 
 #include <cstdint>
 #include <string>
@@ -114,7 +114,7 @@ class PAP3MCPAircraftProfile {
         PAP3MCPAircraftProfile(ProductPAP3MCP *product) :
             product(product) {};
         virtual ~PAP3MCPAircraftProfile() {
-            cleanupOwner(this);
+            cleanupProfile(this);
         }
 
         virtual const std::vector<std::string> &displayDatarefs() const = 0;

@@ -1,7 +1,7 @@
 #ifndef FMC_AIRCRAFT_PROFILE_H
 #define FMC_AIRCRAFT_PROFILE_H
 
-#include "owner-cleanup.h"
+#include "profile-cleanup.h"
 
 #include "fmc-hardware-mapping.h"
 
@@ -105,7 +105,7 @@ class FMCAircraftProfile {
         FMCAircraftProfile(ProductFMC *product) :
             product(product) {};
         virtual ~FMCAircraftProfile() {
-            cleanupOwner(this);
+            cleanupProfile(this);
         }
 
         virtual const std::vector<std::string> &displayDatarefs() const = 0;

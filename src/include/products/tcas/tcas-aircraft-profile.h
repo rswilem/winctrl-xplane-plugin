@@ -1,7 +1,7 @@
 #ifndef TCAS_AIRCRAFT_PROFILE_H
 #define TCAS_AIRCRAFT_PROFILE_H
 
-#include "owner-cleanup.h"
+#include "profile-cleanup.h"
 
 #include <string>
 #include <unordered_map>
@@ -30,7 +30,7 @@ class TCASAircraftProfile {
     public:
         TCASAircraftProfile(ProductTCAS *product) : product(product) {};
         virtual ~TCASAircraftProfile() {
-            cleanupOwner(this);
+            cleanupProfile(this);
         }
 
         virtual const std::vector<std::string> &displayDatarefs() const = 0;

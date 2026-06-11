@@ -21,7 +21,9 @@ class ProductJoystick : public USBDevice {
 
         const unsigned char identifierByte;
         const unsigned char motorCode;
-        float vibrationMultiplier;
+        // 1.0f lets the initial setVibration(0) in connect() write the
+        // motor-off packet; loadVibrationSetting() overrides it right after.
+        float vibrationMultiplier = 1.0f;
 
         const char *classIdentifier() override;
         const char *activeProfileName() const override;

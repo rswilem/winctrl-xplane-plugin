@@ -72,6 +72,10 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
     std::string lightsRef = std::string("AirbusFBW/") + rmpName() + "Lights_Raw";
 
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>(lightsRef.c_str(), [product](const std::vector<float> &brightness) {
+        if (brightness.size() < 14) {
+            return;
+        }
+
         product->setLedBrightness(RMPLed::VHF1, brightness[1] * 255);
         product->setLedBrightness(RMPLed::VHF2, brightness[2] * 255);
         product->setLedBrightness(RMPLed::VHF3, brightness[3] * 255);

@@ -231,7 +231,7 @@ const std::vector<std::string> &FF767FCUEfisProfile::displayDatarefs() const {
 
         // MCP - Power
         "sim/cockpit2/autopilot/autopilot_has_power",
-        "1-sim/AP/desengageLever"
+        "1-sim/AP/desengageLever",
 
         // MCP - Speed
         "1-sim/AP/iasmach",
@@ -254,8 +254,8 @@ const std::vector<std::string> &FF767FCUEfisProfile::displayDatarefs() const {
         //"1-sim/output/mcp/fma_vs_mode",
 
         // EFIS - Barometric settings
-        "1-sim/gauges/baroINHG1_left",
-        "1-sim/gauges/baroINHG1_right",
+        "1-sim/gauges/baroINHg1_left",
+        "1-sim/gauges/baroINHg1_right",
         "1-sim/gauges/baroHPa1_left",
         "1-sim/gauges/baroHPa1_right",
         "sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot",
@@ -265,6 +265,8 @@ const std::vector<std::string> &FF767FCUEfisProfile::displayDatarefs() const {
 
         "1-sim/efis/isBaroHpaL", // 0=inHg,1=hPa
         "1-sim/efis/isBaroHpaR",
+        "1-sim/efis/isBaroStdL",
+        "1-sim/efis/isBaroStdR",
 
         // ND Mode and Range
         "1-sim/efis/ctrlPanel/1/hsiModeRotary",
@@ -587,5 +589,5 @@ void FF767FCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMComm
 }
 
 bool FF767FCUEfisProfile::isTestMode() {
-    return Dataref::getInstance()->get<int>("1-sim/testPanel/test1Button") == 2;
+    return Dataref::getInstance()->getCached<int>("1-sim/testPanel/test1Button") == 2;
 }

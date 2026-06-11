@@ -46,6 +46,10 @@ bool USBDevice::connect() {
 
     connected = true;
     inputThread = std::thread([this]() {
+        HANDLE selfHandle = nullptr;
+        DuplicateHandle(GetCurrentProcess(), GetCurrentThread(), GetCurrentProcess(), &selfHandle, 0, FALSE, DUPLICATE_SAME_ACCESS);
+        inputThreadHandle = selfHandle;
+
         uint8_t buffer[65];
         DWORD bytesRead;
         while (connected && hidDevice != INVALID_HANDLE_VALUE) {
@@ -107,11 +111,6 @@ void USBDevice::update() {
 void USBDevice::disconnect() {
     connected = false;
 
-    // Cancel any pending synchronous ReadFile so the input thread can exit
-    if (hidDevice != INVALID_HANDLE_VALUE) {
-        CancelIoEx(hidDevice, nullptr);
-    }
-
     // Drain write queue, then stop the write thread
     while (writeQueueSize.load() > 0 && writeThreadRunning) {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -123,7 +122,24 @@ void USBDevice::disconnect() {
     }
 
     if (inputThread.joinable()) {
+        // CancelIoEx only cancels a ReadFile that is already pending; the
+        // input thread may be between its loop condition and the next read,
+        // which would then block forever on a quiescent device. Keep
+        // cancelling until the thread has actually exited. A null handle
+        // means the thread has not reached its first statement yet; it will
+        // then see connected == false and exit before reading.
+        HANDLE threadHandle = inputThreadHandle.load();
+        while (threadHandle && WaitForSingleObject(threadHandle, 50) == WAIT_TIMEOUT) {
+            if (hidDevice != INVALID_HANDLE_VALUE) {
+                CancelIoEx(hidDevice, nullptr);
+            }
+            CancelSynchronousIo(threadHandle);
+        }
         inputThread.join();
+        if (threadHandle) {
+            CloseHandle(threadHandle);
+        }
+        inputThreadHandle = nullptr;
     }
 
     if (hidDevice != INVALID_HANDLE_VALUE) {

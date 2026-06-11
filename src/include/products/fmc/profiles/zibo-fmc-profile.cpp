@@ -409,7 +409,10 @@ void ZiboFMCProfile::buttonPressed(const FMCButtonDef *button, XPLMCommandPhase 
                     auto it = buttonKeyMap().find(mapping.second);
                     if (it != buttonKeyMap().end()) {
                         if (phase == xplm_CommandBegin && button->datarefType == FMCDatarefType::EXECUTE_CMD_ONCE) {
-                            datarefManager->executeCommand(it->second->dataref.c_str(), phase);
+                            // Default phase -1 maps to XPLMCommandOnce; passing
+                            // xplm_CommandBegin would issue an XPLMCommandBegin
+                            // that is never balanced with an End.
+                            datarefManager->executeCommand(it->second->dataref.c_str());
                         } else if (button->datarefType == FMCDatarefType::EXECUTE_CMD_PHASED) {
                             datarefManager->executeCommand(it->second->dataref.c_str(), phase);
                         }
@@ -420,7 +423,7 @@ void ZiboFMCProfile::buttonPressed(const FMCButtonDef *button, XPLMCommandPhase 
         }
 
         if (phase == xplm_CommandBegin && button->datarefType == FMCDatarefType::EXECUTE_CMD_ONCE) {
-            datarefManager->executeCommand(button->dataref.c_str(), phase);
+            datarefManager->executeCommand(button->dataref.c_str());
         } else if (button->datarefType == FMCDatarefType::EXECUTE_CMD_PHASED) {
             datarefManager->executeCommand(button->dataref.c_str(), phase);
         }

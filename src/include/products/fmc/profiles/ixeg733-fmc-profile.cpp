@@ -293,7 +293,9 @@ void IXEG733FMCProfile::updatePage(std::vector<std::vector<char>> &page) {
             continue;
         }
 
-        if (ref.find("D_line") == 0) {
+        // The refs are full paths ("ixeg/733/FMC/cdu1_D_line1L_d"), so match
+        // anywhere in the string; a position-0 match never occurs.
+        if (ref.find("D_line") != std::string::npos) {
             size_t linePos = ref.find("line") + 4;
             if (linePos + 2 < ref.length()) {
                 char lineChar = ref[linePos];

@@ -67,7 +67,13 @@ void AppState::deinitialize() {
 
     XPLMUnregisterFlightLoopCallback(AppState::Update, nullptr);
 
-    USBController::getInstance()->destroy();
+    // destroy() resets the singleton pointer but does not free the object;
+    // delete it here or it leaks once per enable/disable cycle. Safe because
+    // the destructor's own destroy() call is idempotent and the task queue is
+    // cleared below before any queued lambda capturing the controller can run.
+    USBController *usbController = USBController::getInstance();
+    usbController->destroy();
+    delete usbController;
 
     Dataref::getInstance()->destroyAllBindings();
 
@@ -102,6 +108,7 @@ void AppState::update() {
     std::vector<DelayedTask> readyTasks;
     {
         std::lock_guard<std::mutex> lock(taskQueueMutex);
+        cancelledOwners.clear();
         std::vector<DelayedTask> remaining;
         remaining.reserve(taskQueue.size());
         for (auto &task : taskQueue) {
@@ -115,9 +122,21 @@ void AppState::update() {
     }
 
     for (auto &task : readyTasks) {
-        if (task.func) {
-            task.func();
+        if (!task.func) {
+            continue;
         }
+
+        // An earlier task in this batch may have destroyed this task's owner
+        // (e.g. a deferred device deletion); cancelTasksForOwner records the
+        // owner so tasks already extracted into the batch are skipped too.
+        if (task.owner) {
+            std::lock_guard<std::mutex> lock(taskQueueMutex);
+            if (std::find(cancelledOwners.begin(), cancelledOwners.end(), task.owner) != cancelledOwners.end()) {
+                continue;
+            }
+        }
+
+        task.func();
     }
 
     if (!pluginInitialized) {
@@ -140,7 +159,7 @@ void AppState::executeAfterDebounced(std::string taskName, int milliseconds, voi
     auto now = std::chrono::steady_clock::now();
     std::lock_guard<std::mutex> lock(taskQueueMutex);
     auto it = std::find_if(taskQueue.begin(), taskQueue.end(), [&](const DelayedTask &t) {
-        return t.name == taskName;
+        return t.owner == owner && t.name == taskName;
     });
 
     if (it != taskQueue.end()) {
@@ -153,11 +172,16 @@ void AppState::executeAfterDebounced(std::string taskName, int milliseconds, voi
 }
 
 void AppState::cancelTasksForOwner(void *owner) {
+    if (!owner) {
+        return;
+    }
+
     std::lock_guard<std::mutex> lock(taskQueueMutex);
     taskQueue.erase(
         std::remove_if(taskQueue.begin(), taskQueue.end(),
             [owner](const DelayedTask &t) { return t.owner == owner; }),
         taskQueue.end());
+    cancelledOwners.push_back(owner);
 }
 
 std::string AppState::readPreference(const std::string &key, const std::string &defaultValue) {

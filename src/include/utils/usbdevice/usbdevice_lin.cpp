@@ -32,8 +32,11 @@ bool USBDevice::connect() {
     inputBuffer = new uint8_t[kInputReportSize];
 
     if (pipe(inputPipe) < 0) {
+        // Without the self-pipe there is no way to wake the input thread out
+        // of select(), so disconnect() would hang in join(). Fail the connect.
         Logger::getInstance()->error("Failed to create shutdown pipe: %d\n", errno);
         inputPipe[0] = inputPipe[1] = -1;
+        return false;
     }
 
     connected = true;

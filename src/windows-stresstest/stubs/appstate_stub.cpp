@@ -2,7 +2,7 @@
 // Replaces the full X-Plane-dependent appstate.cpp.
 // - pluginInitialized is always true
 // - executeAfter / executeAfterDebounced call the function immediately
-//   (usbcontroller_win.cpp uses executeAfter(0, lambda) to create devices)
+//   (usbcontroller_win.cpp uses executeAfter(0, owner, lambda) to create devices)
 // - Everything else is a no-op / sensible default
 
 #include "appstate.h"
@@ -41,13 +41,15 @@ std::string AppState::getPluginDirectory() {
     return "";
 }
 
-void AppState::executeAfter(int /*milliseconds*/, std::function<void()> func) {
+void AppState::executeAfter(int /*milliseconds*/, void * /*owner*/, std::function<void()> func) {
     func();
 }
 
-void AppState::executeAfterDebounced(std::string /*taskName*/, int /*milliseconds*/, std::function<void()> func) {
+void AppState::executeAfterDebounced(std::string /*taskName*/, int /*milliseconds*/, void * /*owner*/, std::function<void()> func) {
     func();
 }
+
+void AppState::cancelTasksForOwner(void * /*owner*/) {}
 
 std::string AppState::readPreference(const std::string & /*key*/, const std::string &defaultValue) {
     return defaultValue;

@@ -21,6 +21,7 @@ class AppState {
 
         static AppState *instance;
         std::vector<DelayedTask> taskQueue;
+        std::vector<void *> cancelledOwners;
         std::mutex taskQueueMutex;
         void update();
 

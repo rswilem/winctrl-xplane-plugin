@@ -54,6 +54,11 @@ class USBDevice {
 #elif IBM
         USHORT outputReportByteLength = 0;
         std::thread inputThread;
+        // Win32 handle of the input thread, published by the thread itself.
+        // std::thread::native_handle() is a pthread_t under MinGW's posix
+        // thread model, so it cannot be used with WaitForSingleObject or
+        // CancelSynchronousIo.
+        std::atomic<HANDLE> inputThreadHandle{nullptr};
         static void InputReportCallback(void *context, DWORD bytesRead, uint8_t *report);
 #elif LIN
         std::thread inputThread;
@@ -67,6 +72,11 @@ class USBDevice {
 
         HIDDeviceHandle hidDevice;
         std::atomic<bool> connected{false};
+#if APL
+        // Set when the OS already removed the device: disconnect() must skip
+        // IOHIDDeviceClose but still release the retained reference.
+        std::atomic<bool> deviceRemoved{false};
+#endif
         bool profileReady = false;
         uint16_t vendorId;
         uint16_t productId;

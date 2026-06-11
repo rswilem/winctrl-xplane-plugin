@@ -100,7 +100,7 @@ PLUGIN_API int XPluginStart(char *name, char *sig, char *desc) {
                     }
                 }
 
-                AppState::getInstance()->executeAfter(5000, *action);
+                AppState::getInstance()->executeAfter(5000, nullptr, *action);
             };
 
             (*action)();
@@ -153,6 +153,11 @@ PLUGIN_API void XPluginReceiveMessage(XPLMPluginID from, long msg, void *params)
 
             USBController::getInstance()->disconnectAllDevices();
             PluginsMenu::getInstance()->clearAllItems();
+
+            // The profiles unbind their own monitors on destruction; this
+            // drops the leftover display/getCached entries and stale handles
+            // so they don't accrete (and get polled) across aircraft switches.
+            Dataref::getInstance()->clearCache();
             break;
         }
 

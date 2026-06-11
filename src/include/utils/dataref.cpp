@@ -92,7 +92,7 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
                 T *valuePtr = static_cast<T *>(info->valuePointer);
 
                 if (info->changeCallbacks.size()) {
-                    if (info->changeCallbacks[0](inValue)) {
+                    if (info->changeCallbacks[0].func(inValue)) {
                         *valuePtr = inValue;
                     }
                 } else {
@@ -126,7 +126,7 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
                 T *valuePtr = static_cast<T *>(info->valuePointer);
 
                 if (info->changeCallbacks.size()) {
-                    if (info->changeCallbacks[0](inValue)) {
+                    if (info->changeCallbacks[0].func(inValue)) {
                         *valuePtr = inValue;
                     }
                 } else {
@@ -160,7 +160,7 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
                 T *valuePtr = static_cast<T *>(info->valuePointer);
 
                 if (info->changeCallbacks.size()) {
-                    if (info->changeCallbacks[0](inValue)) {
+                    if (info->changeCallbacks[0].func(inValue)) {
                         *valuePtr = inValue;
                     }
                 } else {
@@ -192,11 +192,16 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
             nullptr, // Float array
             [](void *inRefcon, void *outValue, int inOffset, int inMaxLength) -> int {
                 T value = *static_cast<T *>(inRefcon);
+                // SDK contract: NULL buffer means "return the total size"
                 if (!outValue) {
                     return static_cast<int>(value.length());
                 }
-                strncpy(static_cast<char *>(outValue), value.c_str(), inMaxLength);
-                return static_cast<int>(value.length());
+                if (inOffset < 0 || inOffset >= static_cast<int>(value.length())) {
+                    return 0;
+                }
+                int copied = std::min(inMaxLength, static_cast<int>(value.length()) - inOffset);
+                memcpy(outValue, value.c_str() + inOffset, copied);
+                return copied;
             },
             [](void *inRefcon, void *inValue, int inOffset, int inMaxLength) {
                 BoundRef *info = static_cast<BoundRef *>(inRefcon);
@@ -204,7 +209,7 @@ void Dataref::createDataref(const char *ref, T *value, bool writable, DatarefSho
 
                 if (info->changeCallbacks.size()) {
                     std::string newValue = std::string(static_cast<const char *>(inValue));
-                    if (info->changeCallbacks[0](newValue)) {
+                    if (info->changeCallbacks[0].func(newValue)) {
                         *valuePtr = (const char *) inValue;
                     }
                 } else {
@@ -234,15 +239,13 @@ template void Dataref::monitorExistingDataref<std::vector<int>>(
 
 template<typename T>
 void Dataref::monitorExistingDataref(const char *ref, DatarefMonitorChangedCallback<T> changeCallback, void *owner) {
-    if constexpr (std::is_same_v<T, std::string>) {
-        set<T>(ref, "", true);
-    } else if constexpr (std::is_same_v<T, std::vector<float>>) {
-        set<T>(ref, {}, true);
-    } else if constexpr (std::is_same_v<T, std::vector<int>>) {
-        set<T>(ref, {}, true);
-    } else {
-        set<T>(ref, 0, true);
-    }
+    // Prime the cache with a default so update() starts polling this ref and
+    // delivers the live value to every subscriber on the next tick. Do not
+    // write the cache through set(): that fired all existing subscribers with
+    // a fabricated default (blanking LEDs and crashing vector callbacks that
+    // index an empty array), and bailed out entirely for datarefs the
+    // aircraft plugin has not registered yet, so those monitors never fired.
+    cachedValues[ref] = {.value = T{}, .lastUpdateCycleNumber = XPLMGetCycleNumber()};
 
     auto callback = [changeCallback](DataRefValueType newValue) -> bool {
         if constexpr (std::is_same_v<T, bool>) {
@@ -273,7 +276,10 @@ void Dataref::monitorExistingDataref(const char *ref, DatarefMonitorChangedCallb
 
 void Dataref::destroyAllBindings() {
     for (auto &[key, ref] : boundRefs) {
-        XPLMUnregisterDataAccessor(ref.handle);
+        // Monitor-only entries have no accessor registered
+        if (ref.handle) {
+            XPLMUnregisterDataAccessor(ref.handle);
+        }
     }
     boundRefs.clear();
 
@@ -298,12 +304,15 @@ void Dataref::unbind(const char *ref) {
         boundCommands.erase(it2);
     }
 
-    //    refs.erase(ref);
+    refs.erase(ref);
     cachedValues.erase(ref);
 }
 
 void Dataref::clearCache() {
     cachedValues.clear();
+    // Cached XPLMDataRef handles of an unloaded aircraft plugin are stale;
+    // drop them so the next access re-resolves against the new aircraft.
+    refs.clear();
 }
 
 void Dataref::drainMainThreadQueue() {
@@ -346,7 +355,12 @@ void Dataref::update() {
     }
 
     for (auto &[key, newData] : updates) {
-        cachedValues[key] = newData;
+        auto it = cachedValues.find(key);
+        if (it == cachedValues.end()) {
+            // Unbound by a callback earlier in this loop; don't resurrect it
+            continue;
+        }
+        it->second = newData;
         executeChangedCallbacksForDataref(key.c_str());
     }
 }
@@ -371,10 +385,23 @@ bool Dataref::exists(const char *ref) {
 
 void Dataref::executeChangedCallbacksForDataref(const char *ref) {
     auto it = boundRefs.find(ref);
-    if (it != boundRefs.end()) {
-        for (auto &tc : it->second.changeCallbacks) {
-            tc.func(cachedValues[ref].value);
-        }
+    if (it == boundRefs.end()) {
+        return;
+    }
+
+    auto cacheIt = cachedValues.find(ref);
+    if (cacheIt == cachedValues.end()) {
+        // No cached value to deliver; operator[] here used to default-insert
+        // a float{0} entry that was then polled forever with the wrong type.
+        return;
+    }
+
+    // Iterate a copy: a callback may register or unbind monitors on this ref,
+    // which would invalidate the live vector mid-iteration.
+    std::vector<TaggedCallback> callbacks = it->second.changeCallbacks;
+    DataRefValueType value = cacheIt->second.value;
+    for (auto &tc : callbacks) {
+        tc.func(value);
     }
 }
 
@@ -386,8 +413,12 @@ void Dataref::unbindAll(void *owner) {
                           return tc.owner == owner;
                       }),
             cbs.end());
-        // Remove monitor-only entries that now have no callbacks
+        // Remove monitor-only entries that now have no callbacks, including
+        // their cache entries, so update() stops polling them and aircraft
+        // switches don't accrete dead refs.
         if (cbs.empty() && !it->second.handle) {
+            cachedValues.erase(it->first);
+            refs.erase(it->first);
             it = boundRefs.erase(it);
         } else {
             ++it;

@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <functional>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,7 @@ class AppState {
 
         static AppState *instance;
         std::vector<DelayedTask> taskQueue;
+        std::mutex taskQueueMutex;
         void update();
 
     public:

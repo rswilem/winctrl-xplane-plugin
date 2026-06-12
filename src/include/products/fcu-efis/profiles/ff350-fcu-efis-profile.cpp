@@ -154,10 +154,6 @@ FF350FCUEfisProfile::FF350FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
     }, this);
 }
 
-FF350FCUEfisProfile::~FF350FCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FF350FCUEfisProfile::IsEligible() {
     return (
         (Dataref::getInstance()->exists("AirbusFBW/FCUAvail")) &&

@@ -128,17 +128,15 @@ TolissFMCProfile::TolissFMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
         if (phase == xplm_CommandBegin && product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN) {
             scratchpadPaddingActive = true;
         }
-    });
+    },
+        this);
 
     Dataref::getInstance()->bindExistingCommand("AirbusFBW/MCDU2KeyClear", [this, product](XPLMCommandPhase phase) {
         if (phase == xplm_CommandBegin && product->deviceVariant == FMCDeviceVariant::VARIANT_FIRSTOFFICER) {
             scratchpadPaddingActive = true;
         }
-    });
-}
-
-TolissFMCProfile::~TolissFMCProfile() {
-    Dataref::getInstance()->unbindAll(this);
+    },
+        this);
 }
 
 bool TolissFMCProfile::IsEligible() {

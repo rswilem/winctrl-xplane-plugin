@@ -36,10 +36,6 @@ ZiboPDCProfile::ZiboPDCProfile(ProductPDC *product) : PDCAircraftProfile(product
     }, this);
 }
 
-ZiboPDCProfile::~ZiboPDCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool ZiboPDCProfile::IsEligible() {
     return Dataref::getInstance()->exists("zibomod/Aircraft_Path");
 }

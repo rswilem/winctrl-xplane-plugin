@@ -12,7 +12,6 @@ class ZiboTCASProfile : public TCASAircraftProfile {
 
     public:
         ZiboTCASProfile(ProductTCAS *product);
-        ~ZiboTCASProfile();
 
         static bool IsEligible();
 

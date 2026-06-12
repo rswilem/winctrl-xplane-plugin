@@ -8,7 +8,6 @@
 class FF777PDCProfile : public PDCAircraftProfile {
     public:
         FF777PDCProfile(ProductPDC *product);
-        ~FF777PDCProfile();
 
         static bool IsEligible();
         const std::unordered_map<PDCButtonIndex3N3M, PDCButtonDef> &buttonDefs() const override;

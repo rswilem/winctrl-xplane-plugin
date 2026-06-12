@@ -63,10 +63,6 @@ SparkyB744PAP3MCPProfile::SparkyB744PAP3MCPProfile(ProductPAP3MCP *product) : PA
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/avionics_on");
 }
 
-SparkyB744PAP3MCPProfile::~SparkyB744PAP3MCPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool SparkyB744PAP3MCPProfile::IsEligible() {
     auto dr = Dataref::getInstance();
     return dr->exists("laminar/B747/fms1/Line01_L") && !dr->exists("FPS/748/simtime") && !dr->exists("SSG/748/simtime");

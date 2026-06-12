@@ -22,10 +22,6 @@ FPS748TCASProfile::FPS748TCASProfile(ProductTCAS *product) : TCASAircraftProfile
     Dataref::getInstance()->executeChangedCallbacksForDataref((altPrefix + "/Elec/bus_1_powered").c_str());
 }
 
-FPS748TCASProfile::~FPS748TCASProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FPS748TCASProfile::IsSSGVersion() {
     return Dataref::getInstance()->exists("SSG/748/simtime");
 }

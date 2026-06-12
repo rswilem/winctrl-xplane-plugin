@@ -6,7 +6,6 @@
 class Strato77WFMCProfile : public FMCAircraftProfile {
     public:
         Strato77WFMCProfile(ProductFMC *product);
-        virtual ~Strato77WFMCProfile();
 
         static bool IsEligible();
 

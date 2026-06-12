@@ -12,7 +12,6 @@ class XCraftsERJTCASProfile : public TCASAircraftProfile {
 
     public:
         XCraftsERJTCASProfile(ProductTCAS *product);
-        ~XCraftsERJTCASProfile();
 
         static bool IsEligible();
 

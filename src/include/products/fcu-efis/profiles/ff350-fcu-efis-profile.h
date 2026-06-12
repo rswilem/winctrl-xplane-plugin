@@ -13,7 +13,6 @@ class FF350FCUEfisProfile : public FCUEfisAircraftProfile {
 
     public:
         FF350FCUEfisProfile(ProductFCUEfis *product);
-        ~FF350FCUEfisProfile();
 
         static bool IsEligible();
 

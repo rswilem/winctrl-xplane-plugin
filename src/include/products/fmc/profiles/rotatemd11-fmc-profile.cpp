@@ -78,14 +78,6 @@ RotateMD11FMCProfile::RotateMD11FMCProfile(ProductFMC *product) : FMCAircraftPro
     Dataref::getInstance()->executeChangedCallbacksForDataref("Rotate/aircraft/systems/mcdu_ofst_lt");
 }
 
-RotateMD11FMCProfile::~RotateMD11FMCProfile() {
-    const std::string mcdu =
-        product->deviceVariant == FMCDeviceVariant::VARIANT_FIRSTOFFICER ? "mcdu_2" : product->deviceVariant == FMCDeviceVariant::VARIANT_OBSERVER ? "mcdu_3"
-                                                                                                                                                   : "mcdu_1";
-    const std::string brtDataref = "Rotate/aircraft/systems/" + mcdu + "_brt_rat";
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool RotateMD11FMCProfile::IsEligible() {
     return Dataref::getInstance()->exists("Rotate/aircraft/controls/cdu_0/mcdu_line_0_content");
 }

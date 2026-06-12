@@ -50,10 +50,6 @@ Strato77WPAP3MCPProfile::Strato77WPAP3MCPProfile(ProductPAP3MCP *product) : PAP3
     }, this);
 }
 
-Strato77WPAP3MCPProfile::~Strato77WPAP3MCPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool Strato77WPAP3MCPProfile::IsEligible() {
     return Dataref::getInstance()->exists("Strato/777/mcp/ap_on") &&
            Dataref::getInstance()->exists("Strato/B777/fms1/Line01_L");

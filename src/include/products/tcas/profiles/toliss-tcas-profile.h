@@ -12,7 +12,6 @@ class TolissTCASProfile : public TCASAircraftProfile {
 
     public:
         TolissTCASProfile(ProductTCAS *product);
-        ~TolissTCASProfile();
 
         static bool IsEligible();
         const std::vector<std::string> &displayDatarefs() const override;

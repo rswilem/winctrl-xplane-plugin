@@ -22,7 +22,6 @@ class ZiboPAP3MCPProfile : public PAP3MCPAircraftProfile {
 
     public:
         ZiboPAP3MCPProfile(ProductPAP3MCP *product);
-        ~ZiboPAP3MCPProfile();
 
         static bool IsEligible();
 

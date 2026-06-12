@@ -7,7 +7,6 @@ class JAR330FMCProfile : public FMCAircraftProfile {
     private:
     public:
         JAR330FMCProfile(ProductFMC *product);
-        ~JAR330FMCProfile();
 
         static bool IsEligible();
         const std::vector<std::string> &displayDatarefs() const override;

@@ -49,10 +49,6 @@ ZiboFMCProfile::ZiboFMCProfile(ProductFMC *product) : FMCAircraftProfile(product
     }, this);
 }
 
-ZiboFMCProfile::~ZiboFMCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool ZiboFMCProfile::IsEligible() {
     return Dataref::getInstance()->exists("zibomod/Aircraft_Path");
 }

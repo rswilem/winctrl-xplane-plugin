@@ -20,7 +20,6 @@ class FPS748PDCProfile : public PDCAircraftProfile {
 
     public:
         FPS748PDCProfile(ProductPDC *product);
-        ~FPS748PDCProfile();
 
         static bool IsEligible();
         const std::unordered_map<PDCButtonIndex3N3M, PDCButtonDef> &buttonDefs() const override;

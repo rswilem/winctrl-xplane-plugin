@@ -103,10 +103,6 @@ ZiboFCUEfisProfile::ZiboFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraf
     }, this);
 }
 
-ZiboFCUEfisProfile::~ZiboFCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool ZiboFCUEfisProfile::IsEligible() {
     return Dataref::getInstance()->exists("zibomod/Aircraft_Path");
 }

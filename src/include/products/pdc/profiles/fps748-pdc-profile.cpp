@@ -23,10 +23,6 @@ FPS748PDCProfile::FPS748PDCProfile(ProductPDC *product) : PDCAircraftProfile(pro
     }, this);
 }
 
-FPS748PDCProfile::~FPS748PDCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FPS748PDCProfile::IsSSGVersion() {
     return Dataref::getInstance()->exists("SSG/748/simtime");
 }

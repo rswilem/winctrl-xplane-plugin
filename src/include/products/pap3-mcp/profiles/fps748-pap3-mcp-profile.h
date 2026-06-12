@@ -17,7 +17,6 @@ class FPS748PAP3MCPProfile : public PAP3MCPAircraftProfile {
 
     public:
         FPS748PAP3MCPProfile(ProductPAP3MCP *product);
-        ~FPS748PAP3MCPProfile();
 
         static bool IsEligible();
 

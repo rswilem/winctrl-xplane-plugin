@@ -47,10 +47,6 @@ RotateMD11PAP3MCPProfile::RotateMD11PAP3MCPProfile(ProductPAP3MCP *product) : PA
     // The real MD-11 uses a different display system (not LED buttons)
 }
 
-RotateMD11PAP3MCPProfile::~RotateMD11PAP3MCPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool RotateMD11PAP3MCPProfile::IsEligible() {
     return Dataref::getInstance()->exists("Rotate/aircraft/systems/gcp_alt_presel_ft");
 }

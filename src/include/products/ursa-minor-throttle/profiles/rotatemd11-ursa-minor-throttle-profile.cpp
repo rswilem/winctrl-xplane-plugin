@@ -37,10 +37,6 @@ RotateMD11UrsaMinorThrottleProfile::RotateMD11UrsaMinorThrottleProfile(ProductUr
     }, this);
 }
 
-RotateMD11UrsaMinorThrottleProfile::~RotateMD11UrsaMinorThrottleProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool RotateMD11UrsaMinorThrottleProfile::IsEligible() {
     return Dataref::getInstance()->exists("Rotate/aircraft/systems/gcp_alt_presel_ft");
 }

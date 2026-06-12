@@ -11,7 +11,6 @@ class FlightFactor777FMCProfile : public FMCAircraftProfile {
 
     public:
         FlightFactor777FMCProfile(ProductFMC *product);
-        virtual ~FlightFactor777FMCProfile();
 
         static bool IsEligible();
 

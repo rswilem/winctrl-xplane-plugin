@@ -52,10 +52,6 @@ TolissECAMProfile::TolissECAMProfile(ProductECAM *product) : ECAMAircraftProfile
     }, this);
 }
 
-TolissECAMProfile::~TolissECAMProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool TolissECAMProfile::IsEligible() {
     return Dataref::getInstance()->exists("AirbusFBW/PanelBrightnessLevel");
 }

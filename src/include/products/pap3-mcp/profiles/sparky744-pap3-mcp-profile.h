@@ -16,7 +16,6 @@ class SparkyB744PAP3MCPProfile : public PAP3MCPAircraftProfile {
 
     public:
         SparkyB744PAP3MCPProfile(ProductPAP3MCP *product);
-        ~SparkyB744PAP3MCPProfile();
 
         static bool IsEligible();
 

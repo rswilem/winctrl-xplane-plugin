@@ -6,7 +6,6 @@
 class XCraftsErjPAP3MCPProfile : public PAP3MCPAircraftProfile {
     public:
         XCraftsErjPAP3MCPProfile(ProductPAP3MCP *product);
-        ~XCraftsErjPAP3MCPProfile();
 
         static bool IsEligible();
         const std::vector<std::string> &displayDatarefs() const override;

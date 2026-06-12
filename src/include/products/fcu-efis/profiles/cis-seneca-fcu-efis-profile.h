@@ -10,7 +10,6 @@
 class CISSenecaFCUEfisProfile : public FCUEfisAircraftProfile {
     public:
         CISSenecaFCUEfisProfile(ProductFCUEfis *product);
-        ~CISSenecaFCUEfisProfile();
 
         static bool IsEligible();
 

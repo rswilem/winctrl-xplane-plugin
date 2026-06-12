@@ -28,10 +28,6 @@ FF777JoystickProfile::FF777JoystickProfile(USBDevice *product) : JoystickAircraf
     }, this);
 }
 
-FF777JoystickProfile::~FF777JoystickProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FF777JoystickProfile::IsEligible() {
     return Dataref::getInstance()->exists("laminar/B738/electric/panel_brightness");
 }

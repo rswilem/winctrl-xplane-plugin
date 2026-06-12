@@ -96,10 +96,6 @@ FPS748FCUEfisProfile::FPS748FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAir
     Dataref::getInstance()->executeChangedCallbacksForDataref((altPrefix + "/Elec/bus_1_powered").c_str());
 }
 
-FPS748FCUEfisProfile::~FPS748FCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FPS748FCUEfisProfile::IsSSGVersion() {
     return Dataref::getInstance()->exists("SSG/748/simtime");
 }

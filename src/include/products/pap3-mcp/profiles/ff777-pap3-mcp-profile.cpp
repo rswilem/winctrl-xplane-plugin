@@ -79,10 +79,6 @@ FF777PAP3MCPProfile::FF777PAP3MCPProfile(ProductPAP3MCP *product) : PAP3MCPAircr
     }, this);
 }
 
-FF777PAP3MCPProfile::~FF777PAP3MCPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FF777PAP3MCPProfile::IsEligible() {
     return Dataref::getInstance()->exists("1-sim/output/mcp/spd");
 }

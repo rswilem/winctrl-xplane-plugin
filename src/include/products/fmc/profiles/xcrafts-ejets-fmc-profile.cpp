@@ -74,11 +74,6 @@ XCraftsEjetsFMCProfile::XCraftsEjetsFMCProfile(ProductFMC *product) : FMCAircraf
     }, this);
 }
 
-XCraftsEjetsFMCProfile::~XCraftsEjetsFMCProfile() {
-    const std::string cdu = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? "CDU_1" : "CDU_2";
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsEjetsFMCProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/FMS/CDU_1_01");
 }

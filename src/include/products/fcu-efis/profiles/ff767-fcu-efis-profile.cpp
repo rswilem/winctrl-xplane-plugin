@@ -216,11 +216,6 @@ FF767FCUEfisProfile::FF767FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
         this);
 }
 
-FF767FCUEfisProfile::~FF767FCUEfisProfile() {
-    AppState::getInstance()->cancelTasksForOwner(this);
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FF767FCUEfisProfile::IsEligible() {
     return (Dataref::getInstance()->exists("1-sim/AP/cmd_C_Button") &&
             !(Dataref::getInstance()->exists("1-sim/output/mcp/ok")));

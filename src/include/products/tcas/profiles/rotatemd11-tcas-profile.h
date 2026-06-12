@@ -6,7 +6,6 @@
 class RotateMD11TCASProfile : public TCASAircraftProfile {
     public:
         RotateMD11TCASProfile(ProductTCAS *product);
-        ~RotateMD11TCASProfile();
 
         static bool IsEligible();
 

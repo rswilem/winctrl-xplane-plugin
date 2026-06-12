@@ -49,10 +49,6 @@ FF777UrsaMinorThrottleProfile::FF777UrsaMinorThrottleProfile(ProductUrsaMinorThr
     }, this);
 }
 
-FF777UrsaMinorThrottleProfile::~FF777UrsaMinorThrottleProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FF777UrsaMinorThrottleProfile::IsEligible() {
     // FF777 datarefs that don't exist on the FF767
     return Dataref::getInstance()->exists("1-sim/ckpt/mcpApLButton/anim") &&

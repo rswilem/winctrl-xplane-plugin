@@ -31,10 +31,6 @@ JAR330FMCProfile::JAR330FMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
     product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, 128);
 }
 
-JAR330FMCProfile::~JAR330FMCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool JAR330FMCProfile::IsEligible() {
     return Dataref::getInstance()->exists("jd/mcdu/big/line00col0");
 }

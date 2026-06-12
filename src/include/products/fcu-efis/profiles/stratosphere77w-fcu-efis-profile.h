@@ -10,7 +10,6 @@
 class Strato77WFCUEfisProfile : public FCUEfisAircraftProfile {
     public:
         Strato77WFCUEfisProfile(ProductFCUEfis *product);
-        ~Strato77WFCUEfisProfile();
 
         static bool IsEligible();
 

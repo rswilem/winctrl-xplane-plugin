@@ -8,7 +8,6 @@
 class XCraftsEjetsAGPProfile : public AGPAircraftProfile {
     public:
         XCraftsEjetsAGPProfile(ProductAGP *product);
-        ~XCraftsEjetsAGPProfile();
 
         static bool IsEligible();
         const std::unordered_map<uint16_t, AGPButtonDef> &buttonDefs() const override;

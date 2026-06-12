@@ -17,7 +17,6 @@ class Strato77WPAP3MCPProfile : public PAP3MCPAircraftProfile {
 
     public:
         Strato77WPAP3MCPProfile(ProductPAP3MCP *product);
-        ~Strato77WPAP3MCPProfile();
 
         static bool IsEligible();
 

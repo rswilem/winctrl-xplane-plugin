@@ -75,10 +75,6 @@ TolissAGPProfile::TolissAGPProfile(ProductAGP *product) : AGPAircraftProfile(pro
     }, this);
 }
 
-TolissAGPProfile::~TolissAGPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool TolissAGPProfile::IsEligible() {
     return Dataref::getInstance()->exists("AirbusFBW/PanelBrightnessLevel");
 }

@@ -13,7 +13,6 @@ class FPS748FMCProfile : public FMCAircraftProfile {
 
     public:
         FPS748FMCProfile(ProductFMC *product);
-        virtual ~FPS748FMCProfile();
 
         static bool IsEligible();
 

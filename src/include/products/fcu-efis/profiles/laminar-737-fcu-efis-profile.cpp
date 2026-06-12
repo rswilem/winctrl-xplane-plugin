@@ -93,10 +93,6 @@ Laminar737FCUEfisProfile::Laminar737FCUEfisProfile(ProductFCUEfis *product) : FC
     }, this);
 }
 
-Laminar737FCUEfisProfile::~Laminar737FCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool Laminar737FCUEfisProfile::IsEligible() {
     return Dataref::getInstance()->exists("laminar/B738/autopilot/cmd_a_status") && Dataref::getInstance()->exists("zibomod/Aircraft_Path") == false;
 }

@@ -136,10 +136,6 @@ ZiboPAP3MCPProfile::ZiboPAP3MCPProfile(ProductPAP3MCP *product) : PAP3MCPAircraf
     }, this);
 }
 
-ZiboPAP3MCPProfile::~ZiboPAP3MCPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool ZiboPAP3MCPProfile::IsEligible() {
     return Dataref::getInstance()->exists("zibomod/Aircraft_Path");
 }

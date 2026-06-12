@@ -10,7 +10,6 @@
 class XCraftsErjFCUEfisProfile : public FCUEfisAircraftProfile {
     public:
         XCraftsErjFCUEfisProfile(ProductFCUEfis *product);
-        ~XCraftsErjFCUEfisProfile();
 
         static bool IsEligible();
 

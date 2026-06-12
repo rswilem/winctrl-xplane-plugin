@@ -42,10 +42,6 @@ XCraftsErjPAP3MCPProfile::XCraftsErjPAP3MCPProfile(ProductPAP3MCP *product) : PA
     }, this);
 }
 
-XCraftsErjPAP3MCPProfile::~XCraftsErjPAP3MCPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsErjPAP3MCPProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/ERJ/MFD1/WX_TERR_status");
 }

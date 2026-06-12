@@ -424,6 +424,21 @@ void Dataref::unbindAll(void *owner) {
             ++it;
         }
     }
+
+    for (auto it = boundCommands.begin(); it != boundCommands.end();) {
+        auto &cbs = it->second.callbacks;
+        cbs.erase(std::remove_if(cbs.begin(), cbs.end(),
+                      [owner](const TaggedCommandCallback &tc) {
+                          return tc.owner == owner;
+                      }),
+            cbs.end());
+        if (cbs.empty()) {
+            XPLMUnregisterCommandHandler(it->second.handle, handleCommandCallback, 1, nullptr);
+            it = boundCommands.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 int Dataref::getCachedLastUpdate(const char *ref) {
@@ -631,13 +646,19 @@ void Dataref::executeCommand(const char *command, XPLMCommandPhase phase) {
     }
 }
 
-void Dataref::bindExistingCommand(const char *command, CommandExecutedCallback callback) {
+void Dataref::bindExistingCommand(const char *command, CommandExecutedCallback callback, void *owner) {
     XPLMCommandRef handle = XPLMFindCommand(command);
     if (!handle) {
         return;
     }
 
-    boundCommands[command] = {handle, callback};
+    auto it = boundCommands.find(command);
+    if (it != boundCommands.end()) {
+        it->second.callbacks.push_back({owner, callback});
+        return;
+    }
+
+    boundCommands[command] = {handle, {{owner, callback}}};
 
     XPLMRegisterCommandHandler(handle, handleCommandCallback, 1, nullptr);
 }
@@ -651,6 +672,7 @@ void Dataref::createCommand(const char *command, const char *description, Comman
     auto it = boundCommands.find(command);
     if (it != boundCommands.end()) {
         XPLMUnregisterCommandHandler(handle, handleCommandCallback, 1, nullptr);
+        boundCommands.erase(it);
     }
 
     bindExistingCommand(command, callback);
@@ -660,7 +682,12 @@ int Dataref::_commandCallback(XPLMCommandRef inCommand, XPLMCommandPhase inPhase
     for (const auto &entry : boundCommands) {
         XPLMCommandRef handle = entry.second.handle;
         if (inCommand == handle) {
-            entry.second.callback(inPhase);
+            // Iterate a copy: a callback may bind or unbind commands,
+            // which would invalidate the live vector mid-iteration.
+            std::vector<TaggedCommandCallback> callbacks = entry.second.callbacks;
+            for (auto &tc : callbacks) {
+                tc.func(inPhase);
+            }
             break;
         }
     }

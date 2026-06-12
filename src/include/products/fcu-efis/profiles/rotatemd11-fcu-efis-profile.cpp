@@ -80,10 +80,6 @@ RotateMD11FCUEfisProfile::RotateMD11FCUEfisProfile(ProductFCUEfis *product) : FC
     }, this);
 }
 
-RotateMD11FCUEfisProfile::~RotateMD11FCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool RotateMD11FCUEfisProfile::IsEligible() {
     return Dataref::getInstance()->exists("Rotate/aircraft/systems/gcp_alt_presel_ft");
 }

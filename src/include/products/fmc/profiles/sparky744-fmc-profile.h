@@ -6,7 +6,6 @@
 class SparkyB744FMCProfile : public FMCAircraftProfile {
     public:
         SparkyB744FMCProfile(ProductFMC *product);
-        virtual ~SparkyB744FMCProfile();
 
         static bool IsEligible();
 

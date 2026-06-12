@@ -29,10 +29,6 @@ LaminarCitXFMCProfile::LaminarCitXFMCProfile(ProductFMC *product) : FMCAircraftP
     product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, 128);
 }
 
-LaminarCitXFMCProfile::~LaminarCitXFMCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool LaminarCitXFMCProfile::IsEligible() {
     return Dataref::getInstance()->exists("laminar/CitX/electrical/avionics");
 }

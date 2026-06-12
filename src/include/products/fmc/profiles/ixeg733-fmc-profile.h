@@ -11,7 +11,6 @@ class IXEG733FMCProfile : public FMCAircraftProfile {
 
     public:
         IXEG733FMCProfile(ProductFMC *product);
-        virtual ~IXEG733FMCProfile();
 
         static bool IsEligible();
 

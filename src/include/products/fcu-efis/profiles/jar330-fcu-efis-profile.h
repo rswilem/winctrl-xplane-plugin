@@ -10,7 +10,6 @@
 class JAR330FCUEfisProfile : public FCUEfisAircraftProfile {
     public:
         JAR330FCUEfisProfile(ProductFCUEfis *product);
-        ~JAR330FCUEfisProfile();
 
         static bool IsEligible();
 

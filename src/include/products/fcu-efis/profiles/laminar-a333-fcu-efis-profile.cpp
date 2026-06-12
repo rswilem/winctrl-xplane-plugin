@@ -123,10 +123,6 @@ LaminarA333FCUEfisProfile::LaminarA333FCUEfisProfile(ProductFCUEfis *product) : 
     }, this);
 }
 
-LaminarA333FCUEfisProfile::~LaminarA333FCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool LaminarA333FCUEfisProfile::IsEligible() {
     bool eligible = Dataref::getInstance()->exists("laminar/A333/ckpt_temp");
     return eligible;

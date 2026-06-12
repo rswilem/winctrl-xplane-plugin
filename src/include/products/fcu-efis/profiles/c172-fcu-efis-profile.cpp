@@ -45,10 +45,6 @@ C172FCUEfisProfile::C172FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraf
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
 }
 
-C172FCUEfisProfile::~C172FCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool C172FCUEfisProfile::IsEligible() {
     return Dataref::getInstance()->exists("laminar/c172/electrical/battery_amps");
 }

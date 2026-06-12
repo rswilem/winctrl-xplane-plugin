@@ -12,7 +12,6 @@ class SparkyB744TCASProfile : public TCASAircraftProfile {
 
     public:
         SparkyB744TCASProfile(ProductTCAS *product);
-        ~SparkyB744TCASProfile();
 
         static bool IsEligible();
 

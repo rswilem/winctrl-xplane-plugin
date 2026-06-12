@@ -28,10 +28,6 @@ ZiboJoystickProfile::ZiboJoystickProfile(USBDevice *product) : JoystickAircraftP
     }, this);
 }
 
-ZiboJoystickProfile::~ZiboJoystickProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool ZiboJoystickProfile::IsEligible() {
     return Dataref::getInstance()->exists("zibomod/Aircraft_Path");
 }

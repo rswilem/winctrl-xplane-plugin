@@ -10,7 +10,6 @@
 class LaminarA333FCUEfisProfile : public FCUEfisAircraftProfile {
     public:
         LaminarA333FCUEfisProfile(ProductFCUEfis *product);
-        ~LaminarA333FCUEfisProfile();
 
         static bool IsEligible();
 

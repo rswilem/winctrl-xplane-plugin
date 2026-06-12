@@ -84,10 +84,6 @@ TolissTCASProfile::TolissTCASProfile(ProductTCAS *product) : TCASAircraftProfile
     // });
 }
 
-TolissTCASProfile::~TolissTCASProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool TolissTCASProfile::IsEligible() {
     return Dataref::getInstance()->exists("AirbusFBW/PanelBrightnessLevel");
 }

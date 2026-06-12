@@ -14,7 +14,6 @@ class JF146FCUEfisProfile : public FCUEfisAircraftProfile {
 
     public:
         JF146FCUEfisProfile(ProductFCUEfis *product);
-        ~JF146FCUEfisProfile();
 
         static bool IsEligible();
 

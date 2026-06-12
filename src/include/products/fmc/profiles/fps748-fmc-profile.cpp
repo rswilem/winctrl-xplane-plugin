@@ -52,14 +52,6 @@ FPS748FMCProfile::FPS748FMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
     Dataref::getInstance()->executeChangedCallbacksForDataref((alternatePrefix + "/Elec/bus_1_powered").c_str());
 }
 
-FPS748FMCProfile::~FPS748FMCProfile() {
-    bool isSSG = IsSSGVersion();
-    std::string prefix = isSSG ? "SSG" : "FPS";
-    std::string alternatePrefix = isSSG ? "ssg" : "FPS";
-
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FPS748FMCProfile::IsSSGVersion() { // The older, V2.0 SSG 748
     return Dataref::getInstance()->exists("SSG/748/simtime");
 }

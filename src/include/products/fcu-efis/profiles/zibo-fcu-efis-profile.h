@@ -10,7 +10,6 @@
 class ZiboFCUEfisProfile : public FCUEfisAircraftProfile {
     public:
         ZiboFCUEfisProfile(ProductFCUEfis *product);
-        ~ZiboFCUEfisProfile();
 
         static bool IsEligible();
 

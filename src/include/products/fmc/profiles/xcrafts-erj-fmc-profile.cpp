@@ -25,10 +25,6 @@ XCraftsErjFMCProfile::XCraftsErjFMCProfile(ProductFMC *product) : FMCAircraftPro
     product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, 128);
 }
 
-XCraftsErjFMCProfile::~XCraftsErjFMCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsErjFMCProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/ERJ/timer_seconds");
 }

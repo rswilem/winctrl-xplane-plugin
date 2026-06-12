@@ -42,10 +42,6 @@ XCraftsErjAGPProfile::XCraftsErjAGPProfile(ProductAGP *product) : AGPAircraftPro
     }, this);
 }
 
-XCraftsErjAGPProfile::~XCraftsErjAGPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsErjAGPProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/ERJ/MFD1/WX_TERR_status");
 }

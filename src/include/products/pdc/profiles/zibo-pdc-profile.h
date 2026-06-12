@@ -18,7 +18,6 @@ class ZiboPDCProfile : public PDCAircraftProfile {
 
     public:
         ZiboPDCProfile(ProductPDC *product);
-        ~ZiboPDCProfile();
 
         static bool IsEligible();
         const std::unordered_map<PDCButtonIndex3N3M, PDCButtonDef> &buttonDefs() const override;

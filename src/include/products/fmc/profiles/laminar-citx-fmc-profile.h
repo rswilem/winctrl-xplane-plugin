@@ -7,7 +7,6 @@ class LaminarCitXFMCProfile : public FMCAircraftProfile {
     private:
     public:
         LaminarCitXFMCProfile(ProductFMC *product);
-        ~LaminarCitXFMCProfile();
 
         static bool IsEligible();
         const std::vector<std::string> &displayDatarefs() const override;

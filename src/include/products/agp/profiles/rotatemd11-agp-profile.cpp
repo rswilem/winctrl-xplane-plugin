@@ -68,10 +68,6 @@ RotateMD11AGPProfile::RotateMD11AGPProfile(ProductAGP *product) : AGPAircraftPro
     }, this);
 }
 
-RotateMD11AGPProfile::~RotateMD11AGPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool RotateMD11AGPProfile::IsEligible() {
     return Dataref::getInstance()->exists("Rotate/aircraft/systems/gcp_alt_presel_ft");
 }

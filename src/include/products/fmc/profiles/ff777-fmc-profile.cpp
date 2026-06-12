@@ -43,10 +43,6 @@ FlightFactor777FMCProfile::FlightFactor777FMCProfile(ProductFMC *product) : FMCA
     }, this);
 }
 
-FlightFactor777FMCProfile::~FlightFactor777FMCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FlightFactor777FMCProfile::IsEligible() {
     return Dataref::getInstance()->exists("1-sim/cduL/display/symbols");
 }

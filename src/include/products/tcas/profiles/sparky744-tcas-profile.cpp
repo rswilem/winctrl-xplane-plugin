@@ -17,10 +17,6 @@ SparkyB744TCASProfile::SparkyB744TCASProfile(ProductTCAS *product) : TCASAircraf
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/avionics_on");
 }
 
-SparkyB744TCASProfile::~SparkyB744TCASProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool SparkyB744TCASProfile::IsEligible() {
     auto dr = Dataref::getInstance();
     return dr->exists("laminar/B747/fms1/Line01_L")

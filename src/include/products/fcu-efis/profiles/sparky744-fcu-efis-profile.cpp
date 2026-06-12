@@ -81,10 +81,6 @@ SparkyB744FCUEfisProfile::SparkyB744FCUEfisProfile(ProductFCUEfis *product) : FC
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/avionics_on");
 }
 
-SparkyB744FCUEfisProfile::~SparkyB744FCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool SparkyB744FCUEfisProfile::IsEligible() {
     auto dr = Dataref::getInstance();
     return dr->exists("laminar/B747/fms1/Line01_L") && !dr->exists("FPS/748/simtime") && !dr->exists("SSG/748/simtime");

@@ -8,7 +8,6 @@
 class ZiboAGPProfile : public AGPAircraftProfile {
     public:
         ZiboAGPProfile(ProductAGP *product);
-        ~ZiboAGPProfile();
 
         static bool IsEligible();
         const std::unordered_map<uint16_t, AGPButtonDef> &buttonDefs() const override;

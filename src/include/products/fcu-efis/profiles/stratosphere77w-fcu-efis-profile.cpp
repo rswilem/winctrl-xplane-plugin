@@ -68,10 +68,6 @@ Strato77WFCUEfisProfile::Strato77WFCUEfisProfile(ProductFCUEfis *product) : FCUE
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/autopilot/autopilot_has_power");
 }
 
-Strato77WFCUEfisProfile::~Strato77WFCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool Strato77WFCUEfisProfile::IsEligible() {
     return Dataref::getInstance()->exists("Strato/777/mcp/ap_on") &&
            Dataref::getInstance()->exists("Strato/B777/fms1/Line01_L");

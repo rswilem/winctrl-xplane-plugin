@@ -6,7 +6,6 @@
 class RotateMD11UrsaMinorThrottleProfile : public UrsaMinorThrottleAircraftProfile {
     public:
         RotateMD11UrsaMinorThrottleProfile(ProductUrsaMinorThrottle *product);
-        ~RotateMD11UrsaMinorThrottleProfile();
 
         static bool IsEligible();
 

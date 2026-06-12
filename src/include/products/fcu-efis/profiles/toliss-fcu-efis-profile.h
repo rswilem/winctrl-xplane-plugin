@@ -13,7 +13,6 @@ class TolissFCUEfisProfile : public FCUEfisAircraftProfile {
 
     public:
         TolissFCUEfisProfile(ProductFCUEfis *product);
-        ~TolissFCUEfisProfile();
 
         static bool IsEligible();
 

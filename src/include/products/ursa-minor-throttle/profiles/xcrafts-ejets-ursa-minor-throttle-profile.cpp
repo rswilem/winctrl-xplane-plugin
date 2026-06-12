@@ -31,10 +31,6 @@ XCraftsEjetsUrsaMinorThrottleProfile::XCraftsEjetsUrsaMinorThrottleProfile(Produ
     }, this);
 }
 
-XCraftsEjetsUrsaMinorThrottleProfile::~XCraftsEjetsUrsaMinorThrottleProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsEjetsUrsaMinorThrottleProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/FMS/CDU_1_01");
 }

@@ -38,10 +38,6 @@ SparkyB744FMCProfile::SparkyB744FMCProfile(ProductFMC *product) : FMCAircraftPro
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/radios/indicators/fms_exec_light_copilot");
 }
 
-SparkyB744FMCProfile::~SparkyB744FMCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool SparkyB744FMCProfile::IsEligible() {
     auto dr = Dataref::getInstance();
     return dr->exists("laminar/B747/fms1/Line01_L") && !dr->exists("FPS/748/simtime") && !dr->exists("SSG/748/simtime");

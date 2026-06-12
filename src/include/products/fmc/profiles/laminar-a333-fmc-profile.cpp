@@ -29,10 +29,6 @@ LaminarA333FMCProfile::LaminarA333FMCProfile(ProductFMC *product) : FMCAircraftP
     product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, 128);
 }
 
-LaminarA333FMCProfile::~LaminarA333FMCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool LaminarA333FMCProfile::IsEligible() {
     return Dataref::getInstance()->exists("laminar/A333/ckpt_temp");
 }

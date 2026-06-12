@@ -14,7 +14,6 @@ class RotateMD11PAP3MCPProfile : public PAP3MCPAircraftProfile {
 
     public:
         RotateMD11PAP3MCPProfile(ProductPAP3MCP *product);
-        ~RotateMD11PAP3MCPProfile();
 
         static bool IsEligible();
 

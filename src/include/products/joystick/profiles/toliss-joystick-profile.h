@@ -10,7 +10,6 @@ class USBDevice;
 class TolissJoystickProfile : public JoystickAircraftProfile {
     public:
         TolissJoystickProfile(USBDevice *product);
-        ~TolissJoystickProfile();
 
         static bool IsEligible();
 };

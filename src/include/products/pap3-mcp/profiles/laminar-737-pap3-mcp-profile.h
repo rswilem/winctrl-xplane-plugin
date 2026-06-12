@@ -10,7 +10,6 @@
 class Laminar737PAP3MCPProfile : public PAP3MCPAircraftProfile {
     public:
         Laminar737PAP3MCPProfile(ProductPAP3MCP *product);
-        ~Laminar737PAP3MCPProfile();
 
         static bool IsEligible();
 

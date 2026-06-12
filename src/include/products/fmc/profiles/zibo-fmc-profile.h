@@ -11,7 +11,6 @@ class ZiboFMCProfile : public FMCAircraftProfile {
 
     public:
         ZiboFMCProfile(ProductFMC *product);
-        virtual ~ZiboFMCProfile();
 
         static bool IsEligible();
 

@@ -11,7 +11,6 @@ class FPS748TCASProfile : public TCASAircraftProfile {
 
     public:
         FPS748TCASProfile(ProductTCAS *product);
-        ~FPS748TCASProfile();
 
         static bool IsEligible();
 

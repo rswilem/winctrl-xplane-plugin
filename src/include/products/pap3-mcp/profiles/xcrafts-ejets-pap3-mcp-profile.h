@@ -9,7 +9,6 @@
 class XCraftsEjetsPAP3MCPProfile : public PAP3MCPAircraftProfile {
     public:
         XCraftsEjetsPAP3MCPProfile(ProductPAP3MCP *product);
-        ~XCraftsEjetsPAP3MCPProfile();
 
         static bool IsEligible();
 

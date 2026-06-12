@@ -12,7 +12,6 @@ class TolissUrsaMinorThrottleProfile : public UrsaMinorThrottleAircraftProfile {
 
     public:
         TolissUrsaMinorThrottleProfile(ProductUrsaMinorThrottle *product);
-        ~TolissUrsaMinorThrottleProfile();
 
         static bool IsEligible();
 

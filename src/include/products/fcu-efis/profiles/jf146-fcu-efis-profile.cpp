@@ -63,11 +63,6 @@ JF146FCUEfisProfile::JF146FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
     }, this);
 }
 
-// destructor, unbinds stuff it used so remember to put the ones you use in here
-JF146FCUEfisProfile::~JF146FCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool JF146FCUEfisProfile::IsEligible() {
     std::string icao = Dataref::getInstance()->get<std::string>("sim/aircraft/view/acf_ICAO");
 

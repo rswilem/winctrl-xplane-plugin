@@ -16,10 +16,6 @@ XCraftsEjetsPDCProfile::XCraftsEjetsPDCProfile(ProductPDC *product) : PDCAircraf
     }, this);
 }
 
-XCraftsEjetsPDCProfile::~XCraftsEjetsPDCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsEjetsPDCProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/FMS/CDU_1_01");
 }

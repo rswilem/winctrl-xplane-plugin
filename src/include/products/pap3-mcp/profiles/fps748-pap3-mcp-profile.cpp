@@ -87,10 +87,6 @@ FPS748PAP3MCPProfile::FPS748PAP3MCPProfile(ProductPAP3MCP *product) : PAP3MCPAir
     dm->executeChangedCallbacksForDataref((prefix + "/B748/MCP/mcp_at_arm_act").c_str());
 }
 
-FPS748PAP3MCPProfile::~FPS748PAP3MCPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FPS748PAP3MCPProfile::IsSSGVersion() {
     return Dataref::getInstance()->exists("SSG/748/simtime");
 }

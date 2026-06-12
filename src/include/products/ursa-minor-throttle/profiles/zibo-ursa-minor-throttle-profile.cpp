@@ -55,10 +55,6 @@ ZiboUrsaMinorThrottleProfile::ZiboUrsaMinorThrottleProfile(ProductUrsaMinorThrot
     }, this);
 }
 
-ZiboUrsaMinorThrottleProfile::~ZiboUrsaMinorThrottleProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool ZiboUrsaMinorThrottleProfile::IsEligible() {
     return Dataref::getInstance()->exists("zibomod/Aircraft_Path");
 }

@@ -14,7 +14,6 @@ class TolissFMCProfile : public FMCAircraftProfile {
 
     public:
         TolissFMCProfile(ProductFMC *product);
-        ~TolissFMCProfile();
 
         static bool IsEligible();
         const std::vector<std::string> &displayDatarefs() const override;

@@ -27,10 +27,6 @@ IXEG733FMCProfile::IXEG733FMCProfile(ProductFMC *product) : FMCAircraftProfile(p
     }, this);
 }
 
-IXEG733FMCProfile::~IXEG733FMCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool IXEG733FMCProfile::IsEligible() {
     return Dataref::getInstance()->exists("ixeg/733/FMC/cdu1_menu");
 }

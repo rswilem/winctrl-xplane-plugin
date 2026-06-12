@@ -23,10 +23,6 @@ XCraftsERJTCASProfile::XCraftsERJTCASProfile(ProductTCAS *product) : TCASAircraf
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/battery_on");
 }
 
-XCraftsERJTCASProfile::~XCraftsERJTCASProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsERJTCASProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/ERJ/MFD1/WX_TERR_status");
 }

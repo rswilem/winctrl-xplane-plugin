@@ -48,10 +48,6 @@ JAR330FCUEfisProfile::JAR330FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAir
     // Laminar A333 uses laminar/A333/annun/autopilot/* datarefs for AP/ATHR/LOC/APPR LED states
 }
 
-JAR330FCUEfisProfile::~JAR330FCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool JAR330FCUEfisProfile::IsEligible() {
     return Dataref::getInstance()->exists("jd/mcdu/big/line00col0");
 }

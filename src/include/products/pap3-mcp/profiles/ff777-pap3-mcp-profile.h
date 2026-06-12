@@ -20,7 +20,6 @@ class FF777PAP3MCPProfile : public PAP3MCPAircraftProfile {
 
     public:
         FF777PAP3MCPProfile(ProductPAP3MCP *product);
-        ~FF777PAP3MCPProfile();
 
         static bool IsEligible();
 

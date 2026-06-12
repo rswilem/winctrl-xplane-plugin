@@ -51,10 +51,6 @@ ZiboAGPProfile::ZiboAGPProfile(ProductAGP *product) : AGPAircraftProfile(product
     }, this);
 }
 
-ZiboAGPProfile::~ZiboAGPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool ZiboAGPProfile::IsEligible() {
     return Dataref::getInstance()->exists("zibomod/Aircraft_Path");
 }

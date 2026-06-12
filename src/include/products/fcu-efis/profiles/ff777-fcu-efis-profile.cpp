@@ -153,11 +153,6 @@ FF777FCUEfisProfile::FF777FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircr
         this);
 }
 
-FF777FCUEfisProfile::~FF777FCUEfisProfile() {
-    AppState::getInstance()->cancelTasksForOwner(this);
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FF777FCUEfisProfile::IsEligible() {
     // FF777 datarefs that don't exist on the FF767
     return Dataref::getInstance()->exists("1-sim/ckpt/mcpApLButton/anim") &&

@@ -47,10 +47,6 @@ CISSenecaFCUEfisProfile::CISSenecaFCUEfisProfile(ProductFCUEfis *product) : FCUE
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/instrument_brightness_ratio_manual");
 }
 
-CISSenecaFCUEfisProfile::~CISSenecaFCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool CISSenecaFCUEfisProfile::IsEligible() {
     return Dataref::getInstance()->exists("CIS/PA34/timer_minutes");
 }

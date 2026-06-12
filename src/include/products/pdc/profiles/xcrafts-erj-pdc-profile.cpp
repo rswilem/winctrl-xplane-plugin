@@ -19,10 +19,6 @@ XCraftsErjPDCProfile::XCraftsErjPDCProfile(ProductPDC *product) : PDCAircraftPro
     }, this);
 }
 
-XCraftsErjPDCProfile::~XCraftsErjPDCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsErjPDCProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/ERJ/MFD1/WX_TERR_status");
 }

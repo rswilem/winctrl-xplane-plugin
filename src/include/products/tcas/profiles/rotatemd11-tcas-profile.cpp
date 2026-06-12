@@ -23,10 +23,6 @@ RotateMD11TCASProfile::RotateMD11TCASProfile(ProductTCAS *product) : TCASAircraf
     }, this);
 }
 
-RotateMD11TCASProfile::~RotateMD11TCASProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool RotateMD11TCASProfile::IsEligible() {
     return Dataref::getInstance()->exists("Rotate/aircraft/systems/gcp_alt_presel_ft");
 }

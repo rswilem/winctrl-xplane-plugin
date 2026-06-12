@@ -8,7 +8,6 @@
 class SparkyB744FCUEfisProfile : public FCUEfisAircraftProfile {
     public:
         SparkyB744FCUEfisProfile(ProductFCUEfis *product);
-        ~SparkyB744FCUEfisProfile();
 
         static bool IsEligible();
 

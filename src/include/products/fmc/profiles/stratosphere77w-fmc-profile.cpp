@@ -29,10 +29,6 @@ Strato77WFMCProfile::Strato77WFMCProfile(ProductFMC *product) : FMCAircraftProfi
 
 }
 
-Strato77WFMCProfile::~Strato77WFMCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool Strato77WFMCProfile::IsEligible() {
     return Dataref::getInstance()->exists("Strato/B777/fms1/Line01_L");
 }

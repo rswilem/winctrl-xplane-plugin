@@ -51,10 +51,6 @@ XCraftsErjFCUEfisProfile::XCraftsErjFCUEfisProfile(ProductFCUEfis *product) : FC
     }, this);
 }
 
-XCraftsErjFCUEfisProfile::~XCraftsErjFCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsErjFCUEfisProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/ERJ/MFD1/WX_TERR_status");
 }

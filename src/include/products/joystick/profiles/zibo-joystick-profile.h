@@ -10,7 +10,6 @@ class USBDevice;
 class ZiboJoystickProfile : public JoystickAircraftProfile {
     public:
         ZiboJoystickProfile(USBDevice *product);
-        ~ZiboJoystickProfile();
 
         static bool IsEligible();
 };

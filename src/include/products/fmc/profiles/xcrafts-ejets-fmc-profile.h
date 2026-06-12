@@ -21,7 +21,6 @@ class XCraftsEjetsFMCProfile : public FMCAircraftProfile {
 
     public:
         XCraftsEjetsFMCProfile(ProductFMC *product);
-        virtual ~XCraftsEjetsFMCProfile();
 
         static bool IsEligible();
 

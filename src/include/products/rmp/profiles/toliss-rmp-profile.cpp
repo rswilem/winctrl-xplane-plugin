@@ -66,7 +66,7 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
     },
         this);
 
-    Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
+    Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [this](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/PanelBrightnessLevel");
         updateDisplays();
     },
@@ -106,10 +106,6 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
         updateDisplays();
     },
         this);
-}
-
-TolissRMPProfile::~TolissRMPProfile() {
-    Dataref::getInstance()->unbindAll(this);
 }
 
 bool TolissRMPProfile::IsEligible() {

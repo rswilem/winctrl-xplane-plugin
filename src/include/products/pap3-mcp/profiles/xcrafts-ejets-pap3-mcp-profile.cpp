@@ -39,10 +39,6 @@ XCraftsEjetsPAP3MCPProfile::XCraftsEjetsPAP3MCPProfile(ProductPAP3MCP *product) 
     }, this);
 }
 
-XCraftsEjetsPAP3MCPProfile::~XCraftsEjetsPAP3MCPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsEjetsPAP3MCPProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/FMS/CDU_1_01");
 }

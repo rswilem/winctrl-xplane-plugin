@@ -45,10 +45,6 @@ TolissUrsaMinorThrottleProfile::TolissUrsaMinorThrottleProfile(ProductUrsaMinorT
     }, this);
 }
 
-TolissUrsaMinorThrottleProfile::~TolissUrsaMinorThrottleProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool TolissUrsaMinorThrottleProfile::IsEligible() {
     return Dataref::getInstance()->exists("AirbusFBW/PanelBrightnessLevel");
 }

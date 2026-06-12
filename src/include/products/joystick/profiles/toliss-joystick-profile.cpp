@@ -24,10 +24,6 @@ TolissJoystickProfile::TolissJoystickProfile(USBDevice *product) : JoystickAircr
     }, this);
 }
 
-TolissJoystickProfile::~TolissJoystickProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool TolissJoystickProfile::IsEligible() {
     return Dataref::getInstance()->exists("AirbusFBW/PanelBrightnessLevel");
 }

@@ -15,7 +15,6 @@ class TolissRMPProfile : public RMPAircraftProfile {
 
     public:
         TolissRMPProfile(ProductRMP *product);
-        ~TolissRMPProfile();
 
         static bool IsEligible();
         const std::vector<std::string> &displayDatarefs() const override;

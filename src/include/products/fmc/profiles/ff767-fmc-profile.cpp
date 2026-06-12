@@ -28,10 +28,6 @@ FlightFactor767FMCProfile::FlightFactor767FMCProfile(ProductFMC *product) : FMCA
     }, this);
 }
 
-FlightFactor767FMCProfile::~FlightFactor767FMCProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool FlightFactor767FMCProfile::IsEligible() {
     const std::string author = Dataref::getInstance()->get<std::string>("sim/aircraft/view/acf_author");
     const std::string icao = Dataref::getInstance()->get<std::string>("sim/aircraft/view/acf_ICAO");

@@ -51,10 +51,6 @@ XCraftsEjetsFCUEfisProfile::XCraftsEjetsFCUEfisProfile(ProductFCUEfis *product) 
     }, this);
 }
 
-XCraftsEjetsFCUEfisProfile::~XCraftsEjetsFCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsEjetsFCUEfisProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/FMS/CDU_1_01");
 }

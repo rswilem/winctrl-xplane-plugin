@@ -6,7 +6,6 @@
 class RotateMD11AGPProfile : public AGPAircraftProfile {
     public:
         RotateMD11AGPProfile(ProductAGP *product);
-        ~RotateMD11AGPProfile();
 
         static bool IsEligible();
 

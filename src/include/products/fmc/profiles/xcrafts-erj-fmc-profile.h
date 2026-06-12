@@ -7,7 +7,6 @@ class XCraftsErjFMCProfile : public FMCAircraftProfile {
     private:
     public:
         XCraftsErjFMCProfile(ProductFMC *product);
-        ~XCraftsErjFMCProfile();
 
         static bool IsEligible();
         const std::vector<std::string> &displayDatarefs() const override;

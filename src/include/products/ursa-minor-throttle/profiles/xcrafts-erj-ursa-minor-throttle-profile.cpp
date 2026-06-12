@@ -31,10 +31,6 @@ XCraftsErjUrsaMinorThrottleProfile::XCraftsErjUrsaMinorThrottleProfile(ProductUr
     }, this);
 }
 
-XCraftsErjUrsaMinorThrottleProfile::~XCraftsErjUrsaMinorThrottleProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsErjUrsaMinorThrottleProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/ERJ/MFD1/WX_TERR_status");
 }

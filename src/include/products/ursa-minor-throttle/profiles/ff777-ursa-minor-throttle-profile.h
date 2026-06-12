@@ -11,7 +11,6 @@ class FF777UrsaMinorThrottleProfile : public UrsaMinorThrottleAircraftProfile {
 
     public:
         FF777UrsaMinorThrottleProfile(ProductUrsaMinorThrottle *product);
-        ~FF777UrsaMinorThrottleProfile();
 
         static bool IsEligible();
 

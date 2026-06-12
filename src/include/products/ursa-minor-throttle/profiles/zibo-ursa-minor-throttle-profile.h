@@ -11,7 +11,6 @@ class ZiboUrsaMinorThrottleProfile : public UrsaMinorThrottleAircraftProfile {
 
     public:
         ZiboUrsaMinorThrottleProfile(ProductUrsaMinorThrottle *product);
-        ~ZiboUrsaMinorThrottleProfile();
 
         static bool IsEligible();
 

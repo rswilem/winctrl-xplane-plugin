@@ -34,10 +34,6 @@ XCraftsEjetsAGPProfile::XCraftsEjetsAGPProfile(ProductAGP *product) : AGPAircraf
     }, this);
 }
 
-XCraftsEjetsAGPProfile::~XCraftsEjetsAGPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool XCraftsEjetsAGPProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/FMS/CDU_1_01");
 }

@@ -11,7 +11,6 @@ class FF777JoystickProfile : public JoystickAircraftProfile {
     private:
     public:
         FF777JoystickProfile(USBDevice *product);
-        ~FF777JoystickProfile();
 
         static bool IsEligible();
 };

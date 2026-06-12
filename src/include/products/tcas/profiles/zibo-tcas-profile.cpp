@@ -23,10 +23,6 @@ ZiboTCASProfile::ZiboTCASProfile(ProductTCAS *product) : TCASAircraftProfile(pro
     Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/battery_on");
 }
 
-ZiboTCASProfile::~ZiboTCASProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool ZiboTCASProfile::IsEligible() {
     return Dataref::getInstance()->exists("zibomod/Aircraft_Path");
 }

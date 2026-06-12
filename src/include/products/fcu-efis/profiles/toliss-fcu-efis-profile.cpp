@@ -159,10 +159,6 @@ TolissFCUEfisProfile::TolissFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAir
     }, this);
 }
 
-TolissFCUEfisProfile::~TolissFCUEfisProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool TolissFCUEfisProfile::IsEligible() {
     return ((Dataref::getInstance()->exists("AirbusFBW/FCUAvail")) &&
             (Dataref::getInstance()->exists("AirbusFBW/NDrangeCapt"))); // exclude the FFA350

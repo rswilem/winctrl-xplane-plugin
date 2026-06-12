@@ -26,10 +26,6 @@ Laminar737PAP3MCPProfile::Laminar737PAP3MCPProfile(ProductPAP3MCP *product) : PA
     }, this);
 }
 
-Laminar737PAP3MCPProfile::~Laminar737PAP3MCPProfile() {
-    Dataref::getInstance()->unbindAll(this);
-}
-
 bool Laminar737PAP3MCPProfile::IsEligible() {
     return Dataref::getInstance()->exists("laminar/B738/autopilot/cmd_a_status") && Dataref::getInstance()->exists("zibomod/Aircraft_Path") == false;
 }

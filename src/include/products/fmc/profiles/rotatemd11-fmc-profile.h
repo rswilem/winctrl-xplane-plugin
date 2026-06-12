@@ -9,7 +9,6 @@ class RotateMD11FMCProfile : public FMCAircraftProfile {
 
     public:
         RotateMD11FMCProfile(ProductFMC *product);
-        virtual ~RotateMD11FMCProfile();
 
         static bool IsEligible();
 

@@ -22,7 +22,6 @@ class XCraftsEjetsPDCProfile : public PDCAircraftProfile {
 
     public:
         XCraftsEjetsPDCProfile(ProductPDC *product);
-        ~XCraftsEjetsPDCProfile();
 
         static bool IsEligible();
         const std::unordered_map<PDCButtonIndex3N3M, PDCButtonDef> &buttonDefs() const override;

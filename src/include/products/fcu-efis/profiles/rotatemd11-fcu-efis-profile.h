@@ -18,7 +18,6 @@ class RotateMD11FCUEfisProfile : public FCUEfisAircraftProfile {
 
     public:
         RotateMD11FCUEfisProfile(ProductFCUEfis *product);
-        ~RotateMD11FCUEfisProfile();
 
         static bool IsEligible();
 

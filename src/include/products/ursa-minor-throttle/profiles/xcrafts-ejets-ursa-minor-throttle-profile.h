@@ -11,7 +11,6 @@ class XCraftsEjetsUrsaMinorThrottleProfile : public UrsaMinorThrottleAircraftPro
 
     public:
         XCraftsEjetsUrsaMinorThrottleProfile(ProductUrsaMinorThrottle *product);
-        ~XCraftsEjetsUrsaMinorThrottleProfile();
 
         static bool IsEligible();
 

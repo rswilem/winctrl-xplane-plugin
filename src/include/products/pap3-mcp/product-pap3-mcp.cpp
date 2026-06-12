@@ -646,6 +646,10 @@ void ProductPAP3MCP::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed
         return;
     }
 
+    if (isButtonHandledByXPlane(hardwareButtonIndex)) {
+        return;
+    }
+
     // Maintained switches: not in buttonDefs, routed to handleSwitchChanged.
     // pressedButtonIndices tracks the last known state so this is edge-triggered
     // on both macOS (IOHIDQueue) and Windows/Linux (raw report button loop).

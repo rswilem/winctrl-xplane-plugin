@@ -346,6 +346,10 @@ void ProductUrsaMinorThrottle::didReceiveButton(uint16_t hardwareButtonIndex, bo
         return;
     }
 
+    if (isButtonHandledByXPlane(hardwareButtonIndex)) {
+        return;
+    }
+
     auto &buttons = profile->buttonDefs();
     auto it = buttons.find(hardwareButtonIndex);
     if (it == buttons.end()) {

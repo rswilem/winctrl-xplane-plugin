@@ -12,6 +12,7 @@
 #include "product-rmp.h"
 #include "product-tcas.h"
 #include "product-ursa-minor-throttle.h"
+#include "xplane-bindings.h"
 
 #include <XPLMUtilities.h>
 
@@ -182,6 +183,10 @@ void USBDevice::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, uin
     if (pressed) {
         notifyButtonPressed(hardwareButtonIndex, this->productId);
     }
+}
+
+bool USBDevice::isButtonHandledByXPlane(uint16_t hardwareButtonIndex) {
+    return XPlaneBindings::getInstance()->isButtonBound(vendorId, productId, hardwareButtonIndex);
 }
 
 void USBDevice::processOnMainThread(const InputEvent &event) {

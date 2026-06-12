@@ -78,7 +78,7 @@ const std::unordered_map<uint16_t, UrsaMinorThrottleButtonDef> &ZiboUrsaMinorThr
         {7, {"ENG mode NORMAL", "laminar/B738/rotary/eng1_start_off,laminar/B738/rotary/eng2_start_off", UrsaMinorThrottleDatarefType::EXECUTE_MULTIPLE_CMD_ONCE}},
         {8, {"ENG mode START", "laminar/B738/rotary/eng1_start_cont,laminar/B738/rotary/eng2_start_cont", UrsaMinorThrottleDatarefType::EXECUTE_MULTIPLE_CMD_ONCE}},
         {9, {"AT disconnect Left", "laminar/B738/autopilot/left_at_dis_press"}},
-        {10, {"AT disconnect Right", ""}}, // We could map to the same as above, but not mapping anything lets the user assign a different command if desired.
+        {10, {"AT disconnect Right", "laminar/B738/autopilot/right_at_dis_press"}},
         {11, {"TOGA L", ""}},
         {12, {"MCT L", ""}},
         {13, {"CLB L", ""}},

@@ -75,7 +75,7 @@ const std::unordered_map<uint16_t, UrsaMinorThrottleButtonDef> &FF777UrsaMinorTh
         {7, {"ENG mode NORMAL", "1-sim/command/eecStartLeftSwitch_set_1"}}, // 1-sim/command/eecStartLeftSwitch_set_0, or 1-sim/command/eecStartRightSwitch_switch+
         {8, {"ENG mode START", "1-sim/command/eecStartLeftSwitch_set_2"}},
         {9, {"AT disconnect Left", "1-sim/command/apDiscLeftButton_button"}},
-        {10, {"AT disconnect Right", ""}}, // We could map to the same as above, but not mapping anything lets the user assign a different command if desired.
+        {10, {"AT disconnect Right", "1-sim/command/apDiscRightButton_button"}},
         {11, {"TOGA L", ""}},
         {12, {"MCT L", ""}},
         {13, {"CLB L", ""}},

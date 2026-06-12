@@ -66,7 +66,7 @@ const std::unordered_map<uint16_t, UrsaMinorThrottleButtonDef> &TolissUrsaMinorT
         {7, {"ENG mode NORMAL", "AirbusFBW/ENGModeSwitch", UrsaMinorThrottleDatarefType::SET_VALUE, 1}},
         {8, {"ENG mode START", "AirbusFBW/ENGModeSwitch", UrsaMinorThrottleDatarefType::SET_VALUE, 2}},
         {9, {"AT disconnect Left", "sim/autopilot/autothrottle_off"}},
-        {10, {"AT disconnect Right", ""}}, // We could map to the same as above, but not mapping anything lets the user assign a different command if desired.
+        {10, {"AT disconnect Right", "sim/autopilot/autothrottle_off"}},
         {11, {"TOGA L", ""}},
         {12, {"MCT L", ""}},
         {13, {"CLB L", ""}},

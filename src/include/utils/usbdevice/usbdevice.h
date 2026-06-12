@@ -106,6 +106,12 @@ class USBDevice {
         virtual void update();
         virtual void didReceiveData(int reportId, uint8_t *report, int reportLength);
         virtual void didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, uint8_t count = 1);
+        // True when the user assigned this button in X-Plane's joystick
+        // settings (globally or in the active aircraft's control profile).
+        // X-Plane fires that binding itself, so product didReceiveButton
+        // overrides must return early instead of running the built-in action.
+        // Not implemented in the stresstest build (usbdevice_shared.cpp).
+        bool isButtonHandledByXPlane(uint16_t hardwareButtonIndex);
 
         virtual void blackout();
         virtual void forceStateSync();

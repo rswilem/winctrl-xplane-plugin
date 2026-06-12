@@ -122,6 +122,8 @@
 		F69FF22D2E1D13CB00F9D2D9 /* GenericDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69FF2292E1D13CB00F9D2D9 /* GenericDeviceView.swift */; };
 		F69FF22E2E1D13CB00F9D2D9 /* DeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69FF2282E1D13CB00F9D2D9 /* DeviceModel.swift */; };
 		F69FF22F2E1D13CB00F9D2D9 /* JoystickControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69FF22A2E1D13CB00F9D2D9 /* JoystickControlView.swift */; };
+		F6A0E6F22FDCA55200BEC19C /* xplane-bindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6A0E6F12FDCA55200BEC19C /* xplane-bindings.cpp */; };
+		F6A0E6F32FDCA55200BEC19C /* xplane-bindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6A0E6F12FDCA55200BEC19C /* xplane-bindings.cpp */; };
 		F6A1492F2E4F03A400FB8395 /* product-fmc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6A1492D2E4F03A400FB8395 /* product-fmc.cpp */; };
 		F6A149302E4F03A400FB8395 /* toliss-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6A149292E4F03A400FB8395 /* toliss-fmc-profile.cpp */; };
 		F6A149312E4F03A400FB8395 /* laminar-a333-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6A149272E4F03A400FB8395 /* laminar-a333-fmc-profile.cpp */; };
@@ -343,6 +345,8 @@
 		F69FF2282E1D13CB00F9D2D9 /* DeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceModel.swift; sourceTree = "<group>"; };
 		F69FF2292E1D13CB00F9D2D9 /* GenericDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericDeviceView.swift; sourceTree = "<group>"; };
 		F69FF22A2E1D13CB00F9D2D9 /* JoystickControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoystickControlView.swift; sourceTree = "<group>"; };
+		F6A0E6F02FDCA55200BEC19C /* xplane-bindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xplane-bindings.h"; sourceTree = "<group>"; };
+		F6A0E6F12FDCA55200BEC19C /* xplane-bindings.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xplane-bindings.cpp"; sourceTree = "<group>"; };
 		F6A149262E4F03A400FB8395 /* laminar-a333-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "laminar-a333-fmc-profile.h"; sourceTree = "<group>"; };
 		F6A149272E4F03A400FB8395 /* laminar-a333-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "laminar-a333-fmc-profile.cpp"; sourceTree = "<group>"; };
 		F6A149282E4F03A400FB8395 /* toliss-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "toliss-fmc-profile.h"; sourceTree = "<group>"; };
@@ -729,6 +733,8 @@
 				F60BE7C62FA8CA0E00E5C542 /* xplane-version.hpp */,
 				F646535D2FDAFB23001F7640 /* profile-cleanup.h */,
 				F646535E2FDAFB23001F7640 /* profile-cleanup.cpp */,
+				F6A0E6F02FDCA55200BEC19C /* xplane-bindings.h */,
+				F6A0E6F12FDCA55200BEC19C /* xplane-bindings.cpp */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1107,6 +1113,7 @@
 				F671B5DF2EA96BBE00141EF2 /* rotatemd11-fmc-profile.cpp in Sources */,
 				83124BD02EE0A3D700C34D9D /* ff767-fcu-efis-profile.cpp in Sources */,
 				F6748A012F0000010000A001 /* fps748-fcu-efis-profile.cpp in Sources */,
+				F6A0E6F22FDCA55200BEC19C /* xplane-bindings.cpp in Sources */,
 				F603CF6F2FCDA132005DF928 /* toliss-rmp-profile.cpp in Sources */,
 				F603CF702FCDA132005DF928 /* product-rmp.cpp in Sources */,
 				DFE44309A6CBA55292A1F2E2 /* sparky744-fcu-efis-profile.cpp in Sources */,
@@ -1213,6 +1220,7 @@
 				F6C6E0312E8D5DAA00558F46 /* laminar-737-pap3-mcp-profile.cpp in Sources */,
 				F6C2086B2FC9702A006973EE /* rotatemd11-fcu-efis-profile.cpp in Sources */,
 				F6C6E0322E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp in Sources */,
+				F6A0E6F32FDCA55200BEC19C /* xplane-bindings.cpp in Sources */,
 				F6CC2B4A2F0E4E5500C0A4D8 /* ff350-fcu-efis-profile.cpp in Sources */,
 				F6CC2B4B2F0E4E5500C0A4D8 /* ff767-fcu-efis-profile.cpp in Sources */,
 				F6748A022F0000010000A002 /* fps748-fcu-efis-profile.cpp in Sources */,

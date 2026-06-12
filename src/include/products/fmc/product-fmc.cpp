@@ -300,6 +300,10 @@ void ProductFMC::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, ui
         return;
     }
 
+    if (isButtonHandledByXPlane(hardwareButtonIndex)) {
+        return;
+    }
+
     bool pressedButtonIndexExists = pressedButtonIndices.find(hardwareButtonIndex) != pressedButtonIndices.end();
     XPLMCommandPhase command = -1;
     if (pressed && !pressedButtonIndexExists) {

@@ -7,6 +7,7 @@
 #include "dataref.h"
 #include "plugins-menu.h"
 #include "usbcontroller.h"
+#include "xplane-bindings.h"
 
 #include <algorithm>
 #include <cmath>
@@ -141,6 +142,7 @@ PLUGIN_API void XPluginReceiveMessage(XPLMPluginID from, long msg, void *params)
             }
 
             AppState::getInstance()->initialize();
+            XPlaneBindings::getInstance()->reload();
             USBController::getInstance()->connectAllDevices();
             break;
         }
@@ -164,10 +166,6 @@ PLUGIN_API void XPluginReceiveMessage(XPLMPluginID from, long msg, void *params)
         case XPLM_MSG_AIRPORT_LOADED: {
             break;
         }
-
-        case XPLM_MSG_WILL_WRITE_PREFS:
-            // AppState::getInstance()->saveState();
-            break;
 
         default:
             break;

@@ -163,6 +163,10 @@ void ProductPDC::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, ui
         return;
     }
 
+    if (isButtonHandledByXPlane(hardwareButtonIndex)) {
+        return;
+    }
+
     bool isDeviceVariant3N = deviceVariant == PDCDeviceVariant::VARIANT_3N_CAPTAIN || deviceVariant == PDCDeviceVariant::VARIANT_3N_FIRSTOFFICER;
 
     auto &buttons = profile->buttonDefs();

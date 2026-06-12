@@ -302,6 +302,10 @@ void ProductAGP::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, ui
         return;
     }
 
+    if (isButtonHandledByXPlane(hardwareButtonIndex)) {
+        return;
+    }
+
     auto &buttons = profile->buttonDefs();
     auto it = buttons.find(hardwareButtonIndex);
     if (it == buttons.end()) {

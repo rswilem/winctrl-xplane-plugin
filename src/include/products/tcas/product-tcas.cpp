@@ -243,6 +243,10 @@ void ProductTCAS::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, u
         return;
     }
 
+    if (isButtonHandledByXPlane(hardwareButtonIndex)) {
+        return;
+    }
+
     auto &buttons = profile->buttonDefs();
     auto it = buttons.find(hardwareButtonIndex);
     if (it == buttons.end()) {

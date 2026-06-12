@@ -502,9 +502,8 @@ T Dataref::get(const char *ref) {
         int size = XPLMGetDatab(handle, nullptr, 0, 0);
         std::vector<char> str(size);
         XPLMGetDatab(handle, str.data(), 0, size);
-        std::string out = std::string(str.data(), size);
-        out.erase(std::remove(out.begin(), out.end(), '\0'), out.end());
-        return out;
+        auto it = std::find(str.begin(), str.end(), '\0');
+        return std::string(str.begin(), it);
     }
 
     if constexpr (std::is_same_v<T, std::string>) {

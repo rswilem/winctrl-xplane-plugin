@@ -1,5 +1,3 @@
----
-
 Language: Cpp
 
 DisableFormat: false
@@ -115,5 +113,3 @@ AlignConsecutiveShortCaseStatements:
   AcrossEmptyLines: true
 
 AlignTrailingComments: true
-
----

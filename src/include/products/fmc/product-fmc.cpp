@@ -579,10 +579,12 @@ void ProductFMC::setDeviceVariant(FMCDeviceVariant variant) {
     writeData({0x02, identifierByte, 0xbb, 0x00, 0x00, 0x04, 0x05, 0xcc, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00});
     writeData({0x02, identifierByte, 0xbb, 0x00, 0x00, 0x08, 0x06, 0xcc, 0x00, 0x00, 0x01, static_cast<uint8_t>(variant), 0xff, 0xff});
 
-    // After writing, disconnect and mark as not ready so USBController will remove us from devices array
-    // We disconnect because the device ceases to exist after changing variant.
+    // Mark as not ready. The firmware reprogramming causes the device to
+    // physically disconnect and reconnect under a different USB product ID.
+    // The OS removal callback (macOS) or poll (Windows) handles full cleanup;
+    // calling disconnect() here would null hidDevice and break the callback's
+    // device-lookup by handle, causing the old menu entry to leak.
     profileReady = false;
-    disconnect();
 }
 
 void ProductFMC::reloadFontsMenu() {

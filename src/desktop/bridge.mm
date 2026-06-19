@@ -2,7 +2,7 @@
 #include "usbcontroller.h"
 #include "appstate.h"
 #include "dataref.h"
-#include "product-ursa-minor-joystick.h"
+#include "product-joystick.h"
 #include "product-fmc.h"
 #include "product-fcu-efis.h"
 #include "font.h"
@@ -154,7 +154,7 @@ void* getJoystickHandle(int deviceIndex) {
     if (deviceIndex < 0 || deviceIndex >= static_cast<int>(devices.size())) {
         return nullptr;
     }
-    return dynamic_cast<ProductUrsaMinorJoystick*>(devices[deviceIndex]);
+    return dynamic_cast<ProductJoystick*>(devices[deviceIndex]);
 }
 
 void* getFMCHandle(int deviceIndex) {
@@ -201,13 +201,13 @@ void device_force_state_sync(void* deviceHandle) {
 // Joystick functions via handle
 void joystick_setVibration(void* joystickHandle, uint8_t vibration) {
     if (!joystickHandle) return;
-    auto joystick = static_cast<ProductUrsaMinorJoystick*>(joystickHandle);
+    auto joystick = static_cast<ProductJoystick*>(joystickHandle);
     joystick->setVibration(vibration);
 }
 
 void joystick_setLedBrightness(void* joystickHandle, uint8_t brightness) {
     if (!joystickHandle) return;
-    auto joystick = static_cast<ProductUrsaMinorJoystick*>(joystickHandle);
+    auto joystick = static_cast<ProductJoystick*>(joystickHandle);
     joystick->setLedBrightness(brightness);
 }
 
@@ -251,32 +251,33 @@ bool fmc_writeData(void* fmcHandle, const uint8_t* data, int length) {
     return fmc->writeData(dataVector);
 }
 
+static FontVariant fontVariantFromType(int fontType) {
+    switch (fontType) {
+        case 1: // Airbus
+            return FontVariant::FontAirbus;
+        case 2: // 737
+            return FontVariant::Font737;
+        case 3: // X-Crafts
+            return FontVariant::FontXCrafts;
+        case 4: // VGA 1
+            return FontVariant::FontVGA1;
+
+        case 0:
+        default:
+            return FontVariant::Default;
+    }
+}
+
 void fmc_setFont(void* fmcHandle, int fontType) {
     if (!fmcHandle) return;
     auto fmc = static_cast<ProductFMC*>(fmcHandle);
-    
-    FontVariant variant;
-    switch (fontType) {
-        case 1: // Airbus
-            variant = FontVariant::FontAirbus;
-            break;
-        case 2: // 737
-            variant = FontVariant::Font737;
-            break;
-        case 3: // X-Crafts
-            variant = FontVariant::FontXCrafts;
-            break;
-        case 4: // VGA 1
-            variant = FontVariant::FontVGA1;
-            break;
-            
-        case 0:
-        default:
-            variant = FontVariant::Default;
-            break;
-    }
-    
-    fmc->setFont(variant);
+    fmc->setFont(fontVariantFromType(fontType));
+}
+
+void fmc_setScreenLayout(void* fmcHandle, int fontType, int characterHeight, int characterWidth, int x, int y) {
+    if (!fmcHandle) return;
+    auto fmc = static_cast<ProductFMC*>(fmcHandle);
+    fmc->setScreenLayout(fontVariantFromType(fontType), static_cast<unsigned char>(characterHeight), static_cast<unsigned char>(characterWidth), static_cast<unsigned char>(x), static_cast<unsigned char>(y));
 }
 
 // Device enumeration and info functions
@@ -299,7 +300,7 @@ const char* getDeviceType(int deviceIndex) {
     }
     
     auto device = devices[deviceIndex];
-    if (dynamic_cast<ProductUrsaMinorJoystick*>(device)) {
+    if (dynamic_cast<ProductJoystick*>(device)) {
         return "joystick";
     } else if (dynamic_cast<ProductFMC*>(device)) {
         return "fmc";
@@ -332,7 +333,7 @@ void joystick_setVibration(int deviceIndex, uint8_t vibration) {
         return;
     }
     
-    auto joystick = dynamic_cast<ProductUrsaMinorJoystick*>(devices[deviceIndex]);
+    auto joystick = dynamic_cast<ProductJoystick*>(devices[deviceIndex]);
     if (joystick) {
         joystick->setVibration(vibration);
     }
@@ -344,7 +345,7 @@ void joystick_setLedBrightness(int deviceIndex, uint8_t brightness) {
         return;
     }
     
-    auto joystick = dynamic_cast<ProductUrsaMinorJoystick*>(devices[deviceIndex]);
+    auto joystick = dynamic_cast<ProductJoystick*>(devices[deviceIndex]);
     if (joystick) {
         joystick->setLedBrightness(brightness);
     }

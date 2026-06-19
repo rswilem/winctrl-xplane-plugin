@@ -27,6 +27,12 @@ class ProductFMC : public USBDevice {
 
         void setProfileForCurrentAircraft();
 
+        // SimAppPro "Screen Position": the top-left corner of the screen content.
+        // Sends one 0x2a packet carrying the 0x18 grid block with left = 36+x,
+        // top = 20+y. Always applied as part of setScreenLayout (X/Y belong with the
+        // character size).
+        void setScreenPosition(unsigned char x, unsigned char y);
+
     public:
         ProductFMC(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t productId, std::string vendorName, std::string productName, FMCHardwareType hardwareType, FMCDeviceVariant variant, unsigned char identifierByte);
         ~ProductFMC();
@@ -52,6 +58,12 @@ class ProductFMC : public USBDevice {
         char getPageCharacter(std::vector<std::vector<char>> &page, int line, int pos);
         void writeLineToPage(std::vector<std::vector<char>> &page, int line, int pos, const std::string &text, char color, bool fontSmall = false);
         void setFont(FontVariant preferredVariant);
+
+        // Apply the SimAppPro "Screen Layout Settings" as one unit: Character Size
+        // (width x height of each character) plus Screen Position (top-left x/y). Used
+        // for PFP devices whose 14 display rows must line up with the physical LSK keys.
+        // Defaults are the MCDU spec (character 23 x 29, position 16/17).
+        void setScreenLayout(FontVariant variant, unsigned char characterHeight = 29, unsigned char characterWidth = 23, unsigned char x = 16, unsigned char y = 17);
 
         void setAllLedsEnabled(bool enable);
         void setLedBrightness(FMCLed led, uint8_t brightness);

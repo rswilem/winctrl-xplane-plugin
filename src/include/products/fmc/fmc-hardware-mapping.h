@@ -139,8 +139,29 @@ struct FMCButtonDef {
         double value = 0.0;
 };
 
+// SimAppPro "Screen Layout Settings" per device: Character Size (width x height of
+// each character) and Screen Position (top-left x/y). The FMC applies the entry for
+// the connected hardware whenever a font is loaded, so the 14 display rows line up
+// with the physical LSK keys.
+struct FMCScreenLayout {
+    unsigned char characterHeight;
+    unsigned char characterWidth;
+    unsigned char x;
+    unsigned char y;
+};
+
 class FMCHardwareMapping {
     public:
+        static FMCScreenLayout ScreenLayoutForHardware(FMCHardwareType hardwareType) {
+            switch (hardwareType) {
+                case FMCHardwareType::HARDWARE_MCDU:  return {29, 23, 16, 17};
+                case FMCHardwareType::HARDWARE_PFP3N: return {32, 23, 14, 12};
+                case FMCHardwareType::HARDWARE_PFP4:  return {32, 23, 14, 12};
+                case FMCHardwareType::HARDWARE_PFP7:  return {32, 23, 14, 12};
+                default:                              return {29, 23, 16, 17};
+            }
+        }
+
         static FMCKey ButtonIdentifierForIndex(FMCHardwareType hardwareType, int index) {
             switch (hardwareType) {
                 case FMCHardwareType::HARDWARE_MCDU:

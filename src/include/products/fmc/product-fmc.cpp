@@ -490,11 +490,73 @@ void ProductFMC::setFont(FontVariant preferredVariant) {
         return;
     }
 
+    // Apply the SimAppPro "Screen Layout" for the connected hardware so the 14 display
+    // rows line up with the physical LSK keys. ResizeCellHeight is best-effort: it
+    // no-ops at the authored height (MCDU 29) and leaves `font` untouched if it cannot
+    // parse the structure, so we always send whatever we have.
+    FMCScreenLayout layout = FMCHardwareMapping::ScreenLayoutForHardware(hardwareType);
+    Font::ResizeCellHeight(font, layout.characterHeight, layout.characterWidth);
+
     for (auto &fontBytes : font) {
         writeData(fontBytes);
     }
 
     showBackground(FMCBackgroundVariant::BLACK);
+
+    setScreenPosition(layout.x, layout.y);
+}
+
+void ProductFMC::setScreenLayout(FontVariant variant, unsigned char characterHeight, unsigned char characterWidth, unsigned char x, unsigned char y) {
+    preferredFontVariant = variant;
+    std::vector<std::vector<unsigned char>> font = Font::GlyphData(variant, identifierByte, hardwareType);
+    if (font.empty()) {
+        Logger::getInstance()->error("setScreenLayout: failed to load font data\n");
+        return;
+    }
+
+    if (!Font::ResizeCellHeight(font, characterHeight, characterWidth)) {
+        return;
+    }
+
+    for (auto &fontBytes : font) {
+        writeData(fontBytes);
+    }
+
+    showBackground(FMCBackgroundVariant::BLACK);
+
+    // Screen position belongs with the character size: apply it in the same update.
+    setScreenPosition(x, y);
+}
+
+void ProductFMC::setScreenPosition(unsigned char x, unsigned char y) {
+    // SAP "Screen Layout Settings" position update: one 0x2a packet carrying the
+    // 0x18 text-grid block (25 bytes) + COMMIT (17 bytes) = 42 = 0x2a.
+    // left = x + 36, top = y + 20 (verified from SAP captures).
+    std::vector<unsigned char> packet(64, 0);
+    packet[0] = 0xf0;
+    packet[1] = 0x00;
+    packet[2] = 0x00; // sequence (tolerant)
+    packet[3] = 0x2a; // TYPE = 42 meaningful bytes
+
+    // 0x18 grid block at payload offset 0 (packet byte 4)
+    unsigned char *p = packet.data() + 4;
+    p[ 0] = identifierByte; p[ 1] = 0xbb; p[ 2] = 0x00; p[ 3] = 0x00;
+    p[ 4] = 0x18;           p[ 5] = 0x01; p[ 6] = 0x00; p[ 7] = 0x00;
+    p[ 8] = 0x00; p[ 9] = 0x00; p[10] = 0x00; p[11] = 0x00; // addr (tolerant = 0)
+    p[12] = 0x00;
+    p[13] = 0x08; p[14] = 0x00; p[15] = 0x00; p[16] = 0x00; // payload length = 8
+    p[17] = static_cast<unsigned char>(36 + x); p[18] = 0x00; // left as LE uint16
+    p[19] = static_cast<unsigned char>(20 + y); p[20] = 0x00; // top as LE uint16
+    p[21] = 0x0e; p[22] = 0x00; p[23] = 0x18; p[24] = 0x00; // 14 cols, 24 rows
+
+    // COMMIT block at payload offset 25 (packet byte 29)
+    unsigned char *c = packet.data() + 29;
+    c[ 0] = identifierByte; c[ 1] = 0xbb; c[ 2] = 0x00; c[ 3] = 0x00;
+    c[ 4] = 0x05;           c[ 5] = 0x01; c[ 6] = 0x00; c[ 7] = 0x00;
+    c[ 8] = 0x00; c[ 9] = 0x00; c[10] = 0x00; c[11] = 0x00; // addr
+    c[12] = 0x01; c[13] = 0x00; c[14] = 0x00; c[15] = 0x00; c[16] = 0x00;
+
+    writeData(packet);
 }
 
 void ProductFMC::showBackground(FMCBackgroundVariant variant) {

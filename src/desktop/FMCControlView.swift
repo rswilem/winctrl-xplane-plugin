@@ -17,6 +17,13 @@ struct FMCControlView: View {
     @State private var ledStates: [Bool] = Array(repeating: false, count: 17)
     @State private var selectedTestPage: String = "TOLISS_INIT";
     @State private var selectedFont: FMCWrapper.FontType = .airbus
+    @State private var isReconnecting = false
+
+    // SimAppPro "Screen Layout": character size + screen position. Defaults = MCDU spec.
+    @State private var charHeight: Double = 29       // Character Size: height of each character
+    @State private var charWidth: Double = 23        // Character Size: width of each character
+    @State private var screenX: Double = 16          // Screen Position: top-left X (device left = x+36)
+    @State private var screenY: Double = 17          // Screen Position: top-left Y (device top = y+20)
     
     private let indicatorLEDs: [(id: Int, name: String)] = [
         (8, "FAIL"), (9, "FM"), (10, "MCDU"), (11, "MENU"), 
@@ -134,7 +141,13 @@ struct FMCControlView: View {
                         clearDisplay()
                     }
                     .buttonStyle(.bordered)
-                    
+
+                    Button(isReconnecting ? "Reconnecting..." : "Reconnect") {
+                        Task { await reconnect() }
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(isReconnecting)
+
                     Spacer()
                 }
                 
@@ -157,11 +170,93 @@ struct FMCControlView: View {
                             setFont()
                         }
                         .buttonStyle(.bordered)
-                        
+
                         Spacer()
                     }
                 }
-                
+
+                // SimAppPro "Screen Layout Settings": character size + screen position,
+                // applied together. The four values line the 14 display rows up with the
+                // physical LSK keys (critical for PFP devices).
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Screen layout")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+
+                    // Device presets — prefill all four values
+                    HStack(spacing: 8) {
+                        Text("Presets:")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Button("MCDU") {
+                            charHeight = 29; charWidth = 23; screenX = 16; screenY = 17
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        Button("PFP 3N") {
+                            charHeight = 32; charWidth = 23; screenX = 14; screenY = 12
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        Button("PFP 4") {
+                            charHeight = 32; charWidth = 23; screenX = 14; screenY = 12
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        Button("PFP 7") {
+                            charHeight = 32; charWidth = 23; screenX = 14; screenY = 12
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        Spacer()
+                    }
+
+                    // Character size (width x height of each character)
+                    HStack(spacing: 16) {
+                        Stepper(value: $charHeight, in: 24...40, step: 1) {
+                            Text("Height: \(Int(charHeight)) px")
+                        }
+                        .frame(width: 170)
+                        .help("Character height (row pitch). MCDU 29; PFP ~32.")
+
+                        Stepper(value: $charWidth, in: 10...30, step: 1) {
+                            Text("Width: \(Int(charWidth)) px")
+                        }
+                        .frame(width: 170)
+                        .help("Character width. Default 23.")
+                    }
+
+                    // Screen position (top-left corner of the screen content)
+                    HStack(spacing: 16) {
+                        Stepper(value: $screenX, in: 0...40, step: 1) {
+                            Text("X: \(Int(screenX))")
+                        }
+                        .frame(width: 170)
+                        .help("Screen position X. Device left = x+36.")
+
+                        Stepper(value: $screenY, in: 0...40, step: 1) {
+                            Text("Y: \(Int(screenY))")
+                        }
+                        .frame(width: 170)
+                        .help("Screen position Y. Device top = y+20.")
+                    }
+
+                    HStack(spacing: 8) {
+                        Button("Apply") {
+                            guard let fmc = device.fmc else { return }
+                            fmc.setScreenLayout(selectedFont,
+                                                characterHeight: Int(charHeight),
+                                                characterWidth: Int(charWidth),
+                                                x: Int(screenX),
+                                                y: Int(screenY))
+                            drawFontTest()
+                        }
+                        .buttonStyle(.borderedProminent)
+
+                        Spacer()
+                    }
+                }
+
                 // Test page selection
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Test pages")
@@ -196,7 +291,6 @@ struct FMCControlView: View {
                         Text("CHARACTER_TEST").tag("CHARACTER_TEST")
                         Text("COLOR_TEST").tag("COLOR_TEST")
                         Text("ALL_GLYPHS").tag("ALL_GLYPHS")
-                        Text("SET_WHITE_GRID").tag("SET_WHITE_GRID")
                     }
                     .pickerStyle(.menu)
                     .frame(width: 200)
@@ -244,13 +338,65 @@ struct FMCControlView: View {
         guard let fmc = device.fmc else { return }
         fmc.clearDisplay()
     }
+
+    @MainActor
+    private func reconnect() async {
+        isReconnecting = true
+        device.fmc?.clearDisplay()
+        device.disconnect()
+        try? await Task.sleep(nanoseconds: 2_000_000_000)
+        device.connect()
+        isReconnecting = false
+    }
     
     private func setFont() {
         guard let fmc = device.fmc else { return }
+        // Drop any aircraft profile + datarefs first, otherwise the update loop
+        // reloads a profile whose constructor calls setFont and overwrites this
+        // font. Then draw a self-contained preview (no profile needed).
+        fmc.unloadProfile()
+        clearDatarefCache()
         fmc.setFont(selectedFont)
-        showTestPage()
+        drawFontTest()
     }
-    
+
+    // Draws a self-contained font preview directly from the desktop app: 14 rows of
+    // "<" + the rotating character set + ">" so the glyphs and row pitch are both
+    // visible without loading an aircraft profile. Sent as 0xf2 page-draw packets.
+    private func drawFontTest() {
+        guard let fmc = device.fmc else { return }
+        let charset = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".utf8)
+        let pageLines = 14, charsPerLine = 24
+        let inner = charsPerLine - 2
+
+        var buf: [UInt8] = []
+        for line in 0..<pageLines {
+            var text: [UInt8] = [UInt8(ascii: "<")]
+            for c in 0..<inner {
+                text.append(charset[(line + c) % charset.count])
+            }
+            text.append(UInt8(ascii: ">"))
+            for col in 0..<charsPerLine {
+                let ch: UInt8 = col < text.count ? text[col] : UInt8(ascii: " ")
+                buf.append(0x42) // white
+                buf.append(0x00)
+                buf.append(ch)
+            }
+        }
+
+        var index = 0
+        while index < buf.count {
+            let maxLength = min(63, buf.count - index)
+            var usbBuf = [UInt8](buf[index..<index + maxLength])
+            usbBuf.insert(0xf2, at: 0)
+            if maxLength < 63 {
+                usbBuf.append(contentsOf: Array(repeating: 0, count: 63 - maxLength))
+            }
+            fmc.writeData(usbBuf)
+            index += maxLength
+        }
+    }
+
     private func showTestPage() {
         guard let fmc = device.fmc else { return }
         fmc.clearDisplay()
@@ -849,12 +995,6 @@ struct FMCControlView: View {
             fmc.writeData([0xf2,0xe2,0x96,0xa0,0x31,0x02,0xe2,0x96,0xa1,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad])
             fmc.writeData([0xf2,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad])
             fmc.writeData([0xf2,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xad,0x01,0x20,0xaf,0x01,0x20,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
-            break
-            
-        case "SET_WHITE_GRID":
-            // Send glyphs fast and then this to get them to overlay. Sending this seperately clears the screen and draws the grid.
-            let color: [UInt8] = [0xff, 0x00, 0xff, 0x00] // ARGB
-            fmc.writeData([0xf0,0x00,0xe7,0x26,0x32,0xbb,0x00,0x00,0x12,0x01,0x00,0x00,0x52,0x13,0x03,0x00,0x00,0x04,0x00,0x00,0x00, color[0], color[1], color[2], color[3], 0x32,0xbb,0x00,0x00,0x1d,0x01,0x00,0x00,0x52,0x13,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
             break
             
         case "TOLISS_INIT":

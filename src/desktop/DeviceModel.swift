@@ -62,6 +62,8 @@ func c_fmc_setLedBrightness(_ handle: UnsafeRawPointer, _ ledId: Int32, _ bright
 func c_fmc_writeData(_ handle: UnsafeRawPointer, _ data: UnsafePointer<UInt8>, _ length: Int32) -> Bool
 @_silgen_name("fmc_setFont")
 func c_fmc_setFont(_ handle: UnsafeRawPointer, _ fontType: Int32) -> Void
+@_silgen_name("fmc_setScreenLayout")
+func c_fmc_setScreenLayout(_ handle: UnsafeRawPointer, _ fontType: Int32, _ characterHeight: Int32, _ characterWidth: Int32, _ x: Int32, _ y: Int32) -> Void
 
 // FCU-EFIS functions via handle
 @_silgen_name("fcuefis_clear")
@@ -152,7 +154,7 @@ struct WinctrlDevice: Identifiable, Equatable, Hashable {
         guard let handle = deviceHandle else { return }
         c_device_force_state_sync(handle)
     }
-    
+
     // Joystick wrapper methods
     var joystick: JoystickWrapper? {
         guard let handle = joystickHandle else { return nil }
@@ -300,6 +302,14 @@ struct FMCWrapper {
     // Set the font for the FMC display
     func setFont(_ fontType: FontType) {
         c_fmc_setFont(handle, Int32(fontType.rawValue))
+    }
+
+    // Apply the SimAppPro "Screen Layout Settings" as one unit: Character Size
+    // (width x height of each character) plus Screen Position (top-left x/y). Used for
+    // PFP devices so 14 display rows line up with the physical LSK keys. Defaults are
+    // the MCDU spec (character 23 x 29, position 16/17).
+    func setScreenLayout(_ fontType: FontType, characterHeight: Int = 29, characterWidth: Int = 23, x: Int = 16, y: Int = 17) {
+        c_fmc_setScreenLayout(handle, Int32(fontType.rawValue), Int32(characterHeight), Int32(characterWidth), Int32(x), Int32(y))
     }
 }
 

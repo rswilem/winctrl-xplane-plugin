@@ -46,6 +46,7 @@ bool fmc_setLed(void *fmcHandle, int ledId, uint8_t value);
 void fmc_setLedBrightness(void *fmcHandle, int ledId, uint8_t brightness);
 bool fmc_writeData(void *fmcHandle, const uint8_t *data, int length);
 void fmc_setFont(void *fmcHandle, int fontType);
+void fmc_setScreenLayout(void *fmcHandle, int fontType, int characterHeight, int characterWidth, int x, int y);
 
 // FCU-EFIS functions via handle
 void fcuefis_clear(void *fcuefisHandle);

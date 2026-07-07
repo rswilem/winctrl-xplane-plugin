@@ -168,6 +168,7 @@ const std::vector<std::string> &ZiboPAP3MCPProfile::displayDatarefs() const {
         "laminar/B738/electric/panel_brightness",
         "laminar/B738/electric/main_bus",
         "laminar/B738/autopilot/mcp_speed_dial_kts_mach",
+        "sim/cockpit/autopilot/airspeed_is_mach",
         "laminar/B738/autopilot/mcp_hdg_dial",
         "laminar/B738/autopilot/mcp_alt_dial",
         "sim/cockpit2/autopilot/vvi_dial_fpm",
@@ -212,8 +213,11 @@ const std::unordered_map<uint16_t, PAP3MCPButtonDef> &ZiboPAP3MCPProfile::button
         {18, {"CRS CAPT INC", "laminar/B738/autopilot/course_pilot_up"}},
         {19, {"SPD DEC", "sim/autopilot/airspeed_down"}},
         {20, {"SPD INC", "sim/autopilot/airspeed_up"}},
-        {21, {"HDG DEC", "laminar/B738/autopilot/heading_dn"}},
-        {22, {"HDG INC", "laminar/B738/autopilot/heading_up"}},
+        // Use the generic sim commands (fixed 1 deg/step) instead of Zibo's
+        // laminar/B738/autopilot/heading_up|dn, which apply velocity-based
+        // acceleration and keep coasting after the knob stops (issue #82).
+        {21, {"HDG DEC", "sim/autopilot/heading_down"}},
+        {22, {"HDG INC", "sim/autopilot/heading_up"}},
         {23, {"ALT DEC", "laminar/B738/autopilot/altitude_dn"}},
         {24, {"ALT INC", "laminar/B738/autopilot/altitude_up"}},
         {25, {"CRS FO DEC", "laminar/B738/autopilot/course_copilot_dn"}},
@@ -239,7 +243,7 @@ const std::vector<PAP3MCPEncoderDef> &ZiboPAP3MCPProfile::encoderDefs() const {
     static std::vector<PAP3MCPEncoderDef> encoders = {
         {0, "CRS CAPT", "laminar/B738/autopilot/course_pilot_up", "laminar/B738/autopilot/course_pilot_dn"},
         {1, "SPD", "sim/autopilot/airspeed_up", "sim/autopilot/airspeed_down"},
-        {2, "HDG", "laminar/B738/autopilot/heading_up", "laminar/B738/autopilot/heading_dn"},
+        {2, "HDG", "sim/autopilot/heading_up", "sim/autopilot/heading_down"},
         {3, "ALT", "laminar/B738/autopilot/altitude_up", "laminar/B738/autopilot/altitude_dn"},
         {4, "V/S", "sim/autopilot/vertical_speed_up", "sim/autopilot/vertical_speed_down"},
         {5, "CRS FO", "laminar/B738/autopilot/course_copilot_up", "laminar/B738/autopilot/course_copilot_dn"}};
@@ -250,6 +254,10 @@ void ZiboPAP3MCPProfile::updateDisplayData(PAP3MCPDisplayData &data) {
     auto dataref = Dataref::getInstance();
     data.showLabels = false; // Zibo MCP does not have labels on the display
     data.speed = dataref->getCached<float>("laminar/B738/autopilot/mcp_speed_dial_kts_mach");
+    // MCP speed window mode. laminar/B738/mcp/digit_A is the 'A' glyph, NOT the
+    // IAS/MACH selector; use the authoritative airspeed_is_mach flag so a mach
+    // value (e.g. 0.78) is rendered as ".78" rather than rounded to IAS "01".
+    data.spdMach = dataref->getCached<int>("sim/cockpit/autopilot/airspeed_is_mach") != 0;
     data.heading = dataref->getCached<int>("laminar/B738/autopilot/mcp_hdg_dial");
     data.altitude = dataref->getCached<int>("laminar/B738/autopilot/mcp_alt_dial");
     data.verticalSpeed = dataref->getCached<float>("sim/cockpit2/autopilot/vvi_dial_fpm");

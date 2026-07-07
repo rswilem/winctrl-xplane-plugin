@@ -17,6 +17,18 @@ extern "C" {
 
 std::string USBDevice::pendingDevicePath;
 
+// Write path resilience tunables. See docs/windows-write-path-fix.md.
+// kWriteTimeoutMs   - how long a single overlapped write may stay pending
+//                     before it is cancelled and (if not delivered) retried.
+// kWriteAttempts    - retries of the SAME packet in place before the device
+//                     is declared unhealthy. A retry only happens when we know
+//                     the packet was NOT delivered (see the stream invariant).
+// kMaxQueuedPackets - backlog ceiling; crossing it means the writer is stuck,
+//                     so the device is recycled rather than dropping packets.
+static constexpr DWORD kWriteTimeoutMs = 500;
+static constexpr int kWriteAttempts = 3;
+static constexpr size_t kMaxQueuedPackets = 5000;
+
 USBDevice::USBDevice(HIDDeviceHandle aHidDevice, uint16_t aVendorId, uint16_t aProductId, std::string aVendorName, std::string aProductName) :
     hidDevice(aHidDevice), vendorId(aVendorId), productId(aProductId), vendorName(aVendorName), productName(aProductName), connected(false) {
     devicePath = pendingDevicePath;
@@ -57,7 +69,11 @@ bool USBDevice::connect() {
         hidWriteDevice = INVALID_HANDLE_VALUE;
     }
     if (!devicePath.empty()) {
-        hidWriteDevice = CreateFileA(devicePath.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
+        // Opened overlapped so the write thread can wait on each write with a
+        // timeout and cancel it if the device stops draining its OUT endpoint,
+        // instead of blocking forever. Only this dedicated handle is overlapped;
+        // the shared hidDevice handle stays non-overlapped.
+        hidWriteDevice = CreateFileA(devicePath.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr);
     }
     if (hidWriteDevice == INVALID_HANDLE_VALUE) {
         // Writes fall back to the shared handle, where they serialize against
@@ -84,6 +100,14 @@ bool USBDevice::connect() {
                 if (error == ERROR_DEVICE_NOT_CONNECTED ||
                     error == ERROR_OPERATION_ABORTED ||
                     error == ERROR_INVALID_HANDLE) {
+                    // Fatal read error. If the device was still considered
+                    // connected, flag it disconnected so the reaper recycles it
+                    // rather than leaving a zombie (input dead, connected true).
+                    // During a normal disconnect() teardown connected is already
+                    // false, so the guard keeps shutdown semantics unchanged.
+                    if (connected.load()) {
+                        connected = false;
+                    }
                     break;
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -133,12 +157,21 @@ void USBDevice::update() {
 void USBDevice::disconnect() {
     connected = false;
 
-    // Drain write queue, then stop the write thread
-    while (writeQueueSize.load() > 0 && writeThreadRunning) {
+    // Drain the write queue, then stop the write thread. Bound the drain with a
+    // deadline so a wedged write (blocked or pending forever) cannot hang
+    // shutdown; on deadline we stop the thread anyway and it discards the rest.
+    auto drainDeadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+    while (writeQueueSize.load() > 0 && writeThreadRunning &&
+           std::chrono::steady_clock::now() < drainDeadline) {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     writeThreadRunning = false;
     writeQueueCV.notify_all();
+    // Wake an in-flight overlapped write immediately instead of after a full
+    // timeout slice, so the join below is provably bounded.
+    if (hidWriteDevice != INVALID_HANDLE_VALUE) {
+        CancelIoEx(hidWriteDevice, nullptr);
+    }
     if (writeThread.joinable()) {
         writeThread.join();
     }
@@ -196,6 +229,18 @@ bool USBDevice::writeData(std::vector<uint8_t> data) {
 
     {
         std::lock_guard<std::mutex> lock(writeQueueMutex);
+        if (writeQueue.size() >= kMaxQueuedPackets) {
+            // A backlog this large means the writer is stuck or the device
+            // stopped draining. Dropping individual packets would corrupt the
+            // ordered output stream (see the stream invariant), so the only
+            // correct recovery is a full recycle: flag the device unhealthy and
+            // let the reaper rebuild it. connected == false makes writeData
+            // return early above, so this logs at most once per wedge.
+            Logger::getInstance()->error("Write queue overflow for %s (vendorId: 0x%04X, productId: 0x%04X): %zu packets queued, recycling device\n",
+                productName.empty() ? "Unknown" : productName.c_str(), vendorId, productId, writeQueue.size());
+            connected = false;
+            return false;
+        }
         writeQueue.push(std::move(data));
         writeQueueSize.store(writeQueue.size());
     }
@@ -205,6 +250,10 @@ bool USBDevice::writeData(std::vector<uint8_t> data) {
 }
 
 void USBDevice::writeThreadLoop() {
+    // One manual-reset event, reused for every overlapped write on this thread.
+    // Closed on every exit path below.
+    HANDLE writeEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+
     while (writeThreadRunning) {
         std::vector<uint8_t> data;
 
@@ -225,28 +274,146 @@ void USBDevice::writeThreadLoop() {
             }
         }
 
-        if (!data.empty() && hidDevice != INVALID_HANDLE_VALUE && connected) {
-            HANDLE writeHandle = hidWriteDevice != INVALID_HANDLE_VALUE ? hidWriteDevice : hidDevice;
-            std::vector<uint8_t> paddedData = data;
-            if (outputReportByteLength > 0 && paddedData.size() < outputReportByteLength) {
-                paddedData.resize(outputReportByteLength, 0);
+        if (data.empty() || hidDevice == INVALID_HANDLE_VALUE || !connected) {
+            continue;
+        }
+
+        // Use the dedicated overlapped handle when it (and its event) exist;
+        // otherwise fall back to the shared non-overlapped handle. Passing an
+        // OVERLAPPED to the shared handle is undefined behavior, so the fallback
+        // stays fully synchronous (the throttled pre-rewrite mode).
+        HANDLE writeHandle;
+        bool overlapped;
+        if (hidWriteDevice != INVALID_HANDLE_VALUE && writeEvent != nullptr) {
+            writeHandle = hidWriteDevice;
+            overlapped = true;
+        } else {
+            writeHandle = hidDevice;
+            overlapped = false;
+        }
+
+        std::vector<uint8_t> paddedData = data;
+        if (outputReportByteLength > 0 && paddedData.size() < outputReportByteLength) {
+            paddedData.resize(outputReportByteLength, 0);
+        }
+
+        bool unhealthy = false;
+        DWORD lastError = 0;
+
+        for (int attempt = 1; attempt <= kWriteAttempts; ++attempt) {
+            DWORD bytesTransferred = 0;
+            bool delivered = false;
+            bool fatal = false;
+
+            if (overlapped) {
+                ResetEvent(writeEvent);
+                OVERLAPPED ov = {};
+                ov.hEvent = writeEvent;
+                if (WriteFile(writeHandle, paddedData.data(), (DWORD) paddedData.size(), nullptr, &ov)) {
+                    delivered = true; // completed synchronously
+                } else {
+                    DWORD error = GetLastError();
+                    if (error == ERROR_IO_PENDING) {
+                        DWORD wait = WaitForSingleObject(writeEvent, kWriteTimeoutMs);
+                        if (wait == WAIT_OBJECT_0) {
+                            if (GetOverlappedResult(writeHandle, &ov, &bytesTransferred, FALSE)) {
+                                delivered = true;
+                            } else {
+                                error = GetLastError();
+                            }
+                        } else {
+                            // Timeout (or wait failure). Cancel the IRP. It is
+                            // MANDATORY to wait for it to finish before the
+                            // OVERLAPPED goes out of scope or is reused.
+                            CancelIoEx(writeHandle, &ov);
+                            if (GetOverlappedResult(writeHandle, &ov, &bytesTransferred, TRUE)) {
+                                // It completed while we were cancelling: it WAS
+                                // delivered. Do NOT retry; a duplicate corrupts
+                                // the stream exactly like a dropped packet.
+                                delivered = true;
+                            } else {
+                                error = GetLastError(); // ERROR_OPERATION_ABORTED expected
+                            }
+                        }
+                    }
+                    if (!delivered) {
+                        lastError = error;
+                        if (error == ERROR_DEVICE_NOT_CONNECTED || error == ERROR_INVALID_HANDLE) {
+                            fatal = true;
+                        }
+                    }
+                }
+            } else {
+                DWORD bytesWritten = 0;
+                if (WriteFile(writeHandle, paddedData.data(), (DWORD) paddedData.size(), &bytesWritten, nullptr)) {
+                    delivered = true;
+                } else {
+                    lastError = GetLastError();
+                    if (lastError == ERROR_DEVICE_NOT_CONNECTED || lastError == ERROR_INVALID_HANDLE) {
+                        fatal = true;
+                    }
+                }
             }
 
-            DWORD bytesWritten;
-            if (!WriteFile(writeHandle, paddedData.data(), (DWORD) paddedData.size(), &bytesWritten, nullptr)) {
-                DWORD error = GetLastError();
-                const char *errorName = "UNKNOWN";
-                if (error == ERROR_DEVICE_NOT_CONNECTED) {
-                    errorName = "DEVICE_NOT_CONNECTED";
-                } else if (error == ERROR_INVALID_HANDLE) {
-                    errorName = "INVALID_HANDLE";
-                } else if (error == ERROR_IO_DEVICE) {
-                    errorName = "IO_DEVICE";
-                }
-                Logger::getInstance()->error("WriteFile failed for %s (vendorId: 0x%04X, productId: 0x%04X): %lu (%s)\n",
-                    productName.empty() ? "Unknown" : productName.c_str(), vendorId, productId, error, errorName);
+            if (delivered) {
+                break; // move on to the next packet
             }
+            if (fatal || attempt >= kWriteAttempts) {
+                unhealthy = true;
+                break;
+            }
+            // Not delivered, not fatal, attempts remain: retry the SAME packet
+            // in place (same queue position, since it is already dequeued).
         }
+
+        if (unhealthy) {
+            const char *errorName = "UNKNOWN";
+            if (lastError == ERROR_DEVICE_NOT_CONNECTED) {
+                errorName = "DEVICE_NOT_CONNECTED";
+            } else if (lastError == ERROR_INVALID_HANDLE) {
+                errorName = "INVALID_HANDLE";
+            } else if (lastError == ERROR_OPERATION_ABORTED) {
+                errorName = "OPERATION_ABORTED";
+            } else if (lastError == ERROR_IO_DEVICE) {
+                errorName = "IO_DEVICE";
+            }
+
+            size_t discarded = 0;
+            {
+                std::lock_guard<std::mutex> lock(writeQueueMutex);
+                // +1 for the packet that just failed and was already dequeued.
+                discarded = writeQueue.size() + 1;
+                std::queue<std::vector<uint8_t>> empty;
+                std::swap(writeQueue, empty);
+                writeQueueSize.store(0);
+            }
+            connected = false;
+
+            Logger::getInstance()->error("Write failed terminally for %s (vendorId: 0x%04X, productId: 0x%04X): %lu (%s), discarding %zu packet(s). Device will be recycled; if this repeats, disconnect and reconnect the device.\n",
+                productName.empty() ? "Unknown" : productName.c_str(), vendorId, productId, lastError, errorName, discarded);
+
+            // Do not exit the thread and do not attempt further writes. Wait
+            // until disconnect() clears writeThreadRunning, discarding (and
+            // re-clearing) anything that races in after connected went false.
+            {
+                std::unique_lock<std::mutex> lock(writeQueueMutex);
+                while (writeThreadRunning) {
+                    writeQueueCV.wait(lock, [this] {
+                        return !writeThreadRunning || !writeQueue.empty();
+                    });
+                    if (!writeQueue.empty()) {
+                        std::queue<std::vector<uint8_t>> empty;
+                        std::swap(writeQueue, empty);
+                        writeQueueSize.store(0);
+                    }
+                }
+            }
+            break;
+        }
+    }
+
+    if (writeEvent != nullptr) {
+        CloseHandle(writeEvent);
     }
 }
 #endif

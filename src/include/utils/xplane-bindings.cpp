@@ -1,5 +1,6 @@
 #include "xplane-bindings.h"
 
+#include "config.h"
 #include "dataref.h"
 #include "logger.hpp"
 
@@ -92,6 +93,9 @@ void XPlaneBindings::rebuildFromAssignments(const std::vector<int> &assignments)
     Logger::getInstance()->info("XPlaneBindings: %zu X-Plane-bound buttons across %zu devices\n", boundCount, boundButtons.size());
 
     for (const auto &[id, buttons] : boundButtons) {
+        if ((id >> 16) != WINCTRL_VENDOR_ID) {
+            continue;
+        }
         for (uint16_t button : buttons) {
             Logger::getInstance()->debug("XPlaneBindings: suppressing button %u on device 0x%04X:0x%04X\n", button, id >> 16, id & 0xFFFF);
         }

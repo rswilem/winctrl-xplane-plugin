@@ -8,9 +8,9 @@
 #include <XPLMUtilities.h>
 
 ZiboTCASProfile::ZiboTCASProfile(ProductTCAS *product) : TCASAircraftProfile(product), squawkInput("") {
-    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("sim/cockpit2/electrical/panel_brightness_ratio", [product](const std::vector<float> &brightness) {
+    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("laminar/B738/electric/panel_brightness", [product](const std::vector<float> &brightness) {
         bool hasPower = Dataref::getInstance()->getCached<bool>("sim/cockpit/electrical/battery_on");
-        uint8_t backlight = (hasPower && !brightness.empty()) ? static_cast<uint8_t>(brightness[0] * 255) : 0;
+        uint8_t backlight = (hasPower && brightness.size() > 3) ? static_cast<uint8_t>(brightness[3] * 255) : 0;
         product->setLedBrightness(TCASLed::BACKLIGHT, backlight);
         product->setLedBrightness(TCASLed::LCD_BRIGHTNESS, hasPower ? 255 : 0);
         product->setLedBrightness(TCASLed::OVERALL_LEDS_BRIGHTNESS, hasPower ? 255 : 0);
@@ -18,7 +18,7 @@ ZiboTCASProfile::ZiboTCASProfile(ProductTCAS *product) : TCASAircraftProfile(pro
         this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/battery_on", [](bool) {
-        Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit2/electrical/panel_brightness_ratio");
+        Dataref::getInstance()->executeChangedCallbacksForDataref("laminar/B738/electric/panel_brightness");
     },
         this);
 

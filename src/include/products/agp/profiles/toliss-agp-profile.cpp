@@ -4,6 +4,7 @@
 #include "dataref.h"
 #include "product-agp.h"
 #include "segment-display.h"
+#include "xplane-version.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -35,7 +36,7 @@ TolissAGPProfile::TolissAGPProfile(ProductAGP *product) : AGPAircraftProfile(pro
     Dataref::getInstance()->monitorExistingDataref<int>("AirbusFBW/AnnunMode", [this, product](int annunMode) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/TerrainSelectedND1");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/TerrainSelectedND2");
-        Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/OHPLightsATA32_Raw");
+        Dataref::getInstance()->executeChangedCallbacksForDataref(ifXPlane11("AirbusFBW/OHPLightsATA32", "AirbusFBW/OHPLightsATA32_Raw"));
 
         product->setLedBrightness(AGPLed::LDG_GEAR_LEVER_RED, isAnnunTest() ? 255 : 0);
         updateDisplays();
@@ -68,7 +69,7 @@ TolissAGPProfile::TolissAGPProfile(ProductAGP *product) : AGPAircraftProfile(pro
     },
         this);
 
-    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/OHPLightsATA32_Raw", [this, product](const std::vector<float> &panelLights) {
+    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>(ifXPlane11("AirbusFBW/OHPLightsATA32", "AirbusFBW/OHPLightsATA32_Raw"), [this, product](const std::vector<float> &panelLights) {
         if (panelLights.size() < 18) {
             return;
         }

@@ -68,6 +68,7 @@ The matrix below shows device and aircraft compatibility. Devices are listed ver
 - [@MortyMars](https://github.com/MortyMars) for the FCU/EFIS FF777, FF767, and FFA350 v1 profiles.
 - [@loftwing](https://github.com/loftwing) for the JF146 profile and testing.
 - [@jcorbier](https://github.com/jcorbier) for the RMP 32 hardware support.
+- [@clumsynick](https://github.com/clumsynick) for adding the CL650 and the Q4XP profiles.
 
 ### Linux udev rules
 

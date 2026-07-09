@@ -12,12 +12,15 @@
 #include <XPLMUtilities.h>
 
 ZiboFCUEfisProfile::ZiboFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraftProfile(product) {
-    // Monitor power and brightness
-    Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/electric/panel_brightness", [product](float brightness) {
+    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("laminar/B738/electric/panel_brightness", [product](const std::vector<float> &brightness) {
+        if (brightness.empty()) {
+            return;
+        }
+
         bool avionicsOn = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on");
 
         // Use appropriate brightness index for 737 instruments
-        uint8_t target = avionicsOn ? brightness * 255 : 0;
+        uint8_t target = avionicsOn ? brightness[0] * 255 : 0;
         product->setLedBrightness(FCUEfisLed::BACKLIGHT, target);
         product->setLedBrightness(FCUEfisLed::EFISR_BACKLIGHT, target);
         product->setLedBrightness(FCUEfisLed::EFISL_BACKLIGHT, target);

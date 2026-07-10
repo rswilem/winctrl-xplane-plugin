@@ -10,6 +10,7 @@
 #include "profiles/ff777-pdc-profile.h"
 #include "profiles/fps748-pdc-profile.h"
 #include "profiles/toliss-pdc-profile.h"
+#include "profiles/tu-154-ce-pdc-profile.h"
 #include "profiles/xcrafts-ejets-pdc-profile.h"
 #include "profiles/fps-ejets-pdc-profile.h"
 #include "profiles/xcrafts-erj-pdc-profile.h"
@@ -125,6 +126,9 @@ void ProductPDC::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (AerobaskPhenomPDCProfile::IsEligible()) {
         profile = new AerobaskPhenomPDCProfile(this);
+        profileReady = true;
+    } else if (Tu154CEPDCProfile::IsEligible()) {
+        profile = new Tu154CEPDCProfile(this);
         profileReady = true;
     } else if (CL650PDCProfile::IsEligible()) {
         profile = new CL650PDCProfile(this);

@@ -17,6 +17,7 @@
 #include "profiles/sparky744-pap3-mcp-profile.h"
 #include "profiles/stratosphere77w-pap3-mcp-profile.h"
 #include "profiles/toliss-pap3-mcp-profile.h"
+#include "profiles/tu-154-ce-pap3-mcp-profile.h"
 #include "profiles/xcrafts-ejets-pap3-mcp-profile.h"
 #include "profiles/fps-ejets-pap3-mcp-profile.h"
 #include "profiles/xcrafts-erj-pap3-mcp-profile.h"
@@ -99,6 +100,9 @@ void ProductPAP3MCP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (AerobaskPhenomPAP3MCPProfile::IsEligible()) {
         profile = new AerobaskPhenomPAP3MCPProfile(this);
+        profileReady = true;
+    } else if (Tu154CEPAP3MCPProfile::IsEligible()) {
+        profile = new Tu154CEPAP3MCPProfile(this);
         profileReady = true;
     } else if (CL650PAP3MCPProfile::IsEligible()) {
         profile = new CL650PAP3MCPProfile(this);

@@ -4,7 +4,8 @@
 #include "config.h"
 #include "dataref.h"
 #include "plugins-menu.h"
-#include "profiles/c172-fcu-efis-profile.h"
+#include "profiles/c172-afl-fcu-efis-profile.h"
+#include "profiles/c172-laminar-fcu-efis-profile.h"
 #include "profiles/cis-seneca-fcu-efis-profile.h"
 #include "profiles/cl650-fcu-efis-profile.h"
 #include "profiles/q4xp-fcu-efis-profile.h"
@@ -82,8 +83,11 @@ void ProductFCUEfis::setProfileForCurrentAircraft() {
     } else if (TolissFCUEfisProfile::IsEligible()) {
         profile = new TolissFCUEfisProfile(this);
         profileReady = true;
-    } else if (C172FCUEfisProfile::IsEligible()) {
-        profile = new C172FCUEfisProfile(this);
+    } else if (C172AFLFCUEfisProfile::IsEligible()) {
+        profile = new C172AFLFCUEfisProfile(this);
+        profileReady = true;
+    } else if (C172LaminarFCUEfisProfile::IsEligible()) {
+        profile = new C172LaminarFCUEfisProfile(this);
         profileReady = true;
     } else if (CISSenecaFCUEfisProfile::IsEligible()) {
         profile = new CISSenecaFCUEfisProfile(this);

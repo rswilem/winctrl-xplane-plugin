@@ -4,6 +4,7 @@
 #include "config.h"
 #include "dataref.h"
 #include "plugins-menu.h"
+#include "profiles/ff350-fmc-profile.h"
 #include "profiles/ff767-fmc-profile.h"
 #include "profiles/ff777-fmc-profile.h"
 #include "profiles/fps748-fmc-profile.h"
@@ -71,6 +72,10 @@ void ProductFMC::setProfileForCurrentAircraft() {
     if (JAR330FMCProfile::IsEligible()) {
         clearDisplay();
         profile = new JAR330FMCProfile(this);
+        profileReady = true;
+    } else if (FF350FMCProfile::IsEligible()) {
+        clearDisplay();
+        profile = new FF350FMCProfile(this);
         profileReady = true;
     } else if (TolissFMCProfile::IsEligible()) {
         clearDisplay();

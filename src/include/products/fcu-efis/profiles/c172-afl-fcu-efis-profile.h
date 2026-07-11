@@ -1,5 +1,5 @@
-#ifndef C172_FCU_EFIS_PROFILE_H
-#define C172_FCU_EFIS_PROFILE_H
+#ifndef C172_AFL_FCU_EFIS_PROFILE_H
+#define C172_AFL_FCU_EFIS_PROFILE_H
 
 #include "fcu-efis-aircraft-profile.h"
 
@@ -7,12 +7,12 @@
 #include <string>
 #include <unordered_map>
 
-class C172FCUEfisProfile : public FCUEfisAircraftProfile {
+class C172AFLFCUEfisProfile : public FCUEfisAircraftProfile {
     private:
         int altitudeIncrements = 0;
 
     public:
-        C172FCUEfisProfile(ProductFCUEfis *product);
+        C172AFLFCUEfisProfile(ProductFCUEfis *product);
 
         static bool IsEligible();
 

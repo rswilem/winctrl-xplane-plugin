@@ -4,6 +4,7 @@
 #include "config.h"
 #include "dataref.h"
 #include "plugins-menu.h"
+#include "profiles/pa28-agp-profile.h"
 #include "profiles/rotatemd11-agp-profile.h"
 #include "profiles/toliss-agp-profile.h"
 #include "profiles/xcrafts-ejets-agp-profile.h"
@@ -61,6 +62,9 @@ void ProductAGP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (TolissAGPProfile::IsEligible()) {
         profile = new TolissAGPProfile(this);
+        profileReady = true;
+    } else if (PA28AGPProfile::IsEligible()) {
+        profile = new PA28AGPProfile(this);
         profileReady = true;
     } else {
         profile = nullptr;

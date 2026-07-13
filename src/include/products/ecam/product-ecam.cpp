@@ -3,6 +3,7 @@
 #include "appstate.h"
 #include "dataref.h"
 #include "plugins-menu.h"
+#include "profiles/pa28-ecam-profile.h"
 #include "profiles/toliss-ecam-profile.h"
 
 #include <algorithm>
@@ -41,6 +42,9 @@ const char *ProductECAM::activeProfileName() const {
 void ProductECAM::setProfileForCurrentAircraft() {
     if (TolissECAMProfile::IsEligible()) {
         profile = new TolissECAMProfile(this);
+        profileReady = true;
+    } else if (PA28ECAMProfile::IsEligible()) {
+        profile = new PA28ECAMProfile(this);
         profileReady = true;
     } else {
         profile = nullptr;

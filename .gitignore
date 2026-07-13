@@ -114,3 +114,4 @@ CLAUDE.md
 
 #VSCode
 .vscode/
+*.code-workspace

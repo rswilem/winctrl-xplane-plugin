@@ -4,6 +4,7 @@
 #include "dataref.h"
 #include "plugins-menu.h"
 #include "profiles/ff777-ursa-minor-throttle-profile.h"
+#include "profiles/pa28-ursa-minor-throttle-profile.h"
 #include "profiles/rotatemd11-ursa-minor-throttle-profile.h"
 #include "profiles/toliss-ursa-minor-throttle-profile.h"
 #include "profiles/xcrafts-ejets-ursa-minor-throttle-profile.h"
@@ -62,6 +63,9 @@ void ProductUrsaMinorThrottle::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (ZiboUrsaMinorThrottleProfile::IsEligible()) {
         profile = new ZiboUrsaMinorThrottleProfile(this);
+        profileReady = true;
+    } else if (PA28UrsaMinorThrottleProfile::IsEligible()) {
+        profile = new PA28UrsaMinorThrottleProfile(this);
         profileReady = true;
     } else {
         profile = nullptr;

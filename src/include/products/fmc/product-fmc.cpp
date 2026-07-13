@@ -12,6 +12,7 @@
 #include "profiles/jar330-fmc-profile.h"
 #include "profiles/laminar-a333-fmc-profile.h"
 #include "profiles/laminar-citx-fmc-profile.h"
+#include "profiles/pa28-fmc-profile.h"
 #include "profiles/q4xp-fmc-profile.h"
 #include "profiles/rotatemd11-fmc-profile.h"
 #include "profiles/sparky744-fmc-profile.h"
@@ -136,6 +137,10 @@ void ProductFMC::setProfileForCurrentAircraft() {
     } else if (IXEG733FMCProfile::IsEligible()) {
         clearDisplay();
         profile = new IXEG733FMCProfile(this);
+        profileReady = true;
+    } else if (PA28FMCProfile::IsEligible()) {
+        clearDisplay();
+        profile = new PA28FMCProfile(this);
         profileReady = true;
     } else {
         profile = nullptr;

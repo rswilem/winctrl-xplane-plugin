@@ -5,6 +5,7 @@
 #include "dataref.h"
 #include "plugins-menu.h"
 #include "profiles/fps748-tcas-profile.h"
+#include "profiles/pa28-tcas-profile.h"
 #include "profiles/rotatemd11-tcas-profile.h"
 #include "profiles/sparky744-tcas-profile.h"
 #include "profiles/toliss-tcas-profile.h"
@@ -66,6 +67,9 @@ void ProductTCAS::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (TolissTCASProfile::IsEligible()) {
         profile = new TolissTCASProfile(this);
+        profileReady = true;
+    } else if (PA28TCASProfile::IsEligible()) {
+        profile = new PA28TCASProfile(this);
         profileReady = true;
     } else {
         profile = nullptr;

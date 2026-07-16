@@ -36,7 +36,8 @@ TolissTCASProfile::TolissTCASProfile(ProductTCAS *product) : TCASAircraftProfile
         {23, {"TCAS MODE TA/RA", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 4}},
     };
 
-    if (Dataref::getInstance()->getCached<std::string>("sim/aircraft/view/acf_ICAO") == "A339") {
+    std::string icao = Dataref::getInstance()->getCached<std::string>("sim/aircraft/view/acf_ICAO");
+    if (icao == "A339" || icao == "A346") {
         buttons[11] = {"XPDR AUTO", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 1};
         buttons[12] = {"XPDR ON", "AirbusFBW/XPDRPower", TCASDatarefType::SET_VALUE, 2};
         buttons[15] = {"ALT RPTG OFF", "AirbusFBW/XPDRAltitude", TCASDatarefType::SET_VALUE, 0};

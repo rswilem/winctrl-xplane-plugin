@@ -53,10 +53,10 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
     Dataref::getInstance()->monitorExistingDataref<float>("AirbusFBW/PanelBrightnessLevel", [product, rmpAvailRef](float brightness) {
         bool available = Dataref::getInstance()->getCached<int>(rmpAvailRef.c_str()) != 0;
         bool hasPower = Dataref::getInstance()->getCached<bool>("sim/cockpit/electrical/avionics_on");
-        uint8_t backlightBrightness = (available && hasPower) ? brightness * 255 : 0;
+        uint8_t backlightBrightness = hasPower ? brightness * 255 : 0;
 
         product->setLedBrightness(RMPLed::BACKLIGHT, backlightBrightness);
-        product->setLedBrightness(RMPLed::LCD_BRIGHTNESS, available ? 255 : 0);
+        product->setLedBrightness(RMPLed::LCD_BRIGHTNESS, hasPower ? 255 : 0);
         product->setLedBrightness(RMPLed::OVERALL_LEDS_BRIGHTNESS, available ? 255 : 0);
 
         product->forceStateSync();

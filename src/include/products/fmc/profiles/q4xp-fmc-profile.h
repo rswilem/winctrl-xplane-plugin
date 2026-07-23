@@ -1,21 +1,17 @@
 #ifndef Q4XP_FMC_PROFILE_H
 #define Q4XP_FMC_PROFILE_H
 
-#include "fmc-aircraft-profile.h"
+#include "uns1-fmc-profile.h"
 
-class Q4XPFMCProfile : public FMCAircraftProfile {
+class Q4XPFMCProfile : public UNS1FMCProfile {
     public:
         Q4XPFMCProfile(ProductFMC *product);
-        ~Q4XPFMCProfile();
 
         static bool IsEligible();
-        const std::vector<std::string> &displayDatarefs() const override;
-        const std::vector<FMCButtonDef> &buttonDefs() const override;
-        const std::unordered_map<FMCKey, const FMCButtonDef *> &buttonKeyMap() const override;
-        const std::map<char, FMCTextColor> &colorMap() const override;
-        void mapCharacter(std::vector<uint8_t> *buffer, uint8_t character, bool isFontSmall) override;
-        void updatePage(std::vector<std::vector<char>> &page) override;
-        void buttonPressed(const FMCButtonDef *button, XPLMCommandPhase phase) override;
+
+    protected:
+        std::string displayPathPrefix() const override;
+        std::string commandPathPrefix() const override;
 };
 
 #endif // Q4XP_FMC_PROFILE_H

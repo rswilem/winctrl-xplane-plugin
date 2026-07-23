@@ -27,6 +27,10 @@ class ZiboFCUEfisProfile : public FCUEfisAircraftProfile {
         }
 
         void buttonPressed(const FCUEfisButtonDef *button, XPLMCommandPhase phase) override;
+
+    private:
+        // Altitude selector step set by the 100/1000 switch (buttons 25/26)
+        int altitudeIncrement = 100;
 };
 
 #endif // ZIBO_FCU_EFIS_PROFILE_H

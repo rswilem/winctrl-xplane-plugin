@@ -144,8 +144,19 @@ const std::vector<std::string> &ZiboFCUEfisProfile::displayDatarefs() const {
         "laminar/B738/EFIS_control/capt/baro_in_hpa",
         "laminar/B738/EFIS_control/fo/baro_in_hpa",
 
+        // Barometer STD mode - shows "Std" instead of the numeric value
+        "laminar/B738/EFIS/baro_set_std_pilot",
+        "laminar/B738/EFIS/baro_set_std_copilot",
+
         // Vertical speed window visibility
         "laminar/B738/autopilot/vvi_dial_show",
+
+        // Speed window visibility
+        "laminar/B738/autopilot/show_ias",
+
+        // LNAV/VNAV status - drive the HDG/ALT managed dots
+        "laminar/B738/autopilot/lnav_status",
+        "laminar/B738/autopilot/vnav_status1",
     };
 
     return datarefs;
@@ -176,9 +187,9 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &ZiboFCUEfisProfile::button
         {15, {"HDG PUSH", "laminar/B738/autopilot/vnav_press", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
         {16, {"HDG PULL", "laminar/B738/autopilot/hdg_sel_press", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
 
-        // Altitude encoder
-        {17, {"ALT DEC", "sim/autopilot/altitude_down"}},
-        {18, {"ALT INC", "sim/autopilot/altitude_up"}},
+        // Altitude encoder - routed through custom_altitude so the 100/1000 switch controls the step
+        {17, {"ALT DEC", "custom_altitude", FCUEfisDatarefType::EXECUTE_CMD_ONCE, -1.0}},
+        {18, {"ALT INC", "custom_altitude", FCUEfisDatarefType::EXECUTE_CMD_ONCE, 1.0}},
         {19, {"ALT PUSH", "laminar/B738/autopilot/lnav_press", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
         {20, {"ALT PULL", "laminar/B738/autopilot/lvl_chg_press", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
 
@@ -188,8 +199,8 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &ZiboFCUEfisProfile::button
         {23, {"VS PUSH", "sim/autopilot/vertical_speed_sync"}},
         {24, {"VS PULL", "laminar/B738/autopilot/vs_press"}},
 
-        {25, {"ALT 100", ""}},
-        {26, {"ALT 1000", ""}},
+        {25, {"ALT 100", "custom_set_altitude_mode", FCUEfisDatarefType::SET_VALUE, 100.0}},
+        {26, {"ALT 1000", "custom_set_altitude_mode", FCUEfisDatarefType::SET_VALUE, 1000.0}},
 
         // EFIS Left (Captain) buttons (32-63)
         {32, {"L_FD", "laminar/B738/autopilot/flight_director_pos,laminar/B738/autopilot/flight_director_toggle,laminar/B738/autopilot/flight_director_toggle", FCUEfisDatarefType::SET_VALUE_USING_COMMANDS, 1.0}},
@@ -282,33 +293,46 @@ void ZiboFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
         data.verticalSpeed = {"", {}};
         data.efisRight.baro = "";
         data.efisLeft.baro = "";
+        data.efisLeft.isStd = false;
+        data.efisRight.isStd = false;
+        data.hdgManaged = false;
+        data.altManaged = false;
         return;
     }
 
     data.displayEnabledWindowsFlag = FCUDisplayData::Window::All;
     data.displayEnabledWindowsFlag &= ~FCUDisplayData::LevelChangeHeader;
     data.headingHdg = true;
-    data.headingLat = true;
 
-    // Speed display
-    bool isMach = Dataref::getInstance()->getCached<int>("sim/cockpit/autopilot/airspeed_is_mach");
-    float speed = Dataref::getInstance()->getCached<float>("sim/cockpit2/autopilot/airspeed_dial_kts_mach");
+    // "Managed" dots follow the FMC modes: LNAV -> HDG dot, VNAV -> ALT dot
+    data.hdgManaged = Dataref::getInstance()->getCached<float>("laminar/B738/autopilot/lnav_status") > 0.5f;
+    data.altManaged = Dataref::getInstance()->getCached<float>("laminar/B738/autopilot/vnav_status1") > 0.5f;
 
-    if (isMach) {
-        std::ostringstream ss;
-        ss << std::fixed << std::setprecision(2) << speed;
-        std::string machStr = ss.str();
-        if (machStr[0] == '0') {
-            machStr = machStr.substr(1);
+    // Speed display - only show when the MCP speed window is active
+    bool speedWindowActive = Dataref::getInstance()->getCached<bool>("laminar/B738/autopilot/show_ias");
+    if (speedWindowActive) {
+        bool isMach = Dataref::getInstance()->getCached<int>("sim/cockpit/autopilot/airspeed_is_mach");
+        float speed = Dataref::getInstance()->getCached<float>("sim/cockpit2/autopilot/airspeed_dial_kts_mach");
+
+        if (isMach) {
+            std::ostringstream ss;
+            ss << std::fixed << std::setprecision(2) << speed;
+            std::string machStr = ss.str();
+            if (machStr[0] == '0') {
+                machStr = machStr.substr(1);
+            }
+            data.speed = {machStr, {}};
+            data.spdMach = true;
+
+        } else {
+            std::ostringstream ss;
+            ss << static_cast<int>(speed);
+            data.speed = ss.str();
+            data.spdMach = false;
         }
-        data.speed = {machStr, {}};
-        data.spdMach = true;
-
     } else {
-        std::ostringstream ss;
-        ss << static_cast<int>(speed);
-        data.speed = ss.str();
-        data.spdMach = false;
+        data.displayEnabledWindowsFlag &= ~FCUDisplayData::SpeedMachHeader;
+        data.displayEnabledWindowsFlag &= ~FCUDisplayData::SpeedMachValue;
     }
 
     // Heading display
@@ -348,6 +372,10 @@ void ZiboFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
 
     data.efisLeft.setBaro(baroPilot, !pilotInHpa);
     data.efisRight.setBaro(baroFO, !foInHpa);
+
+    // STD mode overrides the numeric readout with "Std" (setBaro resets isStd, so set it after)
+    data.efisLeft.isStd = Dataref::getInstance()->getCached<bool>("laminar/B738/EFIS/baro_set_std_pilot");
+    data.efisRight.isStd = Dataref::getInstance()->getCached<bool>("laminar/B738/EFIS/baro_set_std_copilot");
 }
 
 void ZiboFCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMCommandPhase phase) {
@@ -360,6 +388,22 @@ void ZiboFCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMComma
     // Special handling for A/THR button - just execute the command
     if (button->name == "A/THR" && phase == xplm_CommandBegin) {
         datarefManager->executeCommand(button->dataref.c_str());
+        return;
+    }
+
+    // 100/1000 selector - store the altitude step, no sim action of its own
+    if (button->dataref == "custom_set_altitude_mode" && phase == xplm_CommandBegin) {
+        altitudeIncrement = static_cast<int>(button->value);
+        return;
+    }
+
+    // Altitude encoder - repeat the native 100 ft command to honour the selected step
+    if (button->dataref == "custom_altitude" && phase == xplm_CommandBegin) {
+        const char *cmd = button->value > 0 ? "sim/autopilot/altitude_up" : "sim/autopilot/altitude_down";
+        int steps = std::max(1, altitudeIncrement / 100);
+        for (int i = 0; i < steps; i++) {
+            datarefManager->executeCommand(cmd);
+        }
         return;
     }
 

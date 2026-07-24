@@ -11,9 +11,7 @@
 
 class ProductPAP3MCP : public USBDevice {
     public:
-        // A/T ARM switch hardware variant. The magnetic switch is a maintained
-        // toggle held up by a solenoid; the standard switch is a momentary,
-        // spring-loaded toggle with no solenoid that snaps back on its own.
+        // A/T ARM switch variant: magnetic (maintained, solenoid-held) or standard (momentary).
         enum class ATSwitchType {
             Magnetic,
             Standard,

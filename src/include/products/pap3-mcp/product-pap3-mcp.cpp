@@ -679,25 +679,15 @@ void ProductPAP3MCP::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed
         return;
     }
 
-    // A/T ARM switch, standard (non-magnetic) variant. This switch is momentary
-    // and spring-loaded: it snaps back to the down position on its own because
-    // there is no solenoid to hold it up. Routing its two lines (index 40 =
-    // ARMED, index 41 = DISARMED) through the maintained-switch logic below would
-    // arm on the up-flick and immediately disarm on the spring-back. Instead we
-    // ignore the DISARMED line entirely and treat each rising edge of the ARMED
-    // line as a toggle, matching the real switch's "flick up to arm, flick up
-    // again to disarm" behaviour. The magnetic (maintained) variant is the
-    // default and keeps the two-line routing below unchanged.
+    // Standard (non-magnetic) A/T switch is momentary and springs back down.
+    // Ignore the DISARMED line (41); toggle on each rising edge of the ARMED
+    // line (40) so the spring-back can't disarm. Magnetic uses the routing below.
     if (atSwitchType == ATSwitchType::Standard && (hardwareButtonIndex == 40 || hardwareButtonIndex == 41)) {
         if (hardwareButtonIndex == 40) {
             bool wasPressed = pressedButtonIndices.count(hardwareButtonIndex) > 0;
             if (pressed && !wasPressed) {
                 pressedButtonIndices.insert(hardwareButtonIndex);
                 standardModeATArmed = !standardModeATArmed;
-                // 0x01 = ARMED line, 0x02 = DISARMED line. The profile's handler
-                // reconciles the request against the sim (maybeToggle), so an
-                // external A/T state change only costs one extra flick to realign
-                // rather than driving the sim into the wrong state.
                 profile->handleSwitchChanged(0x06, standardModeATArmed ? 0x01 : 0x02, true);
             } else if (!pressed && wasPressed) {
                 pressedButtonIndices.erase(hardwareButtonIndex);

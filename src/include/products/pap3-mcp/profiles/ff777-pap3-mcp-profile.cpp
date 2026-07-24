@@ -106,6 +106,7 @@ const std::vector<std::string> &FF777PAP3MCPProfile::displayDatarefs() const {
         "1-sim/output/mcp/vs",
         "1-sim/output/mcp/isSpdOpen",
         "1-sim/output/mcp/isVsOpen",
+        "1-sim/output/mcp/isMachTrg",
         "sim/cockpit/radios/nav1_obs_degm",
         "sim/cockpit/radios/nav2_obs_degm",
     };
@@ -179,6 +180,8 @@ void FF777PAP3MCPProfile::updateDisplayData(PAP3MCPDisplayData &data) {
     data.verticalSpeed = dataref->getCached<float>("1-sim/output/mcp/vs");
     data.speedVisible = dataref->getCached<bool>("1-sim/output/mcp/isSpdOpen");
     data.verticalSpeedVisible = dataref->getCached<bool>("1-sim/output/mcp/isVsOpen");
+    // MACH flag; without it a mach value renders through the IAS path as "01".
+    data.spdMach = dataref->getCached<bool>("1-sim/output/mcp/isMachTrg");
 
     // 777 doesn't have course on MCP (it's on EFIS panel), but we read standard X-Plane datarefs for reference
     data.crsCapt = dataref->getCached<int>("sim/cockpit/radios/nav1_obs_degm");

@@ -460,6 +460,7 @@
 		F6A77E702ED3514600061D03 /* product-agp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "product-agp.cpp"; sourceTree = "<group>"; };
 		F6A77E772ED3620600061D03 /* segment-display.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "segment-display.h"; sourceTree = "<group>"; };
 		F6A77E782ED3620600061D03 /* segment-display.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "segment-display.cpp"; sourceTree = "<group>"; };
+		F6D1F0AA2F3D0001000A0AA1 /* display-frame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "display-frame.h"; sourceTree = "<group>"; };
 		F6AAEE1E2F261A790020CF32 /* ff777-ursa-minor-throttle-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ff777-ursa-minor-throttle-profile.h"; sourceTree = "<group>"; };
 		F6AAEE1F2F261A790020CF32 /* ff777-ursa-minor-throttle-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "ff777-ursa-minor-throttle-profile.cpp"; sourceTree = "<group>"; };
 		F6AAEE202F261A790020CF32 /* zibo-ursa-minor-throttle-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zibo-ursa-minor-throttle-profile.h"; sourceTree = "<group>"; };
@@ -861,6 +862,7 @@
 				F6C248452EBE498500617E89 /* plugins-menu.cpp */,
 				F6A77E772ED3620600061D03 /* segment-display.h */,
 				F6A77E782ED3620600061D03 /* segment-display.cpp */,
+				F6D1F0AA2F3D0001000A0AA1 /* display-frame.h */,
 				F65361742FA244A90039C2C9 /* power-scheme.h */,
 				F65361752FA244A90039C2C9 /* power-scheme.cpp */,
 				F6B79CFC2F4A5BFD00517E6A /* logger.hpp */,

@@ -2,6 +2,7 @@
 
 #include "appstate.h"
 #include "dataref.h"
+#include "display-frame.h"
 #include "plugins-menu.h"
 #include "profiles/ff777-rmp-profile.h"
 #include "profiles/toliss-rmp-profile.h"
@@ -262,11 +263,7 @@ void ProductRMP::setDisplayText(const std::string &active, const std::string &st
     cachedActiveDisplay = active;
     cachedStbyDisplay = stby;
 
-    std::vector<uint8_t> packet = {
-        0xF0, 0x00, packetNumber, 0x35, ProductRMP::IdentifierByte,
-        0xBB, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00,
-        0x00, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    packet.resize(64, 0x00);
+    std::vector<uint8_t> packet = DisplayFrame::buildDataFrame(packetNumber, 0x35, ProductRMP::IdentifierByte, 0xBB);
 
     const int byteOffset = 25;
 
@@ -291,14 +288,8 @@ void ProductRMP::setDisplayText(const std::string &active, const std::string &st
 
     writeData(packet);
 
-    std::vector<uint8_t> commitPacket = {
-        0xF0, 0x00, packetNumber, 0x11, ProductRMP::IdentifierByte,
-        0xBB, 0x00, 0x00, 0x03, 0x01, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00};
-    commitPacket.resize(64, 0x00);
-    writeData(commitPacket);
-    if (++packetNumber == 0) {
-        packetNumber = 1;
-    }
+    writeData(DisplayFrame::buildCommitFrame(packetNumber, ProductRMP::IdentifierByte, 0xBB));
+    DisplayFrame::advancePacketNumber(packetNumber);
 }
 
 void ProductRMP::forceStateSync() {

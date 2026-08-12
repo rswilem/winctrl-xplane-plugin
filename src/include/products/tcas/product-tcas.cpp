@@ -3,6 +3,7 @@
 #include "appstate.h"
 #include "config.h"
 #include "dataref.h"
+#include "display-frame.h"
 #include "plugins-menu.h"
 #include "profiles/fps748-tcas-profile.h"
 #include "profiles/pa28-tcas-profile.h"
@@ -169,11 +170,7 @@ void ProductTCAS::setLedBrightness(TCASLed led, uint8_t brightness) {
 }
 
 void ProductTCAS::setLCDText(const std::string &squawkCode) {
-    std::vector<uint8_t> packet = {
-        0xF0, 0x00, packetNumber, 0x35, ProductTCAS::IdentifierByte,
-        0xBB, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00,
-        0x00, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    packet.resize(64, 0x00);
+    std::vector<uint8_t> packet = DisplayFrame::buildDataFrame(packetNumber, 0x35, ProductTCAS::IdentifierByte, 0xBB);
 
     const int segmentRowOffsets[7] = {37, 33, 29, 25, 49, 45, 41};
 
@@ -181,14 +178,8 @@ void ProductTCAS::setLCDText(const std::string &squawkCode) {
 
     writeData(packet);
 
-    std::vector<uint8_t> commitPacket = {
-        0xF0, 0x00, packetNumber, 0x11, ProductTCAS::IdentifierByte,
-        0xBB, 0x00, 0x00, 0x03, 0x01, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00};
-    commitPacket.resize(64, 0x00);
-    writeData(commitPacket);
-    if (++packetNumber == 0) {
-        packetNumber = 1;
-    }
+    writeData(DisplayFrame::buildCommitFrame(packetNumber, ProductTCAS::IdentifierByte, 0xBB));
+    DisplayFrame::advancePacketNumber(packetNumber);
 }
 
 void ProductTCAS::didReceiveData(int reportId, uint8_t *report, int reportLength) {

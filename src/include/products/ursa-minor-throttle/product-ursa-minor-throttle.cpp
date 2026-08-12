@@ -2,6 +2,7 @@
 
 #include "appstate.h"
 #include "dataref.h"
+#include "display-frame.h"
 #include "plugins-menu.h"
 #include "profiles/ff777-ursa-minor-throttle-profile.h"
 #include "profiles/pa28-ursa-minor-throttle-profile.h"
@@ -201,11 +202,7 @@ void ProductUrsaMinorThrottle::setVibration(uint8_t vibration, bool leftSide, bo
 }
 
 void ProductUrsaMinorThrottle::setLCDText(const std::string &text) {
-    std::vector<uint8_t> packet = {
-        0xF0, 0x00, packetNumber, 0x35, ProductUrsaMinorThrottle::PACIdentifierByte, 0xB9,
-        0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00,
-        0x00, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    packet.resize(64, 0x00);
+    std::vector<uint8_t> packet = DisplayFrame::buildDataFrame(packetNumber, 0x35, ProductUrsaMinorThrottle::PACIdentifierByte, 0xB9);
 
     const int segmentRowOffsets[7] = {53, 49, 45, 41, 37, 33, 29};
     const int dotRowOffset = 25;
@@ -250,15 +247,8 @@ void ProductUrsaMinorThrottle::setLCDText(const std::string &text) {
 
     writeData(packet);
 
-    std::vector<uint8_t> commitPacket = {
-        0xF0, 0x00, packetNumber, 0x11, 0x01, 0xB9,
-        0x00, 0x00, 0x03, 0x01, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00};
-    commitPacket.resize(64, 0x00);
-    writeData(commitPacket);
-
-    if (++packetNumber == 0) {
-        packetNumber = 1;
-    }
+    writeData(DisplayFrame::buildCommitFrame(packetNumber, 0x01, 0xB9));
+    DisplayFrame::advancePacketNumber(packetNumber);
 }
 
 void ProductUrsaMinorThrottle::forceStateSync() {

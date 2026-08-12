@@ -3,6 +3,7 @@
 #include "appstate.h"
 #include "config.h"
 #include "dataref.h"
+#include "display-frame.h"
 #include "plugins-menu.h"
 #include "profiles/a220-fcu-efis-profile.h"
 #include "profiles/b58-fcu-efis-profile.h"
@@ -429,8 +430,7 @@ void ProductFCUEfis::sendFCUDisplay(const std::string &speed, const std::string 
     }
 
     // First request - send display data
-    std::vector<uint8_t> packet = {
-        0xF0, 0x00, packetNumber, 0x31, ProductFCUEfis::FCUIdentifierByte, 0xBB, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0xFF, 0xFF, 0x02, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    std::vector<uint8_t> packet = DisplayFrame::buildDataFrame(packetNumber, 0x31, ProductFCUEfis::FCUIdentifierByte, 0xBB, 0x02, 0x20);
 
     // Add speed data (3 bytes)
     packet.push_back(speedData[2]);
@@ -465,18 +465,8 @@ void ProductFCUEfis::sendFCUDisplay(const std::string &speed, const std::string 
     writeData(packet);
 
     // Second request - commit display data
-    std::vector<uint8_t> commitPacket = {
-        0xF0, 0x00, packetNumber, 0x11, ProductFCUEfis::FCUIdentifierByte, 0xBB, 0x00, 0x00, 0x03, 0x01, 0x00, 0x00, 0xFF, 0xFF, 0x02, 0x00};
-
-    // Pad to 64 bytes
-    while (commitPacket.size() < 64) {
-        commitPacket.push_back(0x00);
-    }
-
-    writeData(commitPacket);
-    if (++packetNumber == 0) {
-        packetNumber = 1;
-    }
+    writeData(DisplayFrame::buildCommitFrame(packetNumber, ProductFCUEfis::FCUIdentifierByte, 0xBB, 0x02));
+    DisplayFrame::advancePacketNumber(packetNumber);
 }
 
 void ProductFCUEfis::sendEfisDisplayWithFlags(EfisDisplayValue *data, bool isRightSide) {
@@ -487,8 +477,7 @@ void ProductFCUEfis::sendEfisDisplayWithFlags(EfisDisplayValue *data, bool isRig
     }
 
     // EFIS display protocol
-    std::vector<uint8_t> packet = {
-        0xF0, 0x00, packetNumber, 0x1A, static_cast<uint8_t>(isRightSide ? ProductFCUEfis::EfisRightIdentifierByte : ProductFCUEfis::EfisLeftIdentifierByte), 0xBF, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0xFF, 0xFF, 0x1D, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    std::vector<uint8_t> packet = DisplayFrame::buildDataFrame(packetNumber, 0x1A, static_cast<uint8_t>(isRightSide ? ProductFCUEfis::EfisRightIdentifierByte : ProductFCUEfis::EfisLeftIdentifierByte), 0xBF, 0x1D, 0x09);
 
     // Add barometric data
     auto baroData = SegmentDisplay::encodeStringEfis(4, SegmentDisplay::fixStringLength(data->isStd ? "STD " : data->baro, 4));
@@ -520,14 +509,13 @@ void ProductFCUEfis::sendEfisDisplayWithFlags(EfisDisplayValue *data, bool isRig
 
     writeData(packet);
 
+    // EFIS commit frame deviates from the standard template at bytes 12..15
     std::vector<uint8_t> commitPacket = {
         0xF0, 0x00, packetNumber, 0x11, static_cast<uint8_t>(isRightSide ? ProductFCUEfis::EfisRightIdentifierByte : ProductFCUEfis::EfisLeftIdentifierByte),
         0xBF, 0x00, 0x00, 0x03, 0x01, 0x00, 0x00, 0x4C, 0x0C, 0x1D, 0x00};
     commitPacket.resize(64, 0x00);
     writeData(commitPacket);
-    if (++packetNumber == 0) {
-        packetNumber = 1;
-    }
+    DisplayFrame::advancePacketNumber(packetNumber);
 }
 
 void ProductFCUEfis::setAllLedsEnabled(bool enable) {

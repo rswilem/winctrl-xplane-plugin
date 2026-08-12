@@ -35,6 +35,7 @@
 ProductFMC::ProductFMC(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t productId, std::string vendorName, std::string productName, FMCHardwareType hardwareType, FMCDeviceVariant variant, unsigned char identifierByte) : USBDevice(hidDevice, vendorId, productId, vendorName, productName), hardwareType(hardwareType), identifierByte(identifierByte), deviceVariant(variant) {
     profile = nullptr;
     page = std::vector<std::vector<char>>(ProductFMC::PageLines, std::vector<char>(ProductFMC::PageBytesPerLine, ' '));
+    lastDrawnPage = page;
     lastUpdateCycle = 0;
     lastButtonStateLo = 0;
     lastButtonStateHi = 0;
@@ -409,7 +410,12 @@ void ProductFMC::updatePage(bool forceUpdate) {
     if (shouldUpdate) {
         profile->updatePage(page);
         lastUpdateCycle = XPLMGetCycleNumber();
-        draw();
+
+        // Skip the USB transmission if nothing actually changed on screen.
+        if (forceUpdate || page != lastDrawnPage) {
+            draw();
+            lastDrawnPage = page;
+        }
     }
 }
 
@@ -499,6 +505,7 @@ void ProductFMC::writeLineToPage(std::vector<std::vector<char>> &page, int line,
 
 void ProductFMC::clearDisplay() {
     page = std::vector<std::vector<char>>(ProductFMC::PageLines, std::vector<char>(ProductFMC::PageBytesPerLine, ' '));
+    lastDrawnPage = page;
 
     std::vector<uint8_t> blankLine = {};
     blankLine.push_back(0xf2);

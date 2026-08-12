@@ -13,6 +13,8 @@ class ProductFMC : public USBDevice {
     private:
         FMCAircraftProfile *profile;
         std::vector<std::vector<char>> page;
+        // What was last actually sent to the hardware.
+        std::vector<std::vector<char>> lastDrawnPage;
         int lastUpdateCycle;
         int displayUpdateFrameCounter = 0;
         std::set<int> pressedButtonIndices;

@@ -4,16 +4,21 @@
 // The identifierByte is hardcoded to 0x32 (MCDU), matching the sniffed source.
 //
 // Fonts are read from the .xpwwf files in the plugin's fonts/ directory, the
-// same files the plugin ships. For MCDU (identifierByte == 0x32) the hardware
-// conversion in Font::convertGlyphDataForHardware() is a no-op (the sniffed font
-// data already uses 0x32), so we send the packets verbatim without involving
-// font.cpp or any X-Plane / AppState dependencies.
+// same files the plugin ships. There are two upload paths:
+//   loadFont()            - the raw file, packet for packet. For MCDU the
+//                           hardware conversion is a no-op (the sniffed data
+//                           already uses 0x32), so no font.cpp is involved.
+//   loadFontForHardware() - the plugin's real pipeline (Font::GlyphData +
+//                           Font::ResizeCellHeight), for any hardware geometry.
+//                           See TESTING.md for what this is for.
 //
 // The draw path mirrors ProductFMC::draw():
 //   For each character: push {0x42, 0x00, char} into a flat buffer, then send
 //   it in 63-byte chunks each prefixed with 0xf2 via writeData() (usbdevice_win.cpp).
 
 #include "stress_fmc.h"
+
+#include "font.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -141,13 +146,226 @@ const char *StressFMC::fontName(size_t index) {
     return index < fontCount() ? fonts()[index].name.c_str() : "?";
 }
 
+std::string StressFMC::fontsReport() {
+    std::error_code ec;
+    std::string report;
+
+    std::filesystem::path local = executableDirectory() / "fonts";
+    report += "  exe directory      : " + executableDirectory().string() + "\n";
+    report += "  fonts next to exe  : " + local.string() + (std::filesystem::is_directory(local, ec) ? "  [EXISTS]\n" : "  [MISSING]\n");
+
+#ifdef STRESS_FONTS_DIR
+    std::filesystem::path repo(STRESS_FONTS_DIR);
+    report += "  build-time fonts   : " + repo.string() + (std::filesystem::is_directory(repo, ec) ? "  [EXISTS]\n" : "  [MISSING]\n");
+#else
+    report += "  build-time fonts   : (not compiled in)\n";
+#endif
+
+    std::filesystem::path resolved = fontsDirectory();
+    report += "  resolved directory : " + (resolved.empty() ? std::string("(none)") : resolved.string()) + "\n";
+    report += "  fonts found        : " + std::to_string(fontCount()) + "\n";
+
+    if (fontCount() == 0) {
+        report += "\n  No fonts. Copy the repository's fonts/ directory next to the exe.\n";
+        return report;
+    }
+
+    for (size_t i = 0; i < fontCount(); ++i) {
+        std::vector<std::vector<unsigned char>> packets = readFontFile(fonts()[i].path);
+        size_t bytes = 0;
+        for (const auto &packet : packets) {
+            bytes += packet.size();
+        }
+        report += "    " + std::to_string(i + 1) + ". " + fonts()[i].path.filename().string() + " - " + std::to_string(packets.size()) + " packets, " + std::to_string(bytes) + " bytes, first packet " + (packets.empty() ? "n/a" : std::to_string(packets[0].size())) + " bytes\n";
+    }
+
+    return report;
+}
+
+const char *StressFMC::fontFileName(size_t index) {
+    static std::string filename;
+    filename = index < fontCount() ? fonts()[index].path.filename().string() : "";
+    return filename.c_str();
+}
+
 void StressFMC::loadFont(size_t index) {
     if (index >= fontCount()) {
         return;
     }
+    ++uploadsSinceConnect;
     for (const auto &packet : readFontFile(fonts()[index].path)) {
         writeData(std::vector<uint8_t>(packet.begin(), packet.end()));
     }
+}
+
+// ---------------------------------------------------------------------------
+// The plugin's own font pipeline, for the geometry of any hardware type.
+// Mirrors ProductFMC::setFont() step for step so a failure here is a failure
+// in font.cpp, not in this harness.
+// ---------------------------------------------------------------------------
+size_t StressFMC::loadFontForHardware(size_t index, FMCHardwareType hardwareType) {
+    lastUploadReport = {};
+
+    if (index >= fontCount()) {
+        lastUploadReport = "no font at index " + std::to_string(index);
+        return 0;
+    }
+
+    // identifierByte stays 0x32 so the packets remain addressed to the MCDU that
+    // is actually plugged in; hardwareType selects the grid origin patch.
+    std::vector<std::vector<unsigned char>> font = Font::GlyphData(fontFileName(index), identifierByte, hardwareType);
+    if (font.empty()) {
+        lastUploadReport = "Font::GlyphData returned nothing for " + std::string(fontName(index));
+        printf("[StressFMC] %s\n", lastUploadReport.c_str());
+        return 0;
+    }
+
+    FMCScreenLayout layout = FMCHardwareMapping::ScreenLayoutForHardware(hardwareType);
+
+    // ResizeCellHeight returns true both when it rebuilds and when it no-ops at or
+    // below the authored 29px height, so the return value alone cannot tell them
+    // apart. The packet count can: a rebuild changes it, a no-op does not.
+    size_t packetsBefore = font.size();
+    bool parsed = Font::ResizeCellHeight(font, layout.characterHeight, layout.characterWidth);
+    const char *outcome = !parsed ? "PARSE FAILED, font sent unchanged"
+        : font.size() != packetsBefore  ? "rebuilt"
+                                        : "no-op (height <= 29), font sent as authored";
+
+    ++uploadsSinceConnect;
+    lastUploadReport = "cell " + std::to_string(static_cast<int>(layout.characterWidth)) + "x" + std::to_string(static_cast<int>(layout.characterHeight)) + ", origin " + std::to_string(static_cast<int>(layout.x)) + "/" + std::to_string(static_cast<int>(layout.y)) + ", resize " + outcome + ", " + std::to_string(packetsBefore) + " -> " + std::to_string(font.size()) + " packets, upload #" + std::to_string(uploadsSinceConnect) + " since connect";
+    printf("[StressFMC] %s\n", lastUploadReport.c_str());
+
+    for (const auto &packet : font) {
+        writeData(std::vector<uint8_t>(packet.begin(), packet.end()));
+    }
+
+    showBackgroundBlack();
+    setScreenPosition(layout.x, layout.y);
+
+    return font.size();
+}
+
+// ---------------------------------------------------------------------------
+// Offline capture: every font, every hardware geometry, straight to disk.
+// No device writes, so it needs no replug and consumes no font-set commit.
+// ---------------------------------------------------------------------------
+size_t StressFMC::dumpAllFontsAndGeometries() {
+    const struct {
+            const char *name;
+            FMCHardwareType type;
+    } hardwareTypes[] = {
+        {"mcdu", FMCHardwareType::HARDWARE_MCDU},
+        {"pfp3n", FMCHardwareType::HARDWARE_PFP3N},
+        {"pfp4", FMCHardwareType::HARDWARE_PFP4},
+        {"pfp7", FMCHardwareType::HARDWARE_PFP7},
+    };
+
+    std::error_code ec;
+    std::filesystem::path outputDirectory = executableDirectory() / "dumps";
+    std::filesystem::create_directories(outputDirectory, ec);
+
+    size_t written = 0;
+    for (size_t i = 0; i < fontCount(); ++i) {
+        std::string file = fonts()[i].path.filename().string();
+
+        for (const auto &hardware : hardwareTypes) {
+            // Both device identifiers per geometry: 0x32 is what our MCDU accepts,
+            // 0x35 is what a real PFP 3N is addressed as. The field failure only
+            // ever happens on the second, which no MCDU test can cover.
+            for (unsigned char identifier : {0x32, 0x35}) {
+                std::vector<std::vector<unsigned char>> font = Font::GlyphData(file, identifier, hardware.type);
+                if (font.empty()) {
+                    Logger::getInstance()->critical("dump: GlyphData failed for %s\n", file.c_str());
+                    continue;
+                }
+
+                FMCScreenLayout layout = FMCHardwareMapping::ScreenLayoutForHardware(hardware.type);
+                size_t before = font.size();
+                bool parsed = Font::ResizeCellHeight(font, layout.characterHeight, layout.characterWidth);
+
+                char name[256] = {0};
+                snprintf(name, sizeof(name), "%s-%s-id%02x-%dx%d.bin", fonts()[i].name.c_str(), hardware.name, identifier,
+                    static_cast<int>(layout.characterWidth), static_cast<int>(layout.characterHeight));
+
+                std::ofstream out(outputDirectory / name, std::ios::binary);
+                size_t bytes = 0;
+                for (const auto &packet : font) {
+                    // Same length-prefixed framing as the .xpwwf files, so the dump
+                    // can be parsed with the existing reader.
+                    unsigned char length = static_cast<unsigned char>(packet.size());
+                    out.write(reinterpret_cast<const char *>(&length), 1);
+                    out.write(reinterpret_cast<const char *>(packet.data()), packet.size());
+                    bytes += packet.size();
+                }
+
+                Logger::getInstance()->info("dump: %s - %zu -> %zu packets, %zu bytes, resize %s\n",
+                    name, before, font.size(), bytes, !parsed ? "PARSE FAILED" : (font.size() != before ? "rebuilt" : "no-op"));
+                ++written;
+            }
+        }
+    }
+
+    Logger::getInstance()->info("dump: wrote %zu files to %s\n", written, outputDirectory.string().c_str());
+    return written;
+}
+
+// ---------------------------------------------------------------------------
+// Screen position — copy of ProductFMC::setScreenPosition().
+// ---------------------------------------------------------------------------
+void StressFMC::setScreenPosition(unsigned char x, unsigned char y) {
+    std::vector<uint8_t> packet(64, 0);
+    packet[0] = 0xf0;
+    packet[1] = 0x00;
+    packet[2] = 0x00;
+    packet[3] = 0x2a;
+
+    uint8_t *p = packet.data() + 4;
+    p[0] = identifierByte;
+    p[1] = 0xbb;
+    p[2] = 0x00;
+    p[3] = 0x00;
+    p[4] = 0x18;
+    p[5] = 0x01;
+    p[6] = 0x00;
+    p[7] = 0x00;
+    p[8] = 0x00;
+    p[9] = 0x00;
+    p[10] = 0x00;
+    p[11] = 0x00;
+    p[12] = 0x00;
+    p[13] = 0x08;
+    p[14] = 0x00;
+    p[15] = 0x00;
+    p[16] = 0x00;
+    p[17] = static_cast<uint8_t>(36 + x);
+    p[18] = 0x00;
+    p[19] = static_cast<uint8_t>(20 + y);
+    p[20] = 0x00;
+    p[21] = 0x0e;
+    p[22] = 0x00;
+    p[23] = 0x18;
+    p[24] = 0x00;
+
+    uint8_t *c = packet.data() + 29;
+    c[0] = identifierByte;
+    c[1] = 0xbb;
+    c[2] = 0x00;
+    c[3] = 0x00;
+    c[4] = 0x05;
+    c[5] = 0x01;
+    c[6] = 0x00;
+    c[7] = 0x00;
+    c[8] = 0x00;
+    c[9] = 0x00;
+    c[10] = 0x00;
+    c[11] = 0x00;
+    c[12] = 0x01;
+    c[13] = 0x00;
+    c[14] = 0x00;
+    c[15] = 0x00;
+    c[16] = 0x00;
+
+    writeData(packet);
 }
 
 // ---------------------------------------------------------------------------
@@ -184,8 +402,15 @@ bool StressFMC::connect() {
         return false;
     }
 
+    uploadsSinceConnect = 0;
+
     sendInitPackets();
-    sendFont();
+
+    // Deliberately no font upload here. The device accepts only the first
+    // font-set commit per USB session, so uploading one on connect would make
+    // every test upload the second one, which is exactly the confound that
+    // invalidated the first diagnostic run. The device keeps its factory font
+    // until a font is uploaded from the menu.
 
     setLedBrightness(STRESS_LED_BACKLIGHT, 128);
     setLedBrightness(STRESS_LED_SCREEN_BACKLIGHT, 128);
@@ -194,7 +419,7 @@ bool StressFMC::connect() {
     showBackground_WINCTRL_LOGO();
     setLedBrightness(STRESS_LED_MCDU_START, 1); // MCDU_FAIL indicator
 
-    printf("[StressFMC] Connected to %s\n", productName.c_str());
+    printf("[StressFMC] Connected to %s (factory font, no upload yet)\n", productName.c_str());
     return true;
 }
 
@@ -223,14 +448,6 @@ void StressFMC::sendInitPackets() {
 }
 
 // ---------------------------------------------------------------------------
-// Font upload — send the default font packets directly.
-// For MCDU the hardware-conversion is a no-op (data is already for 0x32).
-// ---------------------------------------------------------------------------
-void StressFMC::sendFont() {
-    loadFont(0);
-}
-
-// ---------------------------------------------------------------------------
 // Background — WINCTRL_LOGO (variant value 8, so 0x0c + 8 = 0x14 in extra bytes)
 // ---------------------------------------------------------------------------
 void StressFMC::showBackground_WINCTRL_LOGO() {
@@ -245,6 +462,43 @@ void StressFMC::showBackground_WINCTRL_LOGO() {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00};
     writeData(data);
+}
+
+// Background — BLACK, the variant setFont() applies after every font upload.
+void StressFMC::showBackgroundBlack() {
+    writeData({0xf0, 0x00, 0x03, 0x12, identifierByte, 0xbb, 0x00, 0x00, 0x04, 0x01, 0x00, 0x00, 0xfd, 0x24, 0x07, 0x00});
+}
+
+// ---------------------------------------------------------------------------
+// Glyph sheet — every printable ASCII code point, in order, one screenful.
+// A glyph the device did not store renders blank, which is what the missing
+// characters in the field reports look like.
+// ---------------------------------------------------------------------------
+void StressFMC::drawGlyphSheet() {
+    std::vector<uint8_t> buf;
+    buf.reserve(PageLines * PageCharsPerLine * PageBytesPerChar);
+
+    unsigned int cell = 0;
+    for (unsigned int row = 0; row < PageLines; ++row) {
+        for (unsigned int col = 0; col < PageCharsPerLine; ++col, ++cell) {
+            // 0x20..0x7e is 95 code points; wrap so the whole screen is filled.
+            uint8_t character = static_cast<uint8_t>(0x20 + (cell % 95));
+            buf.push_back(0x42); // white
+            buf.push_back(0x00); // large
+            buf.push_back(character);
+        }
+    }
+
+    while (!buf.empty()) {
+        size_t maxLength = std::min<size_t>(63, buf.size());
+        std::vector<uint8_t> usbBuf(buf.begin(), buf.begin() + maxLength);
+        usbBuf.insert(usbBuf.begin(), 0xf2);
+        if (maxLength < 63) {
+            usbBuf.insert(usbBuf.end(), 63 - maxLength, 0);
+        }
+        writeData(usbBuf);
+        buf.erase(buf.begin(), buf.begin() + maxLength);
+    }
 }
 
 // ---------------------------------------------------------------------------

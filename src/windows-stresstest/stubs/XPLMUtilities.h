@@ -2,12 +2,17 @@
 // Stub XPLMUtilities.h for standalone Windows stress test build.
 // logger.hpp uses XPLMDebugString; stdout via printf() in logger.hpp still works.
 
+#include "diaglog.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// Routed into the diagnostics log so everything the plugin's Logger emits is
+// captured: font.cpp parse messages, and the write-failure / queue-overflow
+// warnings from usbdevice_win.cpp that otherwise only reach the console.
 static inline void XPLMDebugString(const char *inString) {
-    (void) inString;
+    diagLogWrite(inString);
 }
 
 static inline void XPLMGetSystemPath(char *outSystemPath) {

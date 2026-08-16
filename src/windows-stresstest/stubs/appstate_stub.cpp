@@ -7,6 +7,8 @@
 
 #include "appstate.h"
 
+#include <windows.h>
+
 AppState *AppState::instance = nullptr;
 
 AppState::AppState() {
@@ -37,8 +39,19 @@ float AppState::Update(float, float, int, void *) {
     return 0.0f;
 }
 
+// Font::GlyphData() reads <pluginDirectory>/fonts/<file>. The harness keeps a
+// copy of the repository's fonts/ next to the exe (see CMakeLists), so pointing
+// this at the exe directory makes the real font loader work unmodified.
 std::string AppState::getPluginDirectory() {
-    return "";
+    char buffer[MAX_PATH] = {0};
+    DWORD length = GetModuleFileNameA(nullptr, buffer, MAX_PATH);
+    if (length == 0 || length >= MAX_PATH) {
+        return "";
+    }
+
+    std::string path(buffer, length);
+    size_t separator = path.find_last_of("\\/");
+    return separator == std::string::npos ? "" : path.substr(0, separator);
 }
 
 std::string AppState::getXPlaneDirectory() {

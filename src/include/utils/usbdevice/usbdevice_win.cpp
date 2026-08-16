@@ -106,6 +106,8 @@ bool USBDevice::connect() {
                     // During a normal disconnect() teardown connected is already
                     // false, so the guard keeps shutdown semantics unchanged.
                     if (connected.load()) {
+                        Logger::getInstance()->critical("Input read failed for %s (vendorId: 0x%04X, productId: 0x%04X): %lu, marking disconnected\n",
+                            productName.empty() ? "Unknown" : productName.c_str(), vendorId, productId, error);
                         connected = false;
                     }
                     break;

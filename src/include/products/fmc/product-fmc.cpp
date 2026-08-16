@@ -55,7 +55,7 @@ ProductFMC::ProductFMC(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t pr
             std::string fontFile = AppState::getInstance()->readPreference("FMCFont", "default");
             Logger::getInstance()->info("Reloading active font (\"%s\") on FMC...\n", fontFile.c_str());
 
-            setFont(preferredFontVariant);
+            setFont(preferredFontVariant, true);
             updatePage(true);
         });
 #endif
@@ -193,6 +193,10 @@ const char *ProductFMC::activeProfileName() const {
 
 bool ProductFMC::connect() {
     if (USBDevice::connect()) {
+        // A freshly enumerated device is back on its factory font, so nothing we
+        // uploaded before survives; the next setFont must not be skipped.
+        uploadedFontKey = {};
+
         uint8_t col_bg[] = {0x00, 0x00, 0x00};
 
         writeData({0xf0, 0x0, 0x1, 0x38, identifierByte, 0xbb, 0x0, 0x0, 0x1e, 0x1, 0x0, 0x0, 0xc4, 0x24, 0xa, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, identifierByte, 0xbb, 0x0, 0x0, 0x18, 0x1, 0x0, 0x0, 0xc4, 0x24, 0xa, 0x0, 0x0, 0x8, 0x0, 0x0, 0x0, 0x34, 0x0, 0x18, 0x0, 0xe, 0x0, 0x18, 0x0, identifierByte, 0xbb, 0x0, 0x0, 0x19, 0x1, 0x0, 0x0, 0xc4, 0x24, 0xa, 0x0, 0x0, 0xe, 0x0, 0x0, 0x0, 0x0});
@@ -513,7 +517,7 @@ void ProductFMC::clearDisplay() {
     }
 }
 
-void ProductFMC::setFont(FontVariant preferredVariant) {
+void ProductFMC::setFont(FontVariant preferredVariant, bool force) {
     std::string fontPreference = AppState::getInstance()->readPreference("FMCFont", "default");
 
     if (fontPreference == "no_font") {
@@ -522,10 +526,26 @@ void ProductFMC::setFont(FontVariant preferredVariant) {
 
     preferredFontVariant = preferredVariant;
 
+    FMCScreenLayout layout = FMCHardwareMapping::ScreenLayoutForHardware(hardwareType);
+
     bool shouldLoadDefaultFont = fontPreference == "default";
     if (!shouldLoadDefaultFont && !Font::IsCustomFontAvailable(fontPreference)) {
         Logger::getInstance()->critical("Font file not found for font '%s', using the plugin font for now; the selection is kept\n", fontPreference.c_str());
         shouldLoadDefaultFont = true;
+    }
+
+    // A font is several hundred packets, and profile loads repeat on aircraft and
+    // scenery changes, so without this the same font is uploaded several times per
+    // flight. The key identifies what actually reaches the device: the font that
+    // will be sent plus the cell geometry it is rebuilt for. It tracks the
+    // fallbacks below so a later attempt with a working file still uploads.
+    std::string fontId = shouldLoadDefaultFont ? "variant:" + std::to_string(static_cast<int>(preferredVariant)) : fontPreference;
+    auto fontKeyFor = [&layout](const std::string &id) {
+        return id + "|" + std::to_string(layout.characterWidth) + "x" + std::to_string(layout.characterHeight);
+    };
+    if (!force && fontKeyFor(fontId) == uploadedFontKey) {
+        Logger::getInstance()->debug("Font '%s' is already on the device, skipping upload\n", uploadedFontKey.c_str());
+        return;
     }
 
     std::vector<std::vector<unsigned char>> font = {};
@@ -537,6 +557,7 @@ void ProductFMC::setFont(FontVariant preferredVariant) {
     }
 
     if (font.empty()) {
+        fontId = "variant:" + std::to_string(static_cast<int>(preferredVariant));
         font = Font::GlyphData(preferredVariant, identifierByte, hardwareType);
     }
 
@@ -549,7 +570,6 @@ void ProductFMC::setFont(FontVariant preferredVariant) {
     // rows line up with the physical LSK keys. ResizeCellHeight is best-effort: it
     // no-ops at the authored height (MCDU 29) and leaves `font` untouched if it cannot
     // parse the structure, so we always send whatever we have.
-    FMCScreenLayout layout = FMCHardwareMapping::ScreenLayoutForHardware(hardwareType);
     Font::ResizeCellHeight(font, layout.characterHeight, layout.characterWidth);
 
     for (auto &fontBytes : font) {
@@ -559,6 +579,9 @@ void ProductFMC::setFont(FontVariant preferredVariant) {
     showBackground(FMCBackgroundVariant::BLACK);
 
     setScreenPosition(layout.x, layout.y);
+
+    uploadedFontKey = fontKeyFor(fontId);
+    Logger::getInstance()->info("Uploaded font '%s' (%zu packets)\n", uploadedFontKey.c_str(), font.size());
 }
 
 void ProductFMC::setScreenLayout(FontVariant variant, unsigned char characterHeight, unsigned char characterWidth, unsigned char x, unsigned char y) {
@@ -581,6 +604,10 @@ void ProductFMC::setScreenLayout(FontVariant variant, unsigned char characterHei
 
     // Screen position belongs with the character size: apply it in the same update.
     setScreenPosition(x, y);
+
+    // Record the geometry that is actually on the device, not the hardware default,
+    // so a following setFont() for the hardware layout is not skipped as a duplicate.
+    uploadedFontKey = "variant:" + std::to_string(static_cast<int>(variant)) + "|" + std::to_string(characterWidth) + "x" + std::to_string(characterHeight);
 }
 
 void ProductFMC::setScreenPosition(unsigned char x, unsigned char y) {
@@ -725,7 +752,7 @@ void ProductFMC::reloadFontsMenu() {
                 PluginsMenu::getInstance()->uncheckSubmenuSiblings(itemId);
                 PluginsMenu::getInstance()->setItemChecked(itemId, true);
 
-                setFont(preferredFontVariant);
+                setFont(preferredFontVariant, true);
                 updatePage(true);
             },
         },
@@ -763,7 +790,7 @@ void ProductFMC::reloadFontsMenu() {
                         PluginsMenu::getInstance()->uncheckSubmenuSiblings(itemId);
                         PluginsMenu::getInstance()->setItemChecked(itemId, true);
 
-                        setFont(preferredFontVariant);
+                        setFont(preferredFontVariant, true);
                         updatePage(true);
                     },
                 });

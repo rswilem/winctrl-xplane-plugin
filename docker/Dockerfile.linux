@@ -1,6 +1,5 @@
 # Shared Linux build image for the X-Plane plugins. Keep this file identical
-# across winctrl, boarderline and avitab-browser: one base means one glibc
-# floor and one layer cache.
+# across all of them: one base means one glibc floor and one layer cache.
 #
 # Ubuntu 22.04 is glibc 2.35. That number is the whole point: the build host's
 # glibc becomes the oldest system the shipped .xpl will load on. Building on a
@@ -30,6 +29,7 @@ RUN apt-get update && \
         libssl-dev \
         libcurl4-openssl-dev \
         libudev-dev \
+        libusb-1.0-0-dev \
         pkg-config \
         binutils \
         zip && \

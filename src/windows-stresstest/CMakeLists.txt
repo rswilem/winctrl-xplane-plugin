@@ -16,6 +16,7 @@ add_executable(fmc-stresstest
     # ---------- stress test sources (this folder) ----------
     main.cpp
     stress_fmc.cpp
+    diaglog.cpp
 
     # Cross-platform USBDevice methods + minimal device factory.
     usbdevice_shared.cpp
@@ -29,6 +30,10 @@ add_executable(fmc-stresstest
     # ---------- reused 1:1 from the main project ----------
     ${USBDEVICE_DIR}/usbdevice_win.cpp
     ${USBDEVICE_DIR}/usbcontroller_win.cpp
+
+    # The real font pipeline, so the harness exercises Font::ResizeCellHeight
+    # rather than a copy of it.
+    ${INCLUDE_DIR}/products/fmc/fonts/font.cpp
 )
 
 # IBM=1 enables the #if IBM blocks in usbdevice_win.cpp / usbcontroller_win.cpp.
@@ -50,9 +55,11 @@ target_include_directories(fmc-stresstest PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
 
     # Core plugin headers
-    ${INCLUDE_DIR}               # appstate.h, config.h
-    ${INCLUDE_DIR}/utils         # logger.hpp, power-scheme.h
-    ${USBDEVICE_DIR}             # usbdevice.h, usbcontroller.h
+    ${INCLUDE_DIR}                     # appstate.h, config.h
+    ${INCLUDE_DIR}/utils               # logger.hpp, power-scheme.h, path.hpp
+    ${INCLUDE_DIR}/products/fmc        # fmc-hardware-mapping.h
+    ${INCLUDE_DIR}/products/fmc/fonts  # font.h
+    ${USBDEVICE_DIR}                   # usbdevice.h, usbcontroller.h
 )
 
 # Fonts are data files now, so put a copy next to the exe. That keeps the

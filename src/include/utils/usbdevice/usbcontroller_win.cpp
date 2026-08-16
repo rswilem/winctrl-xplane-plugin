@@ -326,6 +326,13 @@ void USBController::checkForDeviceChanges() {
             }
 
             if (!found || dev->hidDevice == INVALID_HANDLE_VALUE || !dev->connected) {
+                // Support logs were silent about devices going away, which made
+                // an unplug indistinguishable from a device that stopped
+                // responding. Name the reason.
+                Logger::getInstance()->info("Removing %s (vendorId: 0x%04X, productId: 0x%04X): %s\n",
+                    dev->productName.c_str(), dev->vendorId, dev->productId,
+                    !found ? "no longer enumerated" : (dev->hidDevice == INVALID_HANDLE_VALUE ? "handle closed" : "flagged disconnected"));
+
                 dev->blackout();
                 dev->disconnect();
                 // Also drops the group key, or this device could never be re-added.

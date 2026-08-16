@@ -22,6 +22,12 @@ class ProductFMC : public USBDevice {
         int fontsMenuItemId = -1;
         FontVariant preferredFontVariant = FontVariant::Default;
 
+        // Identity of the font currently on the device: preference + variant +
+        // cell geometry. setFont skips the upload when this already matches, so
+        // the repeated profile loads on an aircraft/scenery change cost nothing.
+        // Empty means "nothing uploaded yet"; cleared on connect().
+        std::string uploadedFontKey = {};
+
         void draw(const std::vector<std::vector<char>> *pagePtr = nullptr);
         std::pair<uint8_t, uint8_t> dataFromColFont(char color, bool fontSmall = false);
 
@@ -57,7 +63,10 @@ class ProductFMC : public USBDevice {
 
         char getPageCharacter(std::vector<std::vector<char>> &page, int line, int pos);
         void writeLineToPage(std::vector<std::vector<char>> &page, int line, int pos, const std::string &text, char color, bool fontSmall = false);
-        void setFont(FontVariant preferredVariant);
+        // Uploads the font for the current preference and hardware. Skipped when the
+        // same font at the same cell geometry is already on the device; pass force to
+        // re-send anyway (menu picks, so a manual selection always reaches the device).
+        void setFont(FontVariant preferredVariant, bool force = false);
 
         // Apply the SimAppPro "Screen Layout Settings" as one unit: Character Size
         // (width x height of each character) plus Screen Position (top-left x/y). Used

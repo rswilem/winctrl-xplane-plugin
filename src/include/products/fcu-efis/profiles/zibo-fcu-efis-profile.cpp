@@ -184,13 +184,13 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &ZiboFCUEfisProfile::button
         // Heading encoder
         {13, {"HDG DEC", "sim/autopilot/heading_down"}},
         {14, {"HDG INC", "sim/autopilot/heading_up"}},
-        {15, {"HDG PUSH", "laminar/B738/autopilot/vnav_press", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
+        {15, {"HDG PUSH", "laminar/B738/autopilot/lnav_press", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
         {16, {"HDG PULL", "laminar/B738/autopilot/hdg_sel_press", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
 
         // Altitude encoder - routed through custom_altitude so the 100/1000 switch controls the step
         {17, {"ALT DEC", "custom_altitude", FCUEfisDatarefType::EXECUTE_CMD_ONCE, -1.0}},
         {18, {"ALT INC", "custom_altitude", FCUEfisDatarefType::EXECUTE_CMD_ONCE, 1.0}},
-        {19, {"ALT PUSH", "laminar/B738/autopilot/lnav_press", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
+        {19, {"ALT PUSH", "laminar/B738/autopilot/vnav_press", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
         {20, {"ALT PULL", "laminar/B738/autopilot/lvl_chg_press", FCUEfisDatarefType::EXECUTE_CMD_ONCE}},
 
         // Vertical Speed encoder

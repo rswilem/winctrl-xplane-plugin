@@ -7,7 +7,7 @@
 
 #define PRODUCT_NAME "winctrl"
 #define FRIENDLY_NAME "WINCTRL"
-#define VERSION "0.0.47"
+#define VERSION "0.0.48"
 #define ALL_PLUGINS_DIRECTORY "/Resources/plugins/"
 #define PLUGIN_DIRECTORY ALL_PLUGINS_DIRECTORY PRODUCT_NAME
 #define BUNDLE_ID "com.ramonster." PRODUCT_NAME

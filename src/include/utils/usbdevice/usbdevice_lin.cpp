@@ -123,7 +123,8 @@ void USBDevice::disconnect() {
     // Wake the input thread via the self-pipe so it exits its select() block
     if (inputPipe[1] >= 0) {
         uint8_t c = 0;
-        (void) write(inputPipe[1], &c, 1);
+        ssize_t written = write(inputPipe[1], &c, 1);
+        (void) written;
     }
 
     // Drain before clearing connected: the write thread gates each send on

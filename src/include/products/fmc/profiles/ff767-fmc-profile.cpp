@@ -28,6 +28,13 @@ FlightFactor767FMCProfile::FlightFactor767FMCProfile(ProductFMC *product) : FMCA
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/instrument_brightness");
     },
         this);
+
+    Dataref::getInstance()->monitorExistingDataref<int>("757Avionics/fms/warn_flags", [product](int flags) {
+        bool message = (static_cast<uint32_t>(flags) & FlightFactor767FMCProfile::FmsWarnFlagMsg) != 0;
+        product->setLedBrightness(FMCLed::PFP_MSG, message ? 1 : 0);
+        product->setLedBrightness(FMCLed::MCDU_MCDU, message ? 1 : 0);
+    },
+        this);
 }
 
 bool FlightFactor767FMCProfile::IsEligible() {

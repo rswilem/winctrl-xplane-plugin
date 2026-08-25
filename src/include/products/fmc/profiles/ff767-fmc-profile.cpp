@@ -65,6 +65,7 @@ const std::vector<std::string> &FlightFactor767FMCProfile::displayDatarefs() con
 
 const std::vector<FMCButtonDef> &FlightFactor767FMCProfile::buttonDefs() const {
     const std::string cdu = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? "CDU" : "CDU2";
+    const std::string brtSide = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? "L" : "R";
     static std::unordered_map<FMCDeviceVariant, std::vector<FMCButtonDef>> cache;
 
     return cache.try_emplace(product->deviceVariant,
@@ -86,8 +87,8 @@ const std::vector<FMCButtonDef> &FlightFactor767FMCProfile::buttonDefs() const {
                         {FMCKey::PFP3_CLB, "757Avionics/" + cdu + "/clb", FMCDatarefType::SET_VALUE_PHASED},
                         {FMCKey::PFP3_CRZ, "757Avionics/" + cdu + "/crz", FMCDatarefType::SET_VALUE_PHASED},
                         {FMCKey::PFP3_DES, "757Avionics/" + cdu + "/des", FMCDatarefType::SET_VALUE_PHASED},
-                        {FMCKey::BRIGHTNESS_DOWN, "ixeg/733/rheostats/light_fmc_pt_act", FMCDatarefType::ADJUST_VALUE, -0.1},
-                        {FMCKey::BRIGHTNESS_UP, "ixeg/733/rheostats/light_fmc_pt_act", FMCDatarefType::ADJUST_VALUE, 0.1},
+                        {FMCKey::BRIGHTNESS_DOWN, "1-sim/CDU/" + brtSide + "/CDUbrtRotary", FMCDatarefType::ADJUST_VALUE, -0.1},
+                        {FMCKey::BRIGHTNESS_UP, "1-sim/CDU/" + brtSide + "/CDUbrtRotary", FMCDatarefType::ADJUST_VALUE, 0.1},
                         {FMCKey::MENU, "757Avionics/" + cdu + "/mcdu_menu", FMCDatarefType::SET_VALUE_PHASED},
                         {std::vector<FMCKey>{FMCKey::PFP_LEGS, FMCKey::MCDU_FPLN, FMCKey::MCDU_DIR}, "757Avionics/" + cdu + "/legs", FMCDatarefType::SET_VALUE_PHASED},
                         {std::vector<FMCKey>{FMCKey::PFP_DEP_ARR, FMCKey::MCDU_AIRPORT}, "757Avionics/" + cdu + "/dep_arr", FMCDatarefType::SET_VALUE_PHASED},
@@ -275,9 +276,13 @@ void FlightFactor767FMCProfile::buttonPressed(const FMCButtonDef *button, XPLMCo
         }
 
         datarefManager->set<double>(button->dataref.c_str(), phase == xplm_CommandBegin ? value : 0.0);
-    } else if (phase == xplm_CommandBegin && button->datarefType == FMCDatarefType::ADJUST_VALUE) {
+    } else if (button->datarefType == FMCDatarefType::ADJUST_VALUE) {
+        if (phase != xplm_CommandBegin) {
+            return;
+        }
+
         double currentValue = datarefManager->get<double>(button->dataref.c_str());
-        datarefManager->set<double>(button->dataref.c_str(), currentValue + button->value);
+        datarefManager->set<double>(button->dataref.c_str(), std::clamp(currentValue + button->value, 0.0, FlightFactor767FMCProfile::BrightnessMax));
     } else if (phase == xplm_CommandBegin && button->datarefType == FMCDatarefType::EXECUTE_MULTIPLE_CMD_ONCE) {
         std::stringstream ss(button->dataref);
         std::string item;

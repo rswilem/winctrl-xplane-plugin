@@ -8,9 +8,12 @@
 class ZiboFMCProfile : public FMCAircraftProfile {
     private:
         std::regex datarefRegex;
+        bool fansRemapEnabled = true;
+        int fansRemapMenuItemId = -1;
 
     public:
         ZiboFMCProfile(ProductFMC *product);
+        ~ZiboFMCProfile();
 
         static bool IsEligible();
 

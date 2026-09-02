@@ -53,6 +53,11 @@ class ProductFMC : public USBDevice {
 
         const char *classIdentifier() override;
         const char *activeProfileName() const override;
+        // Submenu id of this device's Plugins menu entry, for profiles that add
+        // their own items to it. -1 before connect().
+        int deviceMenuItemId() const {
+            return menuItemId;
+        }
         bool connect() override;
         void unloadProfile();
         void update() override;

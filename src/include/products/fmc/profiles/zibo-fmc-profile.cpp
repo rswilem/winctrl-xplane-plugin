@@ -2,6 +2,7 @@
 
 #include "appstate.h"
 #include "dataref.h"
+#include "plugins-menu.h"
 #include "product-fmc.h"
 
 #include <algorithm>
@@ -52,6 +53,26 @@ ZiboFMCProfile::ZiboFMCProfile(ProductFMC *product) : FMCAircraftProfile(product
         product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
     },
         this);
+
+    // FANS MCDU key remap toggle (issue #108): only PFP hardware shows it; when
+    // off, keys pass through 1:1 regardless of the selected FMC type.
+    fansRemapEnabled = AppState::getInstance()->readPreference("ZiboFansRemap", "1") != "0";
+    if (product->hardwareType != FMCHardwareType::HARDWARE_MCDU && product->deviceMenuItemId() >= 0) {
+        fansRemapMenuItemId = PluginsMenu::getInstance()->addItem(
+            "FANS MCDU key remap", [this](int itemId) {
+                fansRemapEnabled = !fansRemapEnabled;
+                AppState::getInstance()->writePreference("ZiboFansRemap", fansRemapEnabled ? "1" : "0");
+                PluginsMenu::getInstance()->setItemChecked(itemId, fansRemapEnabled);
+            },
+            fansRemapEnabled, product->deviceMenuItemId());
+    }
+}
+
+ZiboFMCProfile::~ZiboFMCProfile() {
+    if (fansRemapMenuItemId >= 0) {
+        PluginsMenu::getInstance()->removeItem(fansRemapMenuItemId);
+        fansRemapMenuItemId = -1;
+    }
 }
 
 bool ZiboFMCProfile::IsEligible() {
@@ -376,7 +397,7 @@ void ZiboFMCProfile::buttonPressed(const FMCButtonDef *button, XPLMCommandPhase 
             datarefManager->executeCommand(cmd.c_str());
         }
     } else {
-        if (Dataref::getInstance()->get<int>("laminar/B738/fmc_type") == 1) {
+        if (fansRemapEnabled && Dataref::getInstance()->get<int>("laminar/B738/fmc_type") == 1) {
             std::vector<std::pair<FMCKey, FMCKey>> fansMapping = {
                 {FMCKey::PFP_DEP_ARR, FMCKey::PFP3_CLB},
                 {FMCKey::PFP4_ATC, FMCKey::PFP3_CRZ},

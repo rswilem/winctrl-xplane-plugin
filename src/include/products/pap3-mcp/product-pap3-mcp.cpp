@@ -668,6 +668,17 @@ void ProductPAP3MCP::didReceiveData(int reportId, uint8_t *report, int reportLen
     lastButtonStateLo = buttonsLo;
     lastButtonStateHi = buttonsHi;
 
+#if DEBUG
+    // Encoder pacing capture (issue #107): timestamp per report to see how the
+    // firmware spaces detent pulses, and the raw bytes past the button block to
+    // spot rotation counters we don't decode yet.
+    printf("[%s] t=%.3f report:", classIdentifier(), XPLMGetElapsedTime());
+    for (int i = 0; i < reportLength; ++i) {
+        printf(" %02X", report[i]);
+    }
+    printf("\n");
+#endif
+
     for (int byteIndex = 1; byteIndex <= 6 && byteIndex < reportLength; byteIndex++) {
         uint8_t buttonByte = report[byteIndex];
 

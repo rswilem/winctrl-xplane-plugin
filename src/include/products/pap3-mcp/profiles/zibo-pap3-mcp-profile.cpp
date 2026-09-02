@@ -208,18 +208,21 @@ const std::unordered_map<uint16_t, PAP3MCPButtonDef> &ZiboPAP3MCPProfile::button
         // Row 3 (byte 0x03)
         {16, {"ALT INTV", "laminar/B738/autopilot/alt_interv"}},
 
-        // Encoder rotations (exposed as button pairs by the hardware)
+        // Encoder rotations (exposed as button pairs by the hardware).
+        // Use the generic sim commands (fixed step per detent) instead of Zibo's
+        // accelerating heading/altitude knob commands, which keep slewing after
+        // the knob stops (issues #82, #107). CRS is the exception: the generic
+        // obs1/obs2 commands don't drive Zibo's course_pilot/copilot, and the
+        // course_*_up/dn commands step exactly 1 per call without coasting
+        // (verified in-sim 2026-09-02).
         {17, {"CRS CAPT DEC", "laminar/B738/autopilot/course_pilot_dn"}},
         {18, {"CRS CAPT INC", "laminar/B738/autopilot/course_pilot_up"}},
         {19, {"SPD DEC", "sim/autopilot/airspeed_down"}},
         {20, {"SPD INC", "sim/autopilot/airspeed_up"}},
-        // Use the generic sim commands (fixed 1 deg/step) instead of Zibo's
-        // laminar/B738/autopilot/heading_up|dn, which apply velocity-based
-        // acceleration and keep coasting after the knob stops (issue #82).
         {21, {"HDG DEC", "sim/autopilot/heading_down"}},
         {22, {"HDG INC", "sim/autopilot/heading_up"}},
-        {23, {"ALT DEC", "laminar/B738/autopilot/altitude_dn"}},
-        {24, {"ALT INC", "laminar/B738/autopilot/altitude_up"}},
+        {23, {"ALT DEC", "sim/autopilot/altitude_down"}},
+        {24, {"ALT INC", "sim/autopilot/altitude_up"}},
         {25, {"CRS FO DEC", "laminar/B738/autopilot/course_copilot_dn"}},
         {26, {"CRS FO INC", "laminar/B738/autopilot/course_copilot_up"}},
         // 27: FD CAPT       - Handled by handleSwitchChanged (byte 0x04, bit 0x08)
@@ -244,7 +247,7 @@ const std::vector<PAP3MCPEncoderDef> &ZiboPAP3MCPProfile::encoderDefs() const {
         {0, "CRS CAPT", "laminar/B738/autopilot/course_pilot_up", "laminar/B738/autopilot/course_pilot_dn"},
         {1, "SPD", "sim/autopilot/airspeed_up", "sim/autopilot/airspeed_down"},
         {2, "HDG", "sim/autopilot/heading_up", "sim/autopilot/heading_down"},
-        {3, "ALT", "laminar/B738/autopilot/altitude_up", "laminar/B738/autopilot/altitude_dn"},
+        {3, "ALT", "sim/autopilot/altitude_up", "sim/autopilot/altitude_down"},
         {4, "V/S", "sim/autopilot/vertical_speed_up", "sim/autopilot/vertical_speed_down"},
         {5, "CRS FO", "laminar/B738/autopilot/course_copilot_up", "laminar/B738/autopilot/course_copilot_dn"}};
     return encoders;

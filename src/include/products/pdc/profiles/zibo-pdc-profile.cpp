@@ -39,14 +39,30 @@ ZiboPDCProfile::ZiboPDCProfile(ProductPDC *product) : PDCAircraftProfile(product
     },
         this);
 
-    // Seed the baro preselect when STD engages, so knob turns while STD start
-    // from 1013 hPa / 29.92 inHg instead of the pre-STD value (issue #109).
     bool isCaptain = product->isCaptainSide();
+
+    // Arm the standard-pressure seed while STD is engaged. Nothing is written
+    // here: writing would light up the preselect on the PFD before the pilot
+    // has touched the knob (issue #109).
     std::string stdDataref = std::string("laminar/B738/EFIS/baro_set_std_") + (isCaptain ? "pilot" : "copilot");
-    std::string selDataref = std::string("laminar/B738/EFIS/baro_sel_in_hg_") + (isCaptain ? "pilot" : "copilot");
-    Dataref::getInstance()->monitorExistingDataref<bool>(stdDataref.c_str(), [selDataref](bool stdActive) {
-        if (stdActive) {
-            Dataref::getInstance()->set<float>(selDataref.c_str(), 29.92f);
+    Dataref::getInstance()->monitorExistingDataref<bool>(stdDataref.c_str(), [this](bool stdActive) {
+        baroStdSeedPending = stdActive;
+    },
+        this);
+
+    // Remember the last minimums the pilot actually dialled in, so the knob
+    // resumes from it after RST parks the dataref at its sentinel.
+    std::string minsDataref = std::string("laminar/B738/pfd/dh_") + (isCaptain ? "pilot" : "copilot");
+    std::string minsModeDataref = std::string("laminar/B738/EFIS_control/") + (isCaptain ? "cpt" : "fo") + "/minimums";
+    Dataref::getInstance()->monitorExistingDataref<float>(minsDataref.c_str(), [this, minsModeDataref](float mins) {
+        if (mins <= 0.0f) {
+            return;
+        }
+
+        if (Dataref::getInstance()->get<int>(minsModeDataref.c_str()) == 1) {
+            lastMinimumsBaro = mins;
+        } else {
+            lastMinimumsRadio = mins;
         }
     },
         this);
@@ -227,10 +243,10 @@ void ZiboPDCProfile::changeMinimums(char delta) {
     std::string dataref = std::string("laminar/B738/pfd/dh_") + (isCaptain ? "pilot" : "copilot");
     float currentMins = datarefManager->get<float>(dataref.c_str());
 
-    // Zibo parks the value at -1000 (BARO) or 0 (RADIO) when no minimums are
-    // set; adjust relative to the mode default instead (issue #109).
+    // Zibo parks the value at a negative sentinel when the minimums are unset
+    // or reset; continue from the last dialled value for this mode instead.
     if (currentMins <= 0.0f) {
-        currentMins = isBaro ? 200.0f : 100.0f;
+        currentMins = isBaro ? lastMinimumsBaro : lastMinimumsRadio;
     }
 
     if (delta == 10 || delta == -10) {
@@ -253,15 +269,20 @@ void ZiboPDCProfile::changeBaro(char delta) {
     std::string dataref = std::string("laminar/B738/EFIS/baro_sel_in_hg_") + (isCaptain ? "pilot" : "copilot");
     float currentBaroInHg = datarefManager->get<float>(dataref.c_str());
 
+    // First turn after STD engaged starts from standard pressure, in whichever
+    // unit the knob is set to (issue #109).
+    bool seedStandard = baroStdSeedPending;
+    baroStdSeedPending = false;
+
     bool isFast = delta == 10 || delta == -10;
     if (isHPA) {
         // Snap/step in whole hPa; the dataref itself stays in inHg.
-        float hpa = std::round(currentBaroInHg / 0.02953f);
+        float hpa = seedStandard ? 1013.0f : std::round(currentBaroInHg / 0.02953f);
         hpa = isFast ? snapToTens(hpa, delta > 0) : hpa + delta;
         currentBaroInHg = hpa * 0.02953f;
     } else {
         // Slow: 0.01 inHg; fast: snap to the next 0.10 inHg.
-        float centiInHg = std::round(currentBaroInHg * 100.0f);
+        float centiInHg = seedStandard ? 2992.0f : std::round(currentBaroInHg * 100.0f);
         centiInHg = isFast ? snapToTens(centiInHg, delta > 0) : centiInHg + delta;
         currentBaroInHg = centiInHg / 100.0f;
     }

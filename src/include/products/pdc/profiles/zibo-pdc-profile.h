@@ -20,6 +20,16 @@ class ZiboPDCProfile : public PDCAircraftProfile {
         float baroFastReleaseTime = -1.0f;
         float baroLastCommandTime = 0.0f;
 
+        // Zibo parks the minimums at a negative sentinel when unset (RST, or
+        // never set), so the knob resumes from the last value the pilot dialled
+        // in; 200/100 are only the initial defaults per mode (issue #109).
+        float lastMinimumsBaro = 200.0f;
+        float lastMinimumsRadio = 100.0f;
+
+        // Set when STD engages: the next knob turn starts from 1013/29.92, but
+        // nothing is written until then so no preselect is shown (issue #109).
+        bool baroStdSeedPending = false;
+
         void changeMinimums(char delta);
         void changeBaro(char delta);
 

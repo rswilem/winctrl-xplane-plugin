@@ -38,6 +38,18 @@ ZiboPDCProfile::ZiboPDCProfile(ProductPDC *product) : PDCAircraftProfile(product
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/avionics_on");
     },
         this);
+
+    // Seed the baro preselect when STD engages, so knob turns while STD start
+    // from 1013 hPa / 29.92 inHg instead of the pre-STD value (issue #109).
+    bool isCaptain = product->isCaptainSide();
+    std::string stdDataref = std::string("laminar/B738/EFIS/baro_set_std_") + (isCaptain ? "pilot" : "copilot");
+    std::string selDataref = std::string("laminar/B738/EFIS/baro_sel_in_hg_") + (isCaptain ? "pilot" : "copilot");
+    Dataref::getInstance()->monitorExistingDataref<bool>(stdDataref.c_str(), [selDataref](bool stdActive) {
+        if (stdActive) {
+            Dataref::getInstance()->set<float>(selDataref.c_str(), 29.92f);
+        }
+    },
+        this);
 }
 
 bool ZiboPDCProfile::IsEligible() {
@@ -74,8 +86,8 @@ const std::unordered_map<PDCButtonIndex3N3M, PDCButtonDef> &ZiboPDCProfile::butt
                         {{18, 19}, {"Baro STD", "laminar/B738/EFIS_control/" + pilotSide + "/push_button/std_press"}},
                         {{-1, 20}, {"3M Range Minus", "laminar/B738/EFIS_control/" + pilotSide + "/map_range_dn"}}, // PDC3N - laminar/B738/EFIS/"+pilotSide+"/map_range,0,1,2,3,4,5,6,7
                         {{-1, 21}, {"3M Range Plus", "laminar/B738/EFIS_control/" + pilotSide + "/map_range_up"}},
-                        {{21, 22}, {"Baro knob left fast", "laminar/B738/" + pilotOrCopilot + "/barometer_down", PDCDatarefType::EXECUTE_CMD_PHASED}},
-                        {{22, 23}, {"Baro knob right fast", "laminar/B738/" + pilotOrCopilot + "/barometer_up", PDCDatarefType::EXECUTE_CMD_PHASED}},
+                        {{21, 22}, {"Baro knob left fast", "custom", PDCDatarefType::ADD_BARO_REPEATING, -10.0}},
+                        {{22, 23}, {"Baro knob right fast", "custom", PDCDatarefType::ADD_BARO_REPEATING, 10.0}},
                         {{23, 24}, {"Mins RADIO", "laminar/B738/EFIS_control/" + cptOrFo + "/minimums,laminar/B738/EFIS_control/" + cptOrFo + "/minimums_up,laminar/B738/EFIS_control/" + cptOrFo + "/minimums_dn", PDCDatarefType::SET_VALUE_USING_COMMANDS, 0.0}}, // Caution, up and down are inverted
                         {{24, 25}, {"Mins BARO", "laminar/B738/EFIS_control/" + cptOrFo + "/minimums,laminar/B738/EFIS_control/" + cptOrFo + "/minimums_up,laminar/B738/EFIS_control/" + cptOrFo + "/minimums_dn", PDCDatarefType::SET_VALUE_USING_COMMANDS, 1.0}},  // Caution, up and down are inverted
                         {{25, 26}, {"Baro inHg", "laminar/B738/EFIS_control/" + pilotSide + "/baro_in_hpa,laminar/B738/EFIS_control/" + pilotSide + "/baro_in_hpa_dn,laminar/B738/EFIS_control/" + pilotSide + "/baro_in_hpa_up", PDCDatarefType::SET_VALUE_USING_COMMANDS, 0.0}},
@@ -92,11 +104,11 @@ const std::unordered_map<PDCButtonIndex3N3M, PDCButtonDef> &ZiboPDCProfile::butt
                         {{36, -1}, {"3N Map range 160", "laminar/B738/EFIS/" + pilotSide + "/map_range", PDCDatarefType::SET_VALUE, 5.0}},
                         {{37, -1}, {"3N Map range 320", "laminar/B738/EFIS/" + pilotSide + "/map_range", PDCDatarefType::SET_VALUE, 6.0}},
                         {{38, -1}, {"3N Map range 640", "laminar/B738/EFIS/" + pilotSide + "/map_range", PDCDatarefType::SET_VALUE, 7.0}},
-                        {{19, 32}, {"Mins knob left fast", std::string("laminar/B738/pfd/dh_") + pilotOrCopilot + "_dn", PDCDatarefType::EXECUTE_CMD_PHASED}},
+                        {{19, 32}, {"Mins knob left fast", "custom", PDCDatarefType::ADD_MINIMUMS_REPEATING, -10.0}},
                         {{39, 33}, {"Mins knob left slow", "custom", PDCDatarefType::ADD_MINIMUMS_REPEATING, -1.0}},
                         {{40, 34}, {"Mins knob center", ""}},
                         {{41, 35}, {"Mins knob right slow", "custom", PDCDatarefType::ADD_MINIMUMS_REPEATING, 1.0}},
-                        {{20, 36}, {"Mins knob right fast", std::string("laminar/B738/pfd/dh_") + pilotOrCopilot + "_up", PDCDatarefType::EXECUTE_CMD_PHASED}},
+                        {{20, 36}, {"Mins knob right fast", "custom", PDCDatarefType::ADD_MINIMUMS_REPEATING, 10.0}},
                         {{42, 37}, {"Baro knob left slow", "custom", PDCDatarefType::ADD_BARO_REPEATING, -1.0}},
                         {{43, 38}, {"Baro knob center", ""}},
                         {{44, 39}, {"Baro knob right slow", "custom", PDCDatarefType::ADD_BARO_REPEATING, 1.0}},
@@ -105,14 +117,18 @@ const std::unordered_map<PDCButtonIndex3N3M, PDCButtonDef> &ZiboPDCProfile::butt
 }
 
 void ZiboPDCProfile::update() {
-    if (minimumsDelta != 0 && XPLMGetElapsedTime() - minimumsLastCommandTime >= 0.1f) {
-        minimumsLastCommandTime = XPLMGetElapsedTime();
-        changeMinimums();
+    float now = XPLMGetElapsedTime();
+
+    char minimumsDelta = minimumsFastDelta != 0 ? minimumsFastDelta : minimumsSlowDelta;
+    if (minimumsDelta != 0 && now - minimumsLastCommandTime >= 0.1f) {
+        minimumsLastCommandTime = now;
+        changeMinimums(minimumsDelta);
     }
 
-    if (baroDelta != 0 && XPLMGetElapsedTime() - baroLastCommandTime >= 0.1f) {
-        baroLastCommandTime = XPLMGetElapsedTime();
-        changeBaro();
+    char baroDelta = baroFastDelta != 0 ? baroFastDelta : baroSlowDelta;
+    if (baroDelta != 0 && now - baroLastCommandTime >= 0.1f) {
+        baroLastCommandTime = now;
+        changeBaro(baroDelta);
     }
 }
 
@@ -123,14 +139,40 @@ void ZiboPDCProfile::buttonPressed(const PDCButtonDef *button, XPLMCommandPhase 
 
     auto datarefManager = Dataref::getInstance();
 
-    if (button->datarefType == PDCDatarefType::ADD_BARO_REPEATING) {
-        baroDelta = phase == xplm_CommandBegin ? static_cast<char>(button->value) : 0;
-        baroLastCommandTime = XPLMGetElapsedTime() + 1.0f;
-        changeBaro();
-    } else if (button->datarefType == PDCDatarefType::ADD_MINIMUMS_REPEATING) {
-        minimumsDelta = phase == xplm_CommandBegin ? static_cast<char>(button->value) : 0;
-        minimumsLastCommandTime = XPLMGetElapsedTime() + 1.0f;
-        changeMinimums();
+    if (button->datarefType == PDCDatarefType::ADD_BARO_REPEATING || button->datarefType == PDCDatarefType::ADD_MINIMUMS_REPEATING) {
+        bool isBaroKnob = button->datarefType == PDCDatarefType::ADD_BARO_REPEATING;
+        char &slowDelta = isBaroKnob ? baroSlowDelta : minimumsSlowDelta;
+        char &fastDelta = isBaroKnob ? baroFastDelta : minimumsFastDelta;
+        float &fastReleaseTime = isBaroKnob ? baroFastReleaseTime : minimumsFastReleaseTime;
+        float &lastCommandTime = isBaroKnob ? baroLastCommandTime : minimumsLastCommandTime;
+
+        char value = static_cast<char>(button->value);
+        bool isFast = value == 10 || value == -10;
+        float now = XPLMGetElapsedTime();
+
+        if (phase == xplm_CommandEnd) {
+            if (isFast) {
+                fastDelta = 0;
+                fastReleaseTime = now;
+                // A slow contact that lingers after the fast detent releases
+                // must re-arm the hold delay instead of repeating ±1.
+                lastCommandTime = now + 1.0f;
+            } else {
+                slowDelta = 0;
+            }
+        } else if (isFast) {
+            fastDelta = value;
+            lastCommandTime = now + 1.0f;
+            isBaroKnob ? changeBaro(value) : changeMinimums(value);
+        } else {
+            slowDelta = value;
+            lastCommandTime = now + 1.0f;
+            // Suppress the immediate ±1 while the fast detent is engaged or
+            // when passing through the slow position on release (issue #109).
+            if (fastDelta == 0 && now - fastReleaseTime > 0.3f) {
+                isBaroKnob ? changeBaro(value) : changeMinimums(value);
+            }
+        }
     } else if (phase == xplm_CommandBegin && button->datarefType == PDCDatarefType::SET_VALUE_USING_COMMANDS) {
         std::stringstream ss(button->dataref);
         std::string item;
@@ -166,31 +208,63 @@ void ZiboPDCProfile::buttonPressed(const PDCButtonDef *button, XPLMCommandPhase 
     }
 }
 
-void ZiboPDCProfile::changeMinimums() {
-    if (minimumsDelta == 0) {
-        return;
-    }
-
-    std::string dataref = std::string("laminar/B738/pfd/dh_") + (product->deviceVariant == PDCDeviceVariant::VARIANT_3N_CAPTAIN || product->deviceVariant == PDCDeviceVariant::VARIANT_3M_CAPTAIN ? "pilot" : "copilot");
-    auto datarefManager = Dataref::getInstance();
-    float currentMins = datarefManager->get<float>(dataref.c_str());
-    currentMins += minimumsDelta;
-    datarefManager->set<float>(dataref.c_str(), currentMins);
+// Fast detent (|delta| == 10): snap to the next multiple of 10 in the turn
+// direction, e.g. 1013 -> 1020/1010 (issue #109).
+static float snapToTens(float value, bool up) {
+    float snapped = up ? std::floor(value / 10.0f) * 10.0f + 10.0f : std::ceil(value / 10.0f) * 10.0f - 10.0f;
+    return snapped;
 }
 
-void ZiboPDCProfile::changeBaro() {
-    if (baroDelta == 0) {
+void ZiboPDCProfile::changeMinimums(char delta) {
+    if (delta == 0) {
         return;
     }
 
+    bool isCaptain = product->deviceVariant == PDCDeviceVariant::VARIANT_3N_CAPTAIN || product->deviceVariant == PDCDeviceVariant::VARIANT_3M_CAPTAIN;
     auto datarefManager = Dataref::getInstance();
-    bool isHPA = datarefManager->get<bool>((std::string("laminar/B738/EFIS_control/") + (product->deviceVariant == PDCDeviceVariant::VARIANT_3N_CAPTAIN || product->deviceVariant == PDCDeviceVariant::VARIANT_3M_CAPTAIN ? "capt" : "fo") + "/baro_in_hpa").c_str());
-    std::string dataref = std::string("laminar/B738/EFIS/baro_sel_in_hg_") + (product->deviceVariant == PDCDeviceVariant::VARIANT_3N_CAPTAIN || product->deviceVariant == PDCDeviceVariant::VARIANT_3M_CAPTAIN ? "pilot" : "copilot");
-    float currentBaroInHg = datarefManager->get<float>(dataref.c_str());
-    if (isHPA) {
-        currentBaroInHg += baroDelta * 0.02953f;
-    } else {
-        currentBaroInHg += baroDelta * 0.01f;
+    // 0 = RADIO, 1 = BARO
+    bool isBaro = datarefManager->get<int>((std::string("laminar/B738/EFIS_control/") + (isCaptain ? "cpt" : "fo") + "/minimums").c_str()) == 1;
+    std::string dataref = std::string("laminar/B738/pfd/dh_") + (isCaptain ? "pilot" : "copilot");
+    float currentMins = datarefManager->get<float>(dataref.c_str());
+
+    // Zibo parks the value at -1000 (BARO) or 0 (RADIO) when no minimums are
+    // set; adjust relative to the mode default instead (issue #109).
+    if (currentMins <= 0.0f) {
+        currentMins = isBaro ? 200.0f : 100.0f;
     }
+
+    if (delta == 10 || delta == -10) {
+        currentMins = snapToTens(currentMins, delta > 0);
+    } else {
+        currentMins += delta;
+    }
+
+    datarefManager->set<float>(dataref.c_str(), std::max(currentMins, 0.0f));
+}
+
+void ZiboPDCProfile::changeBaro(char delta) {
+    if (delta == 0) {
+        return;
+    }
+
+    bool isCaptain = product->deviceVariant == PDCDeviceVariant::VARIANT_3N_CAPTAIN || product->deviceVariant == PDCDeviceVariant::VARIANT_3M_CAPTAIN;
+    auto datarefManager = Dataref::getInstance();
+    bool isHPA = datarefManager->get<bool>((std::string("laminar/B738/EFIS_control/") + (isCaptain ? "capt" : "fo") + "/baro_in_hpa").c_str());
+    std::string dataref = std::string("laminar/B738/EFIS/baro_sel_in_hg_") + (isCaptain ? "pilot" : "copilot");
+    float currentBaroInHg = datarefManager->get<float>(dataref.c_str());
+
+    bool isFast = delta == 10 || delta == -10;
+    if (isHPA) {
+        // Snap/step in whole hPa; the dataref itself stays in inHg.
+        float hpa = std::round(currentBaroInHg / 0.02953f);
+        hpa = isFast ? snapToTens(hpa, delta > 0) : hpa + delta;
+        currentBaroInHg = hpa * 0.02953f;
+    } else {
+        // Slow: 0.01 inHg; fast: snap to the next 0.10 inHg.
+        float centiInHg = std::round(currentBaroInHg * 100.0f);
+        centiInHg = isFast ? snapToTens(centiInHg, delta > 0) : centiInHg + delta;
+        currentBaroInHg = centiInHg / 100.0f;
+    }
+
     datarefManager->set<float>(dataref.c_str(), currentBaroInHg);
 }

@@ -8,6 +8,7 @@
 #include "profiles/bae146-fmc-profile.h"
 #include "profiles/c525-fmc-profile.h"
 #include "profiles/ff350-fmc-profile.h"
+#include "profiles/ffa320-fmc-profile.h"
 #include "profiles/ff767-fmc-profile.h"
 #include "profiles/ff777-fmc-profile.h"
 #include "profiles/felis742-ltn-fmc-profile.h"
@@ -82,6 +83,10 @@ void ProductFMC::setProfileForCurrentAircraft() {
     } else if (FF350FMCProfile::IsEligible()) {
         clearDisplay();
         profile = new FF350FMCProfile(this);
+        profileReady = true;
+    } else if (FFA320FMCProfile::IsEligible()) {
+        clearDisplay();
+        profile = new FFA320FMCProfile(this);
         profileReady = true;
     } else if (TolissFMCProfile::IsEligible()) {
         clearDisplay();

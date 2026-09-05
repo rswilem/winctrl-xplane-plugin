@@ -123,7 +123,7 @@ const std::vector<FMCButtonDef> &CL650FMCProfile::buttonDefs() const {
             {std::vector<FMCKey>{FMCKey::MCDU_SEC_FPLN, FMCKey::PFP_ROUTE}, "CL650/CDU/" + cdu + "/fpln", FMCDatarefType::SET_VALUE, 1.0},
             {std::vector<FMCKey>{FMCKey::MCDU_RAD_NAV, FMCKey::PFP4_NAV_RAD, FMCKey::PFP7_NAV_RAD}, "CL650/CDU/" + cdu + "/tun", FMCDatarefType::SET_VALUE, 1.0},
             {std::vector<FMCKey>{FMCKey::PFP_LEGS, FMCKey::MCDU_FPLN}, "CL650/CDU/" + cdu + "/legs", FMCDatarefType::SET_VALUE, 1.0},
-            {FMCKey::PFP_DEP_ARR, "CL650/CDU/" + cdu + "/dep_arr", FMCDatarefType::SET_VALUE, 1.0},
+            {std::vector<FMCKey>{FMCKey::PFP_DEP_ARR, FMCKey::MCDU_AIRPORT}, "CL650/CDU/" + cdu + "/dep_arr", FMCDatarefType::SET_VALUE, 1.0},
             {std::vector<FMCKey>{FMCKey::PFP_EXEC, FMCKey::MCDU_EMPTY_TOP_RIGHT}, "CL650/CDU/" + cdu + "/exec", FMCDatarefType::SET_VALUE, 1.0},
             {std::vector<FMCKey>{FMCKey::CLR, FMCKey::PFP_DEL}, "CL650/CDU/" + cdu + "/clr_del", FMCDatarefType::SET_VALUE, 1.0},
             {FMCKey::MENU, "CL650/CDU/" + cdu + "/dspl_menu", FMCDatarefType::SET_VALUE, 1.0},

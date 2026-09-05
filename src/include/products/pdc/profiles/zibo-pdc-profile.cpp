@@ -224,11 +224,11 @@ void ZiboPDCProfile::buttonPressed(const PDCButtonDef *button, XPLMCommandPhase 
     }
 }
 
-// Fast detent (|delta| == 10): snap to the next multiple of 10 in the turn
-// direction, e.g. 1013 -> 1020/1010 (issue #109).
-static float snapToTens(float value, bool up) {
-    float snapped = up ? std::floor(value / 10.0f) * 10.0f + 10.0f : std::ceil(value / 10.0f) * 10.0f - 10.0f;
-    return snapped;
+// Step to the next multiple of `step` in the turn direction: 1013 -> 1020/1010
+// for the fast detent, and from the fractional STD base (1013.25 hPa) the first
+// slow click down lands on 1013 rather than 1012 (issue #109).
+static float stepInDirection(float value, bool up, float step) {
+    return up ? std::floor(value / step) * step + step : std::ceil(value / step) * step - step;
 }
 
 void ZiboPDCProfile::changeMinimums(char delta) {
@@ -250,7 +250,7 @@ void ZiboPDCProfile::changeMinimums(char delta) {
     }
 
     if (delta == 10 || delta == -10) {
-        currentMins = snapToTens(currentMins, delta > 0);
+        currentMins = stepInDirection(currentMins, delta > 0, 10.0f);
     } else {
         currentMins += delta;
     }
@@ -277,13 +277,14 @@ void ZiboPDCProfile::changeBaro(char delta) {
     bool isFast = delta == 10 || delta == -10;
     if (isHPA) {
         // Snap/step in whole hPa; the dataref itself stays in inHg.
-        float hpa = seedStandard ? 1013.0f : std::round(currentBaroInHg / 0.02953f);
-        hpa = isFast ? snapToTens(hpa, delta > 0) : hpa + delta;
+        // Standard is 1013.25 hPa, so the first click down off STD shows 1013.
+        float hpa = seedStandard ? 1013.25f : std::round(currentBaroInHg / 0.02953f);
+        hpa = stepInDirection(hpa, delta > 0, isFast ? 10.0f : 1.0f);
         currentBaroInHg = hpa * 0.02953f;
     } else {
         // Slow: 0.01 inHg; fast: snap to the next 0.10 inHg.
         float centiInHg = seedStandard ? 2992.0f : std::round(currentBaroInHg * 100.0f);
-        centiInHg = isFast ? snapToTens(centiInHg, delta > 0) : centiInHg + delta;
+        centiInHg = stepInDirection(centiInHg, delta > 0, isFast ? 10.0f : 1.0f);
         currentBaroInHg = centiInHg / 100.0f;
     }
 

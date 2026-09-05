@@ -80,6 +80,9 @@ class USBDevice {
         std::thread inputThread;
         int inputPipe[2] = {-1, -1};
         static void InputReportCallback(void *context, int bytesRead, uint8_t *report);
+        // Marks the device dead and schedules a controller-level recycle +
+        // re-enumeration. Safe to call from the input and write threads.
+        void handleFatalIOError(const char *what);
 #endif
         int profileMatchRetryCounter = 0;
 
@@ -102,6 +105,11 @@ class USBDevice {
         // Set when the OS already removed the device: disconnect() must skip
         // IOHIDDeviceClose but still release the retained reference.
         std::atomic<bool> deviceRemoved{false};
+#endif
+#if LIN
+        // Set when the hidraw fd returned a fatal error (device dropped off
+        // the bus). USBController::recycleFailedDevices reaps these.
+        std::atomic<bool> ioFailed{false};
 #endif
         bool profileReady = false;
         uint16_t vendorId;

@@ -18,6 +18,10 @@ class ProductFMC : public USBDevice {
         std::set<int> pressedButtonIndices;
         uint64_t lastButtonStateLo = 0;
         uint32_t lastButtonStateHi = 0;
+        // Last brightness written per LED. Profiles drive brightness from
+        // continuously jittering datarefs (e.g. ToLiss *_Raw), so unchanged
+        // values must not become USB packets.
+        std::map<uint8_t, uint8_t> lastLedBrightness;
         int menuItemId = -1;
         int fontsMenuItemId = -1;
         FontVariant preferredFontVariant = FontVariant::Default;

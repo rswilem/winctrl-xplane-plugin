@@ -88,6 +88,12 @@ class USBController {
         // Releases devices the user just switched off, without touching the
         // others. Newly switched on ones return via connectAllDevices().
         void releaseDisabledDevices();
+#if LIN
+        // Reaps devices whose hidraw fd died (ioFailed) and re-enumerates so a
+        // re-plugged or re-enumerated device is picked up again. Must run on
+        // the flight loop.
+        void recycleFailedDevices();
+#endif
 };
 
 #endif

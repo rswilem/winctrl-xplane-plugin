@@ -717,6 +717,12 @@ void ProductFMC::setLedBrightness(FMCLed led, uint8_t brightness) {
         return;
     }
 
+    auto it = lastLedBrightness.find(led);
+    if (it != lastLedBrightness.end() && it->second == brightness) {
+        return;
+    }
+    lastLedBrightness[led] = brightness;
+
     writeData({0x02, identifierByte, 0xbb, 0x00, 0x00, 0x03, 0x49, led, brightness, 0x00, 0x00, 0x00, 0x00, 0x00});
 }
 

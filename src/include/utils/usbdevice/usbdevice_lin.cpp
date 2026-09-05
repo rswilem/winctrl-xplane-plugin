@@ -1,6 +1,7 @@
 #if LIN
 #include "appstate.h"
 #include "config.h"
+#include "usbcontroller.h"
 #include "usbdevice.h"
 
 #include <atomic>
@@ -76,9 +77,16 @@ bool USBDevice::connect() {
                     InputReportCallback(this, (int) bytesRead, buffer);
                 } else if (bytesRead < 0) {
                     Logger::getInstance()->critical("Read failed with error: %d\n", errno);
+                    if (connected) {
+                        handleFatalIOError(strerror(errno));
+                    }
                     break;
                 } else {
-                    break; // EOF — device disconnected
+                    // EOF — device disconnected
+                    if (connected) {
+                        handleFatalIOError("EOF");
+                    }
+                    break;
                 }
             }
         }
@@ -213,8 +221,31 @@ void USBDevice::writeThreadLoop() {
             ssize_t bytesWritten = write(hidDevice, data.data(), data.size());
             if (bytesWritten != (ssize_t) data.size()) {
                 Logger::getInstance()->critical("Raw write failed: %s (wrote %zd of %zu bytes)\n", strerror(errno), bytesWritten, data.size());
+                if (bytesWritten < 0 && (errno == ENODEV || errno == ENXIO || errno == EIO || errno == EBADF)) {
+                    // The device dropped off the bus. Stop the thread so the
+                    // queue doesn't spam failures, and let the controller
+                    // recycle this object and pick up the new hidraw node.
+                    writeThreadRunning = false;
+                    handleFatalIOError(strerror(errno));
+                    break;
+                }
             }
         }
     }
+}
+
+void USBDevice::handleFatalIOError(const char *what) {
+    if (ioFailed.exchange(true)) {
+        return;
+    }
+
+    Logger::getInstance()->critical("%s I/O failed (%s), reconnecting device\n", productName.c_str(), what);
+
+    // Recycle on the flight loop: disconnect() joins this thread, so it must
+    // not run here. Owned by the controller so it survives this device.
+    USBController *controller = USBController::getInstance();
+    AppState::getInstance()->executeAfter(0, controller, [controller]() {
+        controller->recycleFailedDevices();
+    });
 }
 #endif

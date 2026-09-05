@@ -49,6 +49,7 @@ class ProductPDC : public USBDevice {
         void blackout() override;
         void didReceiveData(int reportId, uint8_t *report, int reportLength) override;
         void didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, uint8_t count = 1) override;
+        void forceStateSync() override;
 
         void setDeviceVariant(PDCDeviceVariant variant);
         void setLedBrightness(PDCLed led, uint8_t brightness);

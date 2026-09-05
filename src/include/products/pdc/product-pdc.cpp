@@ -132,6 +132,12 @@ void ProductPDC::unloadProfile() {
     }
 
     pressedButtonIndices.clear();
+
+    // The latched selectors (VOR L/R, baro mode, mins mode, map mode, range)
+    // only report on change, so a stale latch would keep the next profile from
+    // ever learning where the switches physically are.
+    lastButtonStateLo = 0;
+    lastButtonStateHi = 0;
 }
 
 void ProductPDC::setDeviceVariant(PDCDeviceVariant variant) {
@@ -207,6 +213,14 @@ void ProductPDC::update() {
     if (profile) {
         profile->update();
     }
+}
+
+void ProductPDC::forceStateSync() {
+    pressedButtonIndices.clear();
+    lastButtonStateLo = 0;
+    lastButtonStateHi = 0;
+
+    USBDevice::forceStateSync();
 }
 
 void ProductPDC::didReceiveData(int reportId, uint8_t *report, int reportLength) {

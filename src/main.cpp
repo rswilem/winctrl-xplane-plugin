@@ -95,11 +95,11 @@ PLUGIN_API int XPluginStart(char *name, char *sig, char *desc) {
                 strftime(timeBuffer, sizeof(timeBuffer), "%H:%M:%S", &localTime);
 
                 if (USBController::getInstance()->devices.empty()) {
-                    Logger::getInstance()->info("[%s.%03lld] No connected devices.\n", timeBuffer, nowMs.count());
+                    Logger::getInstance()->info("[%s.%03lld] No connected devices.\n", timeBuffer, static_cast<long long>(nowMs.count()));
                 } else {
-                    Logger::getInstance()->info("[%s.%03lld] Write queue sizes:\n", timeBuffer, nowMs.count());
+                    Logger::getInstance()->info("[%s.%03lld] Write queue sizes:\n", timeBuffer, static_cast<long long>(nowMs.count()));
                     for (auto &device : USBController::getInstance()->devices) {
-                        Logger::getInstance()->info("[%s.%03lld] - %s (%s): %zu pending packets\n", timeBuffer, nowMs.count(), device->classIdentifier(), device->activeProfileName(), device->getWriteQueueSize());
+                        Logger::getInstance()->info("[%s.%03lld] - %s (%s): %zu pending packets\n", timeBuffer, static_cast<long long>(nowMs.count()), device->classIdentifier(), device->activeProfileName(), device->getWriteQueueSize());
                     }
                 }
 

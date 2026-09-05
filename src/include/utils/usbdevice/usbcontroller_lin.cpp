@@ -196,6 +196,27 @@ void USBController::enumerateDevices() {
     closedir(dir);
 }
 
+void USBController::recycleFailedDevices() {
+    for (auto it = devices.begin(); it != devices.end();) {
+        USBDevice *dev = *it;
+        if (dev && dev->ioFailed) {
+            dev->disconnect();
+            delete dev;
+            it = devices.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    // A dropped device typically re-enumerates a few seconds later; retry the
+    // scan a few times so recovery doesn't depend on the udev add event.
+    for (int delayMs : {1000, 3000, 6000, 12000}) {
+        AppState::getInstance()->executeAfter(delayMs, this, [this]() {
+            enumerateDevices();
+        });
+    }
+}
+
 void USBController::monitorDevices() {
     if (!AppState::getInstance()->pluginInitialized || shouldStopMonitoring) {
         return;
@@ -260,7 +281,11 @@ void USBController::DeviceRemovedCallback(void *context, struct udev_device *dev
                 ssize_t len = readlink(existingPath, linkTarget, sizeof(linkTarget) - 1);
                 if (len > 0) {
                     linkTarget[len] = '\0';
-                    stale = strcmp(linkTarget, devicePath.c_str()) == 0;
+                    // Once the node is unlinked the fd's link target reads
+                    // "/dev/hidrawX (deleted)", so an exact path match never
+                    // fires; a deleted target means the fd is dead regardless.
+                    stale = strcmp(linkTarget, devicePath.c_str()) == 0 ||
+                            strstr(linkTarget, " (deleted)") != nullptr;
                 }
             }
 

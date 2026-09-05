@@ -2,8 +2,10 @@
 
 #include "dataref.h"
 #include "product-rmp.h"
+#include "xplane-version.hpp"
 
 #include <cstdio>
+#include <limits>
 
 const char *TolissRMPProfile::rmpName() const {
     switch (product->deviceVariant) {
@@ -74,25 +76,26 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
     },
         this);
 
-    std::string lightsRef = std::string("AirbusFBW/") + rmpName() + "Lights_Raw";
+    // XP11 only publishes the non-_Raw array, with brightness-scaled values
+    std::string lightsRef = std::string("AirbusFBW/") + rmpName() + ifXPlane11<std::string>("Lights", "Lights_Raw");
 
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>(lightsRef.c_str(), [product](const std::vector<float> &brightness) {
         if (brightness.size() < 14) {
             return;
         }
 
-        product->setLedBrightness(RMPLed::VHF1, brightness[1] * 255);
-        product->setLedBrightness(RMPLed::VHF2, brightness[2] * 255);
-        product->setLedBrightness(RMPLed::VHF3, brightness[3] * 255);
-        product->setLedBrightness(RMPLed::HF1, brightness[4] * 255);
-        product->setLedBrightness(RMPLed::HF2, brightness[5] * 255);
-        product->setLedBrightness(RMPLed::AM, brightness[6] * 255);
-        product->setLedBrightness(RMPLed::VOR, brightness[7] * 255);
-        product->setLedBrightness(RMPLed::ILS, brightness[8] * 255);
-        product->setLedBrightness(RMPLed::ADF, brightness[10] * 255);
-        product->setLedBrightness(RMPLed::GLS, brightness[11] * 255);
-        product->setLedBrightness(RMPLed::SEL, brightness[12] * 255);
-        product->setLedBrightness(RMPLed::NAV, brightness[13] * 255);
+        product->setLedBrightness(RMPLed::VHF1, brightness[1] > std::numeric_limits<float>::epsilon() ? 255 : 0);
+        product->setLedBrightness(RMPLed::VHF2, brightness[2] > std::numeric_limits<float>::epsilon() ? 255 : 0);
+        product->setLedBrightness(RMPLed::VHF3, brightness[3] > std::numeric_limits<float>::epsilon() ? 255 : 0);
+        product->setLedBrightness(RMPLed::HF1, brightness[4] > std::numeric_limits<float>::epsilon() ? 255 : 0);
+        product->setLedBrightness(RMPLed::HF2, brightness[5] > std::numeric_limits<float>::epsilon() ? 255 : 0);
+        product->setLedBrightness(RMPLed::AM, brightness[6] > std::numeric_limits<float>::epsilon() ? 255 : 0);
+        product->setLedBrightness(RMPLed::VOR, brightness[7] > std::numeric_limits<float>::epsilon() ? 255 : 0);
+        product->setLedBrightness(RMPLed::ILS, brightness[8] > std::numeric_limits<float>::epsilon() ? 255 : 0);
+        product->setLedBrightness(RMPLed::ADF, brightness[10] > std::numeric_limits<float>::epsilon() ? 255 : 0);
+        product->setLedBrightness(RMPLed::GLS, brightness[11] > std::numeric_limits<float>::epsilon() ? 255 : 0);
+        product->setLedBrightness(RMPLed::SEL, brightness[12] > std::numeric_limits<float>::epsilon() ? 255 : 0);
+        product->setLedBrightness(RMPLed::NAV, brightness[13] > std::numeric_limits<float>::epsilon() ? 255 : 0);
     },
         this);
 

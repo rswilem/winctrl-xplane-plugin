@@ -4,6 +4,7 @@
 #include "product-rmp.h"
 #include "xplane-version.hpp"
 
+#include <cmath>
 #include <cstdio>
 #include <limits>
 
@@ -142,13 +143,16 @@ std::string TolissRMPProfile::formatFrequency(float megahertz) const {
         return "";
     }
 
-    // Both windows are six digits. VHF, VOR and ILS arrive as MHz above 100,
-    // HF below it; the backup nav course the window strings append is not
-    // available separately on these builds.
-    int decimals = megahertz >= 100.0f ? 3 : 4;
+    // The dataref carries the tuned frequency, the window shows the 8.33 kHz
+    // channel name, so 118.30613 reads as 118.305. Snapping to the nearest
+    // 5 kHz matches the window strings and is a no-op for VOR, ILS, ADF and HF.
+    float channel = std::round(megahertz / 0.005f) * 0.005f;
+
+    // Both windows are six digits. VHF, VOR and ILS arrive as MHz above 100, HF below it.
+    int decimals = channel >= 100.0f ? 3 : 4;
 
     char buffer[16];
-    snprintf(buffer, sizeof(buffer), "%.*f", decimals, megahertz);
+    snprintf(buffer, sizeof(buffer), "%.*f", decimals, channel);
 
     return buffer;
 }

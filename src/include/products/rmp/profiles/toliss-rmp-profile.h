@@ -9,9 +9,11 @@
 class TolissRMPProfile : public RMPAircraftProfile {
     private:
         std::vector<std::string> _displayDatarefs;
+        bool useFrequencyFallback = false;
         const char *rmpName() const;
         const char *sideName() const;
         const char *swapCommand() const;
+        std::string formatFrequency(float megahertz) const;
 
     public:
         TolissRMPProfile(ProductRMP *product);

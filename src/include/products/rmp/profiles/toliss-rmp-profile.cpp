@@ -46,11 +46,20 @@ const char *TolissRMPProfile::swapCommand() const {
 TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(product) {
     std::string rmpAvailRef = std::string("AirbusFBW/") + rmpName() + "Available";
 
+    // ToLiss builds predating the window strings (A321 v1.3.2 and earlier, XP11)
+    // only publish the raw frequencies, so fall back to formatting those.
+    useFrequencyFallback = !Dataref::getInstance()->exists((std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString").c_str());
+
     _displayDatarefs = {
         std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString",
         std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString",
         rmpAvailRef,
     };
+
+    if (useFrequencyFallback) {
+        _displayDatarefs.push_back(std::string("AirbusFBW/") + rmpName() + "Freq");
+        _displayDatarefs.push_back(std::string("AirbusFBW/") + rmpName() + "StbyFreq");
+    }
 
     Dataref::getInstance()->monitorExistingDataref<float>("AirbusFBW/PanelBrightnessLevel", [product, rmpAvailRef](float brightness) {
         bool available = Dataref::getInstance()->getCached<int>(rmpAvailRef.c_str()) != 0;
@@ -111,6 +120,37 @@ TolissRMPProfile::TolissRMPProfile(ProductRMP *product) : RMPAircraftProfile(pro
         updateDisplays();
     },
         this);
+
+    if (useFrequencyFallback) {
+        std::string activeFreqRef = std::string("AirbusFBW/") + rmpName() + "Freq";
+        std::string stbyFreqRef = std::string("AirbusFBW/") + rmpName() + "StbyFreq";
+
+        Dataref::getInstance()->monitorExistingDataref<float>(activeFreqRef.c_str(), [this](float freq) {
+            updateDisplays();
+        },
+            this);
+
+        Dataref::getInstance()->monitorExistingDataref<float>(stbyFreqRef.c_str(), [this](float freq) {
+            updateDisplays();
+        },
+            this);
+    }
+}
+
+std::string TolissRMPProfile::formatFrequency(float megahertz) const {
+    if (megahertz < std::numeric_limits<float>::epsilon()) {
+        return "";
+    }
+
+    // Both windows are six digits. VHF, VOR and ILS arrive as MHz above 100,
+    // HF below it; the backup nav course the window strings append is not
+    // available separately on these builds.
+    int decimals = megahertz >= 100.0f ? 3 : 4;
+
+    char buffer[16];
+    snprintf(buffer, sizeof(buffer), "%.*f", decimals, megahertz);
+
+    return buffer;
 }
 
 bool TolissRMPProfile::IsEligible() {
@@ -182,10 +222,20 @@ void TolissRMPProfile::updateDisplays() {
         return;
     }
 
-    std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
-    std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
-    std::string activeHz = Dataref::getInstance()->getCached<std::string>(activeRef.c_str());
-    std::string stbyHz = Dataref::getInstance()->getCached<std::string>(stbyRef.c_str());
+    std::string activeHz;
+    std::string stbyHz;
+
+    if (useFrequencyFallback) {
+        std::string activeFreqRef = std::string("AirbusFBW/") + rmpName() + "Freq";
+        std::string stbyFreqRef = std::string("AirbusFBW/") + rmpName() + "StbyFreq";
+        activeHz = formatFrequency(Dataref::getInstance()->getCached<float>(activeFreqRef.c_str()));
+        stbyHz = formatFrequency(Dataref::getInstance()->getCached<float>(stbyFreqRef.c_str()));
+    } else {
+        std::string activeRef = std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString";
+        std::string stbyRef = std::string("AirbusFBW/") + rmpName() + "/StandbyWindowString";
+        activeHz = Dataref::getInstance()->getCached<std::string>(activeRef.c_str());
+        stbyHz = Dataref::getInstance()->getCached<std::string>(stbyRef.c_str());
+    }
 
     product->setDisplayText(activeHz, stbyHz);
 }

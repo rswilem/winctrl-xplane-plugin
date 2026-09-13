@@ -57,6 +57,9 @@ class XPlaneBindings {
 
         void reload();
         bool isButtonBound(uint16_t vendorId, uint16_t productId, const std::string &serialNumber, uint16_t buttonIndex);
+        // Every button X-Plane has assigned on this product, merged across
+        // identical units: the menu reports per product family, not per unit.
+        std::vector<uint16_t> boundButtonsForProduct(uint16_t vendorId, uint16_t productId);
 };
 
 #endif

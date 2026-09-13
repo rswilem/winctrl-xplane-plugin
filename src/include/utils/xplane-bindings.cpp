@@ -3,7 +3,9 @@
 #include "config.h"
 #include "dataref.h"
 #include "logger.hpp"
+#include "plugins-menu.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstdio>
 #include <fstream>
@@ -107,6 +109,17 @@ bool XPlaneBindings::isButtonBound(uint16_t vendorId, uint16_t productId, const 
     return it->second.contains(buttonIndex);
 }
 
+std::vector<uint16_t> XPlaneBindings::boundButtonsForProduct(uint16_t vendorId, uint16_t productId) {
+    auto it = boundButtons.find(((uint32_t) vendorId << 16) | productId);
+    if (it == boundButtons.end()) {
+        return {};
+    }
+
+    std::vector<uint16_t> buttons(it->second.begin(), it->second.end());
+    std::sort(buttons.begin(), buttons.end());
+    return buttons;
+}
+
 void XPlaneBindings::loadSlotMapping() {
     slotDevices.clear();
 
@@ -205,4 +218,8 @@ void XPlaneBindings::rebuildFromAssignments(const std::vector<int> &assignments)
             Logger::getInstance()->debug("XPlaneBindings: device 0x%04X:0x%04X unit %s has %zu bound button(s)\n", id >> 16, id & 0xFFFF, serial.c_str(), buttons.size());
         }
     }
+
+    // The menu shows the per-device count, so it has to follow a mid-session
+    // rebind the moment the user leaves X-Plane's joystick settings.
+    PluginsMenu::getInstance()->refreshXPlaneBindingItems();
 }

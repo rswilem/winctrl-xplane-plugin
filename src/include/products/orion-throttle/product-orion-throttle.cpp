@@ -52,7 +52,7 @@ bool ProductOrionThrottle::connect() {
     menuItemId = PluginsMenu::getInstance()->addItem(
         classIdentifier(),
         std::vector<MenuItem>{
-            PluginsMenu::deviceEnabledItem(productId),
+            PluginsMenu::deviceEnabledItem(productId, false),
             MenuItem::Separator(),
             {.name = "Identify", .content = [this](int menuId) {
                  setVibration(128);

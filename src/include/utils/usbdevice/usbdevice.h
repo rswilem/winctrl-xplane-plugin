@@ -158,6 +158,12 @@ class USBDevice {
         static bool IsProductEnabled(uint16_t productId);
         static bool IsFamilyEnabled(const DeviceFamily &family);
         static void SetFamilyEnabled(const DeviceFamily &family, bool enabled);
+        // Whether the plugin steps aside for X-Plane's own joystick
+        // assignments on this family. On by default; the user can turn it off
+        // from the device menu when a forgotten assignment kills a button.
+        static bool FamilyUsesXPlaneBindings(const DeviceFamily &family);
+        static void SetFamilyUsesXPlaneBindings(const DeviceFamily &family, bool uses);
+        static bool ProductUsesXPlaneBindings(uint16_t productId);
 };
 
 #endif

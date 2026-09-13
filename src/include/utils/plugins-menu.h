@@ -17,6 +17,10 @@ struct MenuItem {
         std::string name;
         bool checked = false;
         MenuItemContent content;
+        // Set on the "Enabled" entry only. It marks the submenu as a device
+        // submenu, so PluginsMenu can append the X-Plane assignment items to
+        // it without every product repeating them.
+        uint16_t deviceProductId = 0;
 
         static MenuItem Separator() {
             MenuItem item;
@@ -42,11 +46,15 @@ class PluginsMenu {
         std::map<int, XPLMMenuID> itemToMenuId;                                // itemId -> menuId (for locating which menu an item belongs to)
         std::map<int, std::vector<int>> submenuChildren;                       // submenuId -> list of child itemIds
         std::vector<int> disabledDeviceItemIds;                                // stub submenus of switched-off devices
+        std::map<int, uint16_t> bindingCountItems;                             // itemId -> productId, label follows the live count
+        std::map<int, uint16_t> bindingToggleItems;                            // itemId -> productId, check follows the preference
 
         static void handleMenuAction(void *mRef, void *iRef);
         void ensureMenuExists();
         int addItemInternal(const std::string &name, const MenuItemContent &content, bool persistent, bool checked, int submenuId);
         void addMenuItemsToMenu(XPLMMenuID parentMenu, const std::vector<MenuItem> &items, bool persistent);
+        void appendXPlaneBindingItems(XPLMMenuID parentMenu, uint16_t productId, bool persistent, int parentSubmenuId);
+        int registerAppendedItem(XPLMMenuID parentMenu, const std::string &name, const std::function<void(int)> &callback, bool persistent, int parentSubmenuId, bool checked);
 
     public:
         static PluginsMenu *getInstance();
@@ -64,10 +72,18 @@ class PluginsMenu {
         // releases the device, so other software (MobiFlight, SimAppPro) can
         // drive it instead. Lives here rather than in USBDevice because the
         // stresstest build shares usbdevice.h but has no menu SDK.
-        static MenuItem deviceEnabledItem(uint16_t productId);
+        // respectsXPlaneBindings marks devices whose buttons the plugin acts
+        // on, and so can be overridden by an X-Plane joystick assignment. Pass
+        // false for a device the plugin drives no buttons on (the joysticks,
+        // NWS, Orion throttle): an assignment there is what the user wants,
+        // and the assignment items would only confuse.
+        static MenuItem deviceEnabledItem(uint16_t productId, bool respectsXPlaneBindings = true);
         // Rebuilds the stub submenus of switched-off devices. Those stubs are
         // the only way back: an unclaimed device never adds a submenu itself.
         void syncDisabledDeviceItems();
+        // Re-labels and re-checks the X-Plane assignment items of every device
+        // submenu. Called whenever the bindings are rebuilt.
+        void refreshXPlaneBindingItems();
 };
 
 #endif

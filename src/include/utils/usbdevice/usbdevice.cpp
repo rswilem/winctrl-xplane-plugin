@@ -70,6 +70,23 @@ void USBDevice::SetFamilyEnabled(const DeviceFamily &family, bool enabled) {
     loggedDisabledProducts.clear();
 }
 
+static std::string bindingPreferenceKey(const DeviceFamily &family) {
+    return std::string(family.preferenceKey) + "XPlaneBindings";
+}
+
+bool USBDevice::FamilyUsesXPlaneBindings(const DeviceFamily &family) {
+    return AppState::getInstance()->readPreference(bindingPreferenceKey(family), "used") != "ignored";
+}
+
+void USBDevice::SetFamilyUsesXPlaneBindings(const DeviceFamily &family, bool uses) {
+    AppState::getInstance()->writePreference(bindingPreferenceKey(family), uses ? "used" : "ignored");
+}
+
+bool USBDevice::ProductUsesXPlaneBindings(uint16_t productId) {
+    const DeviceFamily *family = FamilyForProduct(productId);
+    return family == nullptr || FamilyUsesXPlaneBindings(*family);
+}
+
 bool USBDevice::IsProductEnabled(uint16_t productId) {
     const DeviceFamily *family = FamilyForProduct(productId);
     return family == nullptr || IsFamilyEnabled(*family);
@@ -260,6 +277,10 @@ void USBDevice::didReceiveButton(uint16_t hardwareButtonIndex, bool pressed, uin
 }
 
 bool USBDevice::isButtonHandledByXPlane(uint16_t hardwareButtonIndex) {
+    if (!ProductUsesXPlaneBindings(productId)) {
+        return false;
+    }
+
     bool handled = XPlaneBindings::getInstance()->isButtonBound(vendorId, productId, serialNumber, hardwareButtonIndex);
     if (handled) {
         Logger::getInstance()->debug("Button %u on %s (0x%04X:0x%04X, serial %s) is overridden in X-Plane joystick settings; suppressing plugin action\n", hardwareButtonIndex, productName.c_str(), vendorId, productId, serialNumber.empty() ? "unknown" : serialNumber.c_str());

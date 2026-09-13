@@ -2,8 +2,11 @@
 
 #include "appstate.h"
 #include "config.h"
+#include "dataref.h"
+#include "logger.hpp"
 #include "usbcontroller.h"
 #include "usbdevice.h"
+#include "xplane-bindings.h"
 
 #include <XPLMPlanes.h>
 #include <XPLMUtilities.h>
@@ -95,6 +98,110 @@ void PluginsMenu::addMenuItemsToMenu(XPLMMenuID parentMenu, const std::vector<Me
             // Recursively add items to nested submenu
             addMenuItemsToMenu(nestedSubmenuId, nestedItems, persistent);
         }
+    }
+
+    // A submenu carrying the "Enabled" entry is a device submenu, so it ends
+    // with the X-Plane assignment items. They come last, after whatever the
+    // product added.
+    for (const auto &item : items) {
+        if (item.deviceProductId != 0) {
+            appendXPlaneBindingItems(parentMenu, item.deviceProductId, persistent, parentSubmenuId);
+            break;
+        }
+    }
+}
+
+int PluginsMenu::registerAppendedItem(XPLMMenuID parentMenu, const std::string &name, const std::function<void(int)> &callback, bool persistent, int parentSubmenuId, bool checked) {
+    int itemId = nextItemId++;
+    int itemIndex = XPLMAppendMenuItem(parentMenu, name.c_str(), (void *) (intptr_t) itemId, 0);
+    menuCallbacks[itemId] = std::make_pair(itemIndex, callback);
+    itemNames[itemId] = name;
+    persistentItems[itemId] = persistent;
+    itemToMenuId[itemId] = parentMenu;
+
+    if (parentSubmenuId != -1) {
+        submenuChildren[parentSubmenuId].push_back(itemId);
+    }
+
+    if (checked) {
+        XPLMCheckMenuItem(parentMenu, itemIndex, xplm_Menu_Checked);
+    }
+
+    return itemId;
+}
+
+// Counts are per product, merged across identical units: the preference behind
+// the toggle is per device family too, so a per-unit split would say more than
+// the switch below it can act on.
+static std::string xplaneBindingCountLabel(uint16_t productId) {
+    size_t count = XPlaneBindings::getInstance()->boundButtonsForProduct(WINCTRL_VENDOR_ID, productId).size();
+    if (count == 0) {
+        return "Button overrides: none";
+    }
+
+    return "Button overrides: " + std::to_string(count);
+}
+
+void PluginsMenu::appendXPlaneBindingItems(XPLMMenuID parentMenu, uint16_t productId, bool persistent, int parentSubmenuId) {
+    int separatorId = nextItemId++;
+    XPLMAppendMenuSeparator(parentMenu);
+    itemNames[separatorId] = "---";
+    persistentItems[separatorId] = persistent;
+    itemToMenuId[separatorId] = parentMenu;
+    if (parentSubmenuId != -1) {
+        submenuChildren[parentSubmenuId].push_back(separatorId);
+    }
+
+    // Clicking it opens X-Plane's settings, where the assignment has to be
+    // cleared, and writes the overridden buttons to the log: that list is what
+    // support needs, and the only place the user can see which button.
+    int countId = registerAppendedItem(parentMenu, xplaneBindingCountLabel(productId), [productId](int) {
+        Dataref::getInstance()->executeCommand("sim/operation/toggle_settings_window");
+
+        std::vector<uint16_t> buttons = XPlaneBindings::getInstance()->boundButtonsForProduct(WINCTRL_VENDOR_ID, productId);
+        if (buttons.empty()) {
+            Logger::getInstance()->info("Device 0x%04X has no buttons assigned in X-Plane joystick settings\n", productId);
+            return;
+        }
+
+        std::string list;
+        for (uint16_t button : buttons) {
+            list += (list.empty() ? "" : ", ") + std::to_string(button);
+        }
+        Logger::getInstance()->info("Device 0x%04X: X-Plane joystick settings assign button(s) %s; clear them there, or switch off \"Use X-Plane joystick assignments\" in the " FRIENDLY_NAME " menu\n", productId, list.c_str());
+    },
+        persistent, parentSubmenuId, false);
+    bindingCountItems[countId] = productId;
+
+    int toggleId = registerAppendedItem(parentMenu, "Use X-Plane joystick assignments", [productId](int itemId) {
+        const DeviceFamily *family = USBDevice::FamilyForProduct(productId);
+        if (family == nullptr) {
+            return;
+        }
+
+        bool uses = !USBDevice::FamilyUsesXPlaneBindings(*family);
+        USBDevice::SetFamilyUsesXPlaneBindings(*family, uses);
+        PluginsMenu::getInstance()->refreshXPlaneBindingItems();
+    },
+        persistent, parentSubmenuId, USBDevice::ProductUsesXPlaneBindings(productId));
+    bindingToggleItems[toggleId] = productId;
+}
+
+void PluginsMenu::refreshXPlaneBindingItems() {
+    for (const auto &[itemId, productId] : bindingCountItems) {
+        auto callbackIt = menuCallbacks.find(itemId);
+        auto menuIt = itemToMenuId.find(itemId);
+        if (callbackIt == menuCallbacks.end() || menuIt == itemToMenuId.end()) {
+            continue;
+        }
+
+        std::string label = xplaneBindingCountLabel(productId);
+        itemNames[itemId] = label;
+        XPLMSetMenuItemName(menuIt->second, callbackIt->second.first, label.c_str(), 0);
+    }
+
+    for (const auto &[itemId, productId] : bindingToggleItems) {
+        setItemChecked(itemId, USBDevice::ProductUsesXPlaneBindings(productId));
     }
 }
 
@@ -201,6 +308,8 @@ void PluginsMenu::removeItem(int itemId) {
                     itemToMenuId.erase(childId);
                     submenus.erase(childId);
                     submenuChildren.erase(childId);
+                    bindingCountItems.erase(childId);
+                    bindingToggleItems.erase(childId);
                 }
                 submenuChildren.erase(childrenIt);
             }
@@ -214,6 +323,8 @@ void PluginsMenu::removeItem(int itemId) {
         itemNames.erase(itemId);
         persistentItems.erase(itemId);
         itemToMenuId.erase(itemId);
+        bindingCountItems.erase(itemId);
+        bindingToggleItems.erase(itemId);
 
         // Update stored indices for items in the same menu after the removed one
         for (auto &entry : menuCallbacks) {
@@ -355,6 +466,8 @@ void PluginsMenu::clearAllItems() {
         submenus.clear();
         itemToMenuId.clear();
         submenuChildren.clear();
+        bindingCountItems.clear();
+        bindingToggleItems.clear();
         // The stubs are gone with everything else; their ids must not be reused
         // for removal or they would take a freshly added item down instead.
         disabledDeviceItemIds.clear();
@@ -371,7 +484,7 @@ void PluginsMenu::clearAllItems() {
     }
 }
 
-MenuItem PluginsMenu::deviceEnabledItem(uint16_t productId) {
+MenuItem PluginsMenu::deviceEnabledItem(uint16_t productId, bool respectsXPlaneBindings) {
     return {.name = "Enabled", .checked = true, .content = [productId](int itemId) {
                 const DeviceFamily *family = USBDevice::FamilyForProduct(productId);
                 if (family == nullptr) {
@@ -383,7 +496,8 @@ MenuItem PluginsMenu::deviceEnabledItem(uint16_t productId) {
                 // stub added right after.
                 USBController::getInstance()->releaseDisabledDevices();
                 PluginsMenu::getInstance()->syncDisabledDeviceItems();
-            }};
+            },
+        .deviceProductId = productId};
 }
 
 void PluginsMenu::syncDisabledDeviceItems() {
@@ -427,6 +541,8 @@ void PluginsMenu::teardown() {
     submenus.clear();
     itemToMenuId.clear();
     submenuChildren.clear();
+    bindingCountItems.clear();
+    bindingToggleItems.clear();
     disabledDeviceItemIds.clear();
     nextItemId = 0;
 }

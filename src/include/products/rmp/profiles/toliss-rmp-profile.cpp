@@ -144,9 +144,13 @@ std::string TolissRMPProfile::formatFrequency(float megahertz) const {
     }
 
     // The dataref carries the tuned frequency, the window shows the 8.33 kHz
-    // channel name, so 118.30613 reads as 118.305. Snapping to the nearest
-    // 5 kHz matches the window strings and is a no-op for VOR, ILS, ADF and HF.
+    // channel name: three channels per 25 kHz block, labelled .005/.010/.015
+    // above the block base, so 118.00833 reads as 118.010.
     float channel = std::round(megahertz / 0.005f) * 0.005f;
+    if (megahertz >= 118.0f && megahertz < 137.0f) {
+        long step = std::lround((megahertz - 118.0f) / (0.025 / 3.0));
+        channel = 118.0 + (step / 3) * 0.025 + (step % 3 + 1) * 0.005;
+    }
 
     // Both windows are six digits. VHF, VOR and ILS arrive as MHz above 100, HF below it.
     int decimals = channel >= 100.0f ? 3 : 4;

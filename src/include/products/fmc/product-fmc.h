@@ -15,6 +15,9 @@ class ProductFMC : public USBDevice {
         std::vector<std::vector<char>> page;
         int lastUpdateCycle = 0;
         int displayUpdateFrameCounter = 0;
+        // Repaints spent waiting for the display datarefs to re-enter the cache.
+        static constexpr int kMaxUncachedRepaints = 300;
+        int uncachedRepaints = 0;
         std::set<int> pressedButtonIndices;
         uint64_t lastButtonStateLo = 0;
         uint32_t lastButtonStateHi = 0;

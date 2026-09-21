@@ -37,6 +37,7 @@ ProductFMC::ProductFMC(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t pr
     profile = nullptr;
     page = std::vector<std::vector<char>>(ProductFMC::PageLines, std::vector<char>(ProductFMC::PageBytesPerLine, ' '));
     lastUpdateCycle = 0;
+    uncachedRepaints = 0;
     lastButtonStateLo = 0;
     lastButtonStateHi = 0;
     menuItemId = -1;
@@ -408,11 +409,30 @@ void ProductFMC::updatePage(bool forceUpdate) {
 
     datarefManager->pollDisplayDatarefs(profile->displayDatarefs());
 
+    // A ref with no cache entry is never polled, so it can never report a change.
+    // That is the state after clearCache() on an aircraft switch, until the
+    // profile's own getCached() calls put the entries back, and without a repaint
+    // to run those calls the page stays blank forever. Keep repainting until they
+    // are all there, bounded so a profile that lists a ref it never reads cannot
+    // spin on it.
+    bool hasUncachedDataref = false;
+
     for (const std::string &dataref : profile->displayDatarefs()) {
-        if (!lastUpdateCycle || datarefManager->getCachedLastUpdate(dataref.c_str()) > lastUpdateCycle) {
-            shouldUpdate = true;
-            break;
+        int lastUpdate = datarefManager->getCachedLastUpdate(dataref.c_str());
+        if (!lastUpdate) {
+            hasUncachedDataref = true;
         }
+
+        if (!lastUpdateCycle || lastUpdate > lastUpdateCycle) {
+            shouldUpdate = true;
+        }
+    }
+
+    if (hasUncachedDataref && uncachedRepaints < kMaxUncachedRepaints) {
+        uncachedRepaints++;
+        shouldUpdate = true;
+    } else if (!hasUncachedDataref) {
+        uncachedRepaints = 0;
     }
 
     if (shouldUpdate) {
@@ -520,6 +540,10 @@ void ProductFMC::clearDisplay() {
     for (int i = 0; i < 16; ++i) {
         writeData(blankLine);
     }
+
+    // The device no longer shows what `page` holds, so the next updatePage()
+    // must repaint even when no display dataref changed.
+    lastUpdateCycle = 0;
 }
 
 void ProductFMC::setFont(FontVariant preferredVariant, bool force) {
@@ -586,6 +610,7 @@ void ProductFMC::setFont(FontVariant preferredVariant, bool force) {
     setScreenPosition(layout.x, layout.y);
 
     uploadedFontKey = fontKeyFor(fontId);
+    lastUpdateCycle = 0;
     Logger::getInstance()->info("Uploaded font '%s' (%zu packets)\n", uploadedFontKey.c_str(), font.size());
 }
 
@@ -613,6 +638,7 @@ void ProductFMC::setScreenLayout(FontVariant variant, unsigned char characterHei
     // Record the geometry that is actually on the device, not the hardware default,
     // so a following setFont() for the hardware layout is not skipped as a duplicate.
     uploadedFontKey = "variant:" + std::to_string(static_cast<int>(variant)) + "|" + std::to_string(characterWidth) + "x" + std::to_string(characterHeight);
+    lastUpdateCycle = 0;
 }
 
 void ProductFMC::setScreenPosition(unsigned char x, unsigned char y) {

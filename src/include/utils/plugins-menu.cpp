@@ -497,7 +497,7 @@ MenuItem PluginsMenu::deviceEnabledItem(uint16_t productId, bool respectsXPlaneB
                 USBController::getInstance()->releaseDisabledDevices();
                 PluginsMenu::getInstance()->syncDisabledDeviceItems();
             },
-        .deviceProductId = productId};
+        .deviceProductId = respectsXPlaneBindings ? productId : (uint16_t) 0};
 }
 
 void PluginsMenu::syncDisabledDeviceItems() {

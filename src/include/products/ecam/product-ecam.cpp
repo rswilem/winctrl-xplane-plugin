@@ -110,17 +110,22 @@ void ProductECAM::didReceiveData(int reportId, uint8_t *report, int reportLength
         return;
     }
 
-    if (reportId != 1 || reportLength < 13) {
+    if (reportId != 1 || reportLength < 2) {
         return;
     }
 
+    // The button map holds 96 bits, but the device decides how many data bytes it
+    // actually sends: the ECAM's report is 12 bytes (1 report ID + 11 data bytes).
+    // Parse what arrived instead of demanding the widest report the map can hold.
+    const int dataBytes = std::min(reportLength - 1, 12);
+
     uint64_t buttonsLo = 0;
     uint32_t buttonsHi = 0;
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < dataBytes && i < 8; ++i) {
         buttonsLo |= ((uint64_t) report[i + 1]) << (8 * i);
     }
-    for (int i = 0; i < 4; ++i) {
-        buttonsHi |= ((uint32_t) report[i + 9]) << (8 * i);
+    for (int i = 8; i < dataBytes; ++i) {
+        buttonsHi |= ((uint32_t) report[i + 1]) << (8 * (i - 8));
     }
 
     if (buttonsLo == lastButtonStateLo && buttonsHi == lastButtonStateHi) {
@@ -130,7 +135,7 @@ void ProductECAM::didReceiveData(int reportId, uint8_t *report, int reportLength
     lastButtonStateLo = buttonsLo;
     lastButtonStateHi = buttonsHi;
 
-    for (int i = 0; i < 96; ++i) {
+    for (int i = 0; i < dataBytes * 8; ++i) {
         bool pressed;
 
         if (i < 64) {

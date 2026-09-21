@@ -188,16 +188,60 @@ const std::map<char, FMCTextColor> &FlightFactor777FMCProfile::colorMap() const 
 
 void FlightFactor777FMCProfile::mapCharacter(std::vector<uint8_t> *buffer, uint8_t character, bool isFontSmall) {
     switch (character) {
+        case 0x1C: // Degrees (Flight Factor internal code)
+        case '*':
+        case '`':
+            buffer->insert(buffer->end(), FMCSpecialCharacter::DEGREES.begin(), FMCSpecialCharacter::DEGREES.end());
+            break;
+
+        case 0x1D: // Outlined square (Flight Factor internal code)
         case '#':
             buffer->insert(buffer->end(), FMCSpecialCharacter::OUTLINED_SQUARE.begin(), FMCSpecialCharacter::OUTLINED_SQUARE.end());
             break;
 
-        case '*':
-            buffer->insert(buffer->end(), FMCSpecialCharacter::DEGREES.begin(), FMCSpecialCharacter::DEGREES.end());
+        case 0x1E: // Down arrow (Flight Factor internal code)
+        case 25:
+            buffer->insert(buffer->end(), FMCSpecialCharacter::ARROW_DOWN.begin(), FMCSpecialCharacter::ARROW_DOWN.end());
+            break;
+
+        case 0x1F: // Right arrow (Flight Factor internal code)
+        case 26:
+            buffer->insert(buffer->end(), FMCSpecialCharacter::ARROW_RIGHT.begin(), FMCSpecialCharacter::ARROW_RIGHT.end());
+            break;
+
+        case 0x5E: // Up arrow (Flight Factor internal code)
+        case 24:
+            buffer->insert(buffer->end(), FMCSpecialCharacter::ARROW_UP.begin(), FMCSpecialCharacter::ARROW_UP.end());
+            break;
+
+        case 0x5F: // Left arrow (Flight Factor internal code)
+        case 27:
+            buffer->insert(buffer->end(), FMCSpecialCharacter::ARROW_LEFT.begin(), FMCSpecialCharacter::ARROW_LEFT.end());
+            break;
+
+        case '<':
+            if (isFontSmall) {
+                buffer->insert(buffer->end(), FMCSpecialCharacter::ARROW_LEFT.begin(), FMCSpecialCharacter::ARROW_LEFT.end());
+            } else {
+                buffer->push_back(character);
+            }
+            break;
+
+        case '>':
+            if (isFontSmall) {
+                buffer->insert(buffer->end(), FMCSpecialCharacter::ARROW_RIGHT.begin(), FMCSpecialCharacter::ARROW_RIGHT.end());
+            } else {
+                buffer->push_back(character);
+            }
             break;
 
         default:
-            buffer->push_back(character);
+            // Replace unrecognized or control characters with spaces to avoid corrupting device output
+            if (character < 32 || character > 126) {
+                buffer->push_back(' ');
+            } else {
+                buffer->push_back(character);
+            }
             break;
     }
 }

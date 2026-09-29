@@ -7,6 +7,7 @@
 
 class TolissTCASProfile : public TCASAircraftProfile {
     private:
+        std::string squawkCode();
         bool isAnnunTest();
         std::unordered_map<uint16_t, TCASButtonDef> buttons;
 

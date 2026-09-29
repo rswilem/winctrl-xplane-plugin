@@ -95,7 +95,10 @@ bool TolissTCASProfile::IsEligible() {
 
 const std::vector<std::string> &TolissTCASProfile::displayDatarefs() const {
     static const std::vector<std::string> datarefs = {
-        "AirbusFBW/XPDRString",
+        "AirbusFBW/XPDR1",
+        "AirbusFBW/XPDR2",
+        "AirbusFBW/XPDR3",
+        "AirbusFBW/XPDR4",
         "AirbusFBW/AnnunMode",
         "sim/cockpit/electrical/avionics_on",
     };
@@ -129,8 +132,24 @@ void TolissTCASProfile::updateDisplays() {
         return;
     }
 
-    std::string squawkCode = isAnnunTest() ? "8888" : Dataref::getInstance()->getCached<std::string>("AirbusFBW/XPDRString");
-    product->setLCDText(squawkCode);
+    product->setLCDText(isAnnunTest() ? "8888" : squawkCode());
+}
+
+// ToLiss publishes one dataref per digit, least significant first, so 5230 reads
+// XPDR4..XPDR1. A position not yet keyed in sits outside 0-9 and stays blank, the
+// way the panel shows a partial entry.
+std::string TolissTCASProfile::squawkCode() {
+    auto datarefManager = Dataref::getInstance();
+    std::string code;
+
+    for (int digit = 4; digit >= 1; --digit) {
+        const std::string name = "AirbusFBW/XPDR" + std::to_string(digit);
+        const int value = datarefManager->getCached<int>(name.c_str());
+
+        code += (value >= 0 && value <= 9) ? static_cast<char>('0' + value) : ' ';
+    }
+
+    return code;
 }
 
 bool TolissTCASProfile::isAnnunTest() {

@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "dataref.h"
+#include "xplane-version.hpp"
 #include "product-fmc.h"
 
 #include <algorithm>
@@ -14,7 +15,7 @@ TolissFMCProfile::TolissFMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
     product->setAllLedsEnabled(false);
     product->setFont(FontVariant::FontAirbus);
 
-    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/MCDUIntegBrightness_Raw", [product](const std::vector<float> &brightness) {
+    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>(ifXPlane11("AirbusFBW/MCDUIntegBrightness", "AirbusFBW/MCDUIntegBrightness_Raw"), [product](const std::vector<float> &brightness) {
         if (brightness.size() < 2) {
             return;
         }
@@ -57,13 +58,13 @@ TolissFMCProfile::TolissFMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/DUBrightness");
-        Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/MCDUIntegBrightness_Raw");
+        Dataref::getInstance()->executeChangedCallbacksForDataref(ifXPlane11("AirbusFBW/MCDUIntegBrightness", "AirbusFBW/MCDUIntegBrightness_Raw"));
     },
         this);
 
     Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit2/radios/actuators/com1_power", [product](bool enabled) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/DUBrightness");
-        Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/MCDUIntegBrightness_Raw");
+        Dataref::getInstance()->executeChangedCallbacksForDataref(ifXPlane11("AirbusFBW/MCDUIntegBrightness", "AirbusFBW/MCDUIntegBrightness_Raw"));
     },
         this);
 

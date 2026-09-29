@@ -3,6 +3,7 @@
 #include "appstate.h"
 #include "dataref.h"
 #include "product-fcu-efis.h"
+#include "xplane-version.hpp"
 
 #include <algorithm>
 #include <bitset>
@@ -48,7 +49,7 @@ TolissFCUEfisProfile::TolissFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAir
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/ATHRmode");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/LOCilluminated");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/APPRilluminated");
-        Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/OHPLightsATA31_Raw");
+        Dataref::getInstance()->executeChangedCallbacksForDataref(ifXPlane11("AirbusFBW/OHPLightsATA31", "AirbusFBW/OHPLightsATA31_Raw"));
 
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/FD2Engage");
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/ILSonFO");
@@ -98,7 +99,7 @@ TolissFCUEfisProfile::TolissFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAir
     },
         this);
 
-    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/OHPLightsATA31_Raw", [this, product](const std::vector<float> &panelLights) {
+    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>(ifXPlane11("AirbusFBW/OHPLightsATA31", "AirbusFBW/OHPLightsATA31_Raw"), [this, product](const std::vector<float> &panelLights) {
         if (panelLights.size() < 52) {
             return;
         }

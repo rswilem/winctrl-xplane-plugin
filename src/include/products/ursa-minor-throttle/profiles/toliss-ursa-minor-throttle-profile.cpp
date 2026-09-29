@@ -2,6 +2,7 @@
 
 #include "appstate.h"
 #include "dataref.h"
+#include "xplane-version.hpp"
 #include "product-ursa-minor-throttle.h"
 
 #include <algorithm>
@@ -31,13 +32,13 @@ TolissUrsaMinorThrottleProfile::TolissUrsaMinorThrottleProfile(ProductUrsaMinorT
         this);
 
     Dataref::getInstance()->monitorExistingDataref<int>("AirbusFBW/AnnunMode", [this, product](int annunMode) {
-        Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/OHPLightsATA70_Raw");
+        Dataref::getInstance()->executeChangedCallbacksForDataref(ifXPlane11("AirbusFBW/OHPLightsATA70", "AirbusFBW/OHPLightsATA70_Raw"));
 
         updateDisplays();
     },
         this);
 
-    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/OHPLightsATA70_Raw", [this, product](const std::vector<float> &panelLights) {
+    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>(ifXPlane11("AirbusFBW/OHPLightsATA70", "AirbusFBW/OHPLightsATA70_Raw"), [this, product](const std::vector<float> &panelLights) {
         if (panelLights.size() < 13) {
             return;
         }

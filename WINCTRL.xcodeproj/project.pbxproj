@@ -126,6 +126,8 @@
 		F64BE3EE2E1BF625003C1B73 /* usbcontroller_lin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F64BE3E32E1BF625003C1B73 /* usbcontroller_lin.cpp */; };
 		F65361762FA244A90039C2C9 /* power-scheme.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65361752FA244A90039C2C9 /* power-scheme.cpp */; };
 		F65361772FA244A90039C2C9 /* power-scheme.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65361752FA244A90039C2C9 /* power-scheme.cpp */; };
+		F6FCU3200000000000000003 /* ffa320-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6FCU3200000000000000002 /* ffa320-fcu-efis-profile.cpp */; };
+		F6FCU3200000000000000004 /* ffa320-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6FCU3200000000000000002 /* ffa320-fcu-efis-profile.cpp */; };
 		F662AA0A304C332300FAC102 /* ffa320-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F662AA09304C332300FAC102 /* ffa320-fmc-profile.cpp */; };
 		F662AA0B304C332300FAC102 /* ffa320-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F662AA09304C332300FAC102 /* ffa320-fmc-profile.cpp */; };
 		F662AA0E304C333C00FAC102 /* ffsharedvalues.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F662AA0D304C333C00FAC102 /* ffsharedvalues.cpp */; };
@@ -495,6 +497,8 @@
 		F6B520E72FC7676F00A04562 /* xcrafts-erj-ursa-minor-throttle-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-erj-ursa-minor-throttle-profile.cpp"; sourceTree = "<group>"; };
 		F6B79CFC2F4A5BFD00517E6A /* logger.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = logger.hpp; sourceTree = "<group>"; };
 		F6BB75712E32634700C2B21F /* toliss-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "toliss-fcu-efis-profile.h"; sourceTree = "<group>"; };
+		F6FCU3200000000000000001 /* ffa320-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ffa320-fcu-efis-profile.h"; sourceTree = "<group>"; };
+		F6FCU3200000000000000002 /* ffa320-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "ffa320-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
 		F6BB75722E32634700C2B21F /* toliss-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "toliss-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
 		F6BB75742E32634700C2B21F /* fcu-efis-aircraft-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "fcu-efis-aircraft-profile.h"; sourceTree = "<group>"; };
 		F6BB75752E32634700C2B21F /* product-fcu-efis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "product-fcu-efis.h"; sourceTree = "<group>"; };
@@ -937,6 +941,8 @@
 				F6748A002F0000010000A001 /* fps748-fcu-efis-profile.cpp */,
 				461E547726D6D16D7587F797 /* sparky744-fcu-efis-profile.h */,
 				47B7241413C5ED0B0A9A0EE9 /* sparky744-fcu-efis-profile.cpp */,
+				F6FCU3200000000000000001 /* ffa320-fcu-efis-profile.h */,
+				F6FCU3200000000000000002 /* ffa320-fcu-efis-profile.cpp */,
 				F6BB75712E32634700C2B21F /* toliss-fcu-efis-profile.h */,
 				F6BB75722E32634700C2B21F /* toliss-fcu-efis-profile.cpp */,
 				F67FE8122E895BAC00C4243C /* laminar-a333-fcu-efis-profile.h */,
@@ -1240,6 +1246,7 @@
 				F6A149402E4F04AE00FB8395 /* ixeg733-fmc-profile.cpp in Sources */,
 				F60ABADE2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.cpp in Sources */,
 				F6BB757A2E32634700C2B21F /* product-fcu-efis.cpp in Sources */,
+				F6FCU3200000000000000004 /* ffa320-fcu-efis-profile.cpp in Sources */,
 				F6BB757B2E32634700C2B21F /* toliss-fcu-efis-profile.cpp in Sources */,
 				F672B7233017AA8A00A7D1BC /* uns1-decode.cpp in Sources */,
 				F68164E62E3161FD00319E9D /* usbcontroller.cpp in Sources */,
@@ -1385,6 +1392,7 @@
 				F60ABAE92FBE134D001C91EF /* jar330-fmc-profile.cpp in Sources */,
 				F6B520E82FC7676F00A04562 /* xcrafts-erj-ursa-minor-throttle-profile.cpp in Sources */,
 				F6CC2B4F2F0E5F4B00C0A4D8 /* ff777-pdc-profile.cpp in Sources */,
+				F6FCU3200000000000000003 /* ffa320-fcu-efis-profile.cpp in Sources */,
 				F6BB75792E32634700C2B21F /* toliss-fcu-efis-profile.cpp in Sources */,
 				F63BC99A2E30D73E00ACBBB0 /* appstate.cpp in Sources */,
 				F60ABAD92FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.cpp in Sources */,

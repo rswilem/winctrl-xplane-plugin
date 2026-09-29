@@ -11,6 +11,7 @@
 #include "profiles/cis-seneca-fcu-efis-profile.h"
 #include "profiles/cl650-fcu-efis-profile.h"
 #include "profiles/ff350-fcu-efis-profile.h"
+#include "profiles/ffa320-fcu-efis-profile.h"
 #include "profiles/ff767-fcu-efis-profile.h"
 #include "profiles/ff777-fcu-efis-profile.h"
 #include "profiles/fps748-fcu-efis-profile.h"
@@ -70,6 +71,9 @@ void ProductFCUEfis::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (FF350FCUEfisProfile::IsEligible()) {
         profile = new FF350FCUEfisProfile(this);
+
+    } else if (FFA320FCUEfisProfile::IsEligible()) {
+        profile = new FFA320FCUEfisProfile(this);
         profileReady = true;
     } else if (XCraftsEjetsFCUEfisProfile::IsEligible()) {
         profile = new XCraftsEjetsFCUEfisProfile(this);
@@ -552,6 +556,13 @@ void ProductFCUEfis::setLedBrightness(FCUEfisLed led, uint8_t brightness) {
 
     int ledValue = static_cast<int>(led);
 
+    // Profiles that mirror a live value re-assert every lamp each frame, which
+    // would put dozens of identical packets a frame ahead of the display writes.
+    auto last = lastLedBrightness.find(ledValue);
+    if (last != lastLedBrightness.end() && last->second == brightness) {
+        return;
+    }
+
     if (ledValue < 100) {
         // FCU LEDs
         data = {0x02, ProductFCUEfis::FCUIdentifierByte, 0xBB, 0x00, 0x00, 0x03, 0x49, static_cast<uint8_t>(ledValue), brightness, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -563,8 +574,8 @@ void ProductFCUEfis::setLedBrightness(FCUEfisLed led, uint8_t brightness) {
         data = {0x02, ProductFCUEfis::EfisLeftIdentifierByte, 0xBF, 0x00, 0x00, 0x03, 0x49, static_cast<uint8_t>(ledValue - 200), brightness, 0x00, 0x00, 0x00, 0x00, 0x00};
     }
 
-    if (!data.empty()) {
-        writeData(data);
+    if (!data.empty() && writeData(data)) {
+        lastLedBrightness[ledValue] = brightness;
     }
 }
 

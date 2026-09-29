@@ -211,7 +211,17 @@ struct FCUDisplayData {
                    fpaMode == other.fpaMode &&
                    displayEnabled == other.displayEnabled &&
                    displayTest == other.displayTest &&
-                   displayEnabledWindowsFlag == other.displayEnabledWindowsFlag;
+                   displayEnabledWindowsFlag == other.displayEnabledWindowsFlag &&
+                   altIndication == other.altIndication &&
+                   vsHorizontalLine == other.vsHorizontalLine &&
+                   vsVerticalLine == other.vsVerticalLine &&
+                   lvlChange == other.lvlChange &&
+                   lvlChangeLeft == other.lvlChangeLeft &&
+                   lvlChangeRight == other.lvlChangeRight &&
+                   vsIndication == other.vsIndication &&
+                   fpaIndication == other.fpaIndication &&
+                   fpaComma == other.fpaComma &&
+                   vsSign == other.vsSign;
         }
 };
 

@@ -17,6 +17,7 @@ class ProductFCUEfis : public USBDevice {
         int displayUpdateFrameCounter = 0;
         std::set<int> pressedButtonIndices;
         std::map<std::string, int> selectorPositions;
+        std::map<int, uint8_t> lastLedBrightness;
 
         uint64_t lastButtonStateLo = 0;
         uint32_t lastButtonStateHi = 0;

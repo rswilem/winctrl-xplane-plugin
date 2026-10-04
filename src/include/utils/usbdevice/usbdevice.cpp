@@ -16,6 +16,7 @@
 #include "xplane-bindings.h"
 
 #include <algorithm>
+#include <map>
 #include <set>
 #include <XPLMUtilities.h>
 
@@ -74,12 +75,26 @@ static std::string bindingPreferenceKey(const DeviceFamily &family) {
     return std::string(family.preferenceKey) + "XPlaneBindings";
 }
 
+// readPreference() parses the ini from disk, and this is asked for every
+// button index on every input state change.
+static std::map<std::string, bool> usesXPlaneBindingsCache;
+
 bool USBDevice::FamilyUsesXPlaneBindings(const DeviceFamily &family) {
-    return AppState::getInstance()->readPreference(bindingPreferenceKey(family), "used") != "ignored";
+    std::string key = bindingPreferenceKey(family);
+    auto it = usesXPlaneBindingsCache.find(key);
+    if (it != usesXPlaneBindingsCache.end()) {
+        return it->second;
+    }
+
+    bool uses = AppState::getInstance()->readPreference(key, "used") != "ignored";
+    usesXPlaneBindingsCache[key] = uses;
+    return uses;
 }
 
 void USBDevice::SetFamilyUsesXPlaneBindings(const DeviceFamily &family, bool uses) {
-    AppState::getInstance()->writePreference(bindingPreferenceKey(family), uses ? "used" : "ignored");
+    std::string key = bindingPreferenceKey(family);
+    AppState::getInstance()->writePreference(key, uses ? "used" : "ignored");
+    usesXPlaneBindingsCache[key] = uses;
 }
 
 bool USBDevice::ProductUsesXPlaneBindings(uint16_t productId) {

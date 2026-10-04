@@ -95,6 +95,7 @@ bool TolissTCASProfile::IsEligible() {
 
 const std::vector<std::string> &TolissTCASProfile::displayDatarefs() const {
     static const std::vector<std::string> datarefs = {
+        "AirbusFBW/XPDRString",
         "AirbusFBW/XPDR1",
         "AirbusFBW/XPDR2",
         "AirbusFBW/XPDR3",
@@ -135,11 +136,16 @@ void TolissTCASProfile::updateDisplays() {
     product->setLCDText(isAnnunTest() ? "8888" : squawkCode());
 }
 
-// ToLiss publishes one dataref per digit, least significant first, so 5230 reads
-// XPDR4..XPDR1. A position not yet keyed in sits outside 0-9 and stays blank, the
-// way the panel shows a partial entry.
+// Builds that publish XPDRString keep using it, as 0.0.48 did. The others publish
+// one dataref per digit, least significant first, so 5230 reads XPDR4..XPDR1. A
+// position not yet keyed in sits outside 0-9 and stays blank, the way the panel
+// shows a partial entry.
 std::string TolissTCASProfile::squawkCode() {
     auto datarefManager = Dataref::getInstance();
+    if (datarefManager->exists("AirbusFBW/XPDRString")) {
+        return datarefManager->getCached<std::string>("AirbusFBW/XPDRString");
+    }
+
     std::string code;
 
     for (int digit = 4; digit >= 1; --digit) {

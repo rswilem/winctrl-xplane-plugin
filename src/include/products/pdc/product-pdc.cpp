@@ -240,12 +240,15 @@ void ProductPDC::didReceiveData(int reportId, uint8_t *report, int reportLength)
         return;
     }
 
+    // The 3N has 64 buttons; bytes 9-12 are its X/Y axes, which jitter.
+    int buttonCount = isHardware3N() ? 64 : 96;
+
     uint64_t buttonsLo = 0;
     uint32_t buttonsHi = 0;
     for (int i = 0; i < 8; ++i) {
         buttonsLo |= ((uint64_t) report[i + 1]) << (8 * i);
     }
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4 && buttonCount > 64; ++i) {
         buttonsHi |= ((uint32_t) report[i + 9]) << (8 * i);
     }
 
@@ -256,7 +259,7 @@ void ProductPDC::didReceiveData(int reportId, uint8_t *report, int reportLength)
     lastButtonStateLo = buttonsLo;
     lastButtonStateHi = buttonsHi;
 
-    for (int i = 0; i < 96; ++i) {
+    for (int i = 0; i < buttonCount; ++i) {
         bool pressed;
 
         if (i < 64) {

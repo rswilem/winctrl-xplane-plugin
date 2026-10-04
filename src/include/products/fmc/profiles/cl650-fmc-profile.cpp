@@ -181,7 +181,6 @@ const std::vector<FMCButtonDef> &CL650FMCProfile::buttonDefs() const {
             {FMCKey::MCDU_EMPTY_BOTTOM_LEFT, ""},
             {FMCKey::MCDU_FUEL_PRED, ""},
             {FMCKey::MCDU_ATC_COMM, ""},
-            {FMCKey::MCDU_AIRPORT, ""},
             {FMCKey::PFP_HOLD, ""},
             {FMCKey::PFP_FIX, ""},
             {FMCKey::PFP3_CLB, ""},

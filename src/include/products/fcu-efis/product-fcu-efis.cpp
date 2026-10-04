@@ -71,7 +71,7 @@ void ProductFCUEfis::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (FF350FCUEfisProfile::IsEligible()) {
         profile = new FF350FCUEfisProfile(this);
-
+        profileReady = true;
     } else if (FFA320FCUEfisProfile::IsEligible()) {
         profile = new FFA320FCUEfisProfile(this);
         profileReady = true;

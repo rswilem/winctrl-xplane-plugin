@@ -41,9 +41,15 @@ bool FF777PDCProfile::IsEligible() {
 }
 
 const std::unordered_map<PDCButtonIndex3N3M, PDCButtonDef> &FF777PDCProfile::buttonDefs() const {
-    const std::string pilotSide = product->isCaptainSide() ? "cpt" : "fo";
     static std::unordered_map<PDCDeviceVariant, std::unordered_map<PDCButtonIndex3N3M, PDCButtonDef>> cache;
 
+    // try_emplace would build the whole table before the lookup; this runs per button index.
+    auto it = cache.find(product->deviceVariant);
+    if (it != cache.end()) {
+        return it->second;
+    }
+
+    const std::string pilotSide = product->isCaptainSide() ? "cpt" : "fo";
     return cache.try_emplace(product->deviceVariant,
                     std::unordered_map<PDCButtonIndex3N3M, PDCButtonDef>{
                         {{0, 0}, {"FPV", "1-sim/command/" + pilotSide + "HsiFpvButton_button"}},

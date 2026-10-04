@@ -229,6 +229,11 @@ void TolissRMPProfile::updateDisplays() {
     std::string activeHz;
     std::string stbyHz;
 
+    // The window strings can register after this profile was built.
+    if (useFrequencyFallback && Dataref::getInstance()->exists((std::string("AirbusFBW/") + rmpName() + "/ActiveWindowString").c_str())) {
+        useFrequencyFallback = false;
+    }
+
     if (useFrequencyFallback) {
         std::string activeFreqRef = std::string("AirbusFBW/") + rmpName() + "Freq";
         std::string stbyFreqRef = std::string("AirbusFBW/") + rmpName() + "StbyFreq";

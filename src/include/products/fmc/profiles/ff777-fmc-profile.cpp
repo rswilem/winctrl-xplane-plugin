@@ -219,22 +219,6 @@ void FlightFactor777FMCProfile::mapCharacter(std::vector<uint8_t> *buffer, uint8
             buffer->insert(buffer->end(), FMCSpecialCharacter::ARROW_LEFT.begin(), FMCSpecialCharacter::ARROW_LEFT.end());
             break;
 
-        case '<':
-            if (isFontSmall) {
-                buffer->insert(buffer->end(), FMCSpecialCharacter::ARROW_LEFT.begin(), FMCSpecialCharacter::ARROW_LEFT.end());
-            } else {
-                buffer->push_back(character);
-            }
-            break;
-
-        case '>':
-            if (isFontSmall) {
-                buffer->insert(buffer->end(), FMCSpecialCharacter::ARROW_RIGHT.begin(), FMCSpecialCharacter::ARROW_RIGHT.end());
-            } else {
-                buffer->push_back(character);
-            }
-            break;
-
         default:
             // Replace unrecognized or control characters with spaces to avoid corrupting device output
             if (character < 32 || character > 126) {

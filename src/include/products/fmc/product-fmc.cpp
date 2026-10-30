@@ -37,7 +37,7 @@ ProductFMC::ProductFMC(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t pr
     profile = nullptr;
     page = std::vector<std::vector<char>>(ProductFMC::PageLines, std::vector<char>(ProductFMC::PageBytesPerLine, ' '));
     lastUpdateCycle = 0;
-    uncachedRepaints = 0;
+    lastUncachedCount = -1;
     lastButtonStateLo = 0;
     lastButtonStateHi = 0;
     menuItemId = -1;
@@ -409,18 +409,12 @@ void ProductFMC::updatePage(bool forceUpdate) {
 
     datarefManager->pollDisplayDatarefs(profile->displayDatarefs());
 
-    // A ref with no cache entry is never polled, so it can never report a change.
-    // That is the state after clearCache() on an aircraft switch, until the
-    // profile's own getCached() calls put the entries back, and without a repaint
-    // to run those calls the page stays blank forever. Keep repainting until they
-    // are all there, bounded so a profile that lists a ref it never reads cannot
-    // spin on it.
-    bool hasUncachedDataref = false;
+    int uncachedCount = 0;
 
     for (const std::string &dataref : profile->displayDatarefs()) {
         int lastUpdate = datarefManager->getCachedLastUpdate(dataref.c_str());
         if (!lastUpdate) {
-            hasUncachedDataref = true;
+            uncachedCount++;
         }
 
         if (!lastUpdateCycle || lastUpdate > lastUpdateCycle) {
@@ -428,12 +422,17 @@ void ProductFMC::updatePage(bool forceUpdate) {
         }
     }
 
-    if (hasUncachedDataref && uncachedRepaints < kMaxUncachedRepaints) {
-        uncachedRepaints++;
+    // A ref with no cache entry is never polled, so it can never report a change.
+    // That is the state after clearCache() on an aircraft switch, until the
+    // profile's own getCached() calls put the entries back, and without a repaint
+    // to run those calls the page stays blank forever. Refs still missing after a
+    // repaint are ones the profile never reads (e.g. listed but undrawn lines), so
+    // only keep repainting while each repaint changes how many are missing.
+    // Repainting until all of them were there flooded the MCDU-32 off the bus.
+    if (uncachedCount > 0 && uncachedCount != lastUncachedCount) {
         shouldUpdate = true;
-    } else if (!hasUncachedDataref) {
-        uncachedRepaints = 0;
     }
+    lastUncachedCount = uncachedCount;
 
     if (shouldUpdate) {
         profile->updatePage(page);

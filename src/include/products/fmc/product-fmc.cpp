@@ -11,6 +11,7 @@
 #include "profiles/ffa320-fmc-profile.h"
 #include "profiles/ff767-fmc-profile.h"
 #include "profiles/ff777-fmc-profile.h"
+#include "profiles/felis-742-fmc-profile.h"
 #include "profiles/felis742-ltn-fmc-profile.h"
 #include "profiles/fjs732-fmc-profile.h"
 #include "profiles/fps748-fmc-profile.h"
@@ -156,6 +157,10 @@ void ProductFMC::setProfileForCurrentAircraft() {
     } else if (SparkyB744FMCProfile::IsEligible()) {
         clearDisplay();
         profile = new SparkyB744FMCProfile(this);
+        profileReady = true;
+    } else if (Felis742FMCProfile::IsEligible()) {
+        clearDisplay();
+        profile = new Felis742FMCProfile(this);
         profileReady = true;
     } else if (IXEG733FMCProfile::IsEligible()) {
         clearDisplay();

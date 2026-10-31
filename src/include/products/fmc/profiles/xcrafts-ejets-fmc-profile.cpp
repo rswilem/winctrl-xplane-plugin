@@ -87,6 +87,12 @@ XCraftsEjetsFMCProfile::XCraftsEjetsFMCProfile(ProductFMC *product) : FMCAircraf
         this);
 }
 
+XCraftsEjetsFMCProfile::~XCraftsEjetsFMCProfile() {
+    if (radioLinesVisible) {
+        drawRadioLines(false);
+    }
+}
+
 bool XCraftsEjetsFMCProfile::IsEligible() {
     return Dataref::getInstance()->exists("XCrafts/FMS/CDU_1_01");
 }
@@ -99,6 +105,7 @@ const std::vector<std::string> &XCraftsEjetsFMCProfile::displayDatarefs() const 
                     [cduNumber]() {
                         std::vector<std::string> datarefs;
                         datarefs.push_back("XCrafts/FMS/data_count" + cduNumber);
+                        datarefs.push_back("XCrafts/FMS/CDU" + cduNumber + "_page");
 
                         for (int i = 1; i <= 70; i++) {
                             char buffer[32];
@@ -460,6 +467,28 @@ void XCraftsEjetsFMCProfile::updatePage(std::vector<std::vector<char>> &page) {
             product->writeLineToPage(page, 13, i, std::string(1, (char) c), 0, false);
         }
     }
+
+    int cduPage = datarefManager->getCached<int>(("XCrafts/FMS/CDU" + cduNumber + "_page").c_str());
+    bool onRadioPage = cduPage == RadioPage1 || cduPage == RadioPage2;
+    if (onRadioPage || radioLinesVisible) {
+        drawRadioLines(onRadioPage);
+    }
+}
+
+void XCraftsEjetsFMCProfile::drawRadioLines(bool visible) {
+    FMCScreenLayout layout = FMCHardwareMapping::ScreenLayoutForHardware(product->hardwareType);
+    const uint16_t left = 36 + layout.x;
+    const uint16_t top = 20 + layout.y;
+    const uint16_t width = ProductFMC::PageCharsPerLine * layout.characterWidth;
+    const uint16_t comBottom = top + 5 * layout.characterHeight;
+    const uint16_t navBottom = top + 9 * layout.characterHeight;
+    const uint8_t shade = visible ? 0xff : 0x00;
+
+    product->fillRect(left, comBottom - 1, width, 2, shade, shade, shade);
+    product->fillRect(left, navBottom - 1, width, 2, shade, shade, shade);
+    product->fillRect(left + width / 2 - 1, top + layout.characterHeight, 2, navBottom - top - layout.characterHeight, shade, shade, shade);
+
+    radioLinesVisible = visible;
 }
 
 void XCraftsEjetsFMCProfile::buttonPressed(const FMCButtonDef *button, XPLMCommandPhase phase) {

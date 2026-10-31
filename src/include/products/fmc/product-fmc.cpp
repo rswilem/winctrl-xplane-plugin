@@ -317,6 +317,9 @@ void ProductFMC::update() {
     // clearDisplay before a profile loads) must still be handled.
     USBDevice::update();
     serviceTextPage();
+    if (hasPendingDrawing()) {
+        presentDrawing();
+    }
 
     if (!profile) {
         if (shouldRetryProfileMatch()) {
@@ -553,6 +556,7 @@ bool ProductFMC::presentDrawing() {
     appendCommandBlock(drawStream, 0x103, nullptr, 0, true);
     sendCommandStream(drawStream);
     drawStream.clear();
+    drawFillColorKnown = false;
     expectDisplayAck(0x103);
     return true;
 }

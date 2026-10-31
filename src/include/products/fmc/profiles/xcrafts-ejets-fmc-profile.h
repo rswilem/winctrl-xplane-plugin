@@ -16,11 +16,17 @@ enum class XCraftsFMCFontStyle : unsigned char {
 
 class XCraftsEjetsFMCProfile : public FMCAircraftProfile {
     private:
+        static constexpr int RadioPage1 = 1001;
+        static constexpr int RadioPage2 = 1002;
+
         std::regex datarefRegex;
+        bool radioLinesVisible = false;
         bool isAnnunTest();
+        void drawRadioLines(bool visible);
 
     public:
         XCraftsEjetsFMCProfile(ProductFMC *product);
+        ~XCraftsEjetsFMCProfile();
 
         static bool IsEligible();
 

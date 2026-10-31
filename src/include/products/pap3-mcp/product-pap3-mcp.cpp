@@ -198,12 +198,13 @@ void ProductPAP3MCP::updateDisplays(bool force) {
         return;
     }
 
-    bool shouldUpdate = force;
+    // The first update always runs, so a profile without display datarefs still sets the windows
+    bool shouldUpdate = force || !lastUpdateCycle;
     auto datarefManager = Dataref::getInstance();
     datarefManager->pollDisplayDatarefs(profile->displayDatarefs());
 
     for (const std::string &dataref : profile->displayDatarefs()) {
-        if (!lastUpdateCycle || datarefManager->getCachedLastUpdate(dataref.c_str()) > lastUpdateCycle) {
+        if (datarefManager->getCachedLastUpdate(dataref.c_str()) > lastUpdateCycle) {
             shouldUpdate = true;
             break;
         }

@@ -17,31 +17,47 @@ FlightFactor767FMCProfile::FlightFactor767FMCProfile(ProductFMC *product) : FMCA
     product->setAllLedsEnabled(false);
     product->setFont(FontVariant::Font737);
 
+    const std::string brtSide = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? "L" : "R";
+    const std::string screenBrightnessRef = "1-sim/CDU/" + brtSide + "/CDUbrtRotary";
+
     Dataref::getInstance()->monitorExistingDataref<float>("sim/cockpit/electrical/instrument_brightness", [product](float brightness) {
         uint8_t target = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on") ? brightness * 255 : 0;
         product->setLedBrightness(FMCLed::BACKLIGHT, target);
+    },
+        this);
+
+    // Screen follows the CDU's own BRT knob, the same dataref the BRT keys adjust
+    Dataref::getInstance()->monitorExistingDataref<float>(screenBrightnessRef.c_str(), [product](float brightness) {
+        uint8_t target = Dataref::getInstance()->get<bool>("sim/cockpit/electrical/avionics_on") ? std::clamp(brightness, 0.0f, 1.0f) * 255 : 0;
         product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, target);
     },
         this);
 
-    Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [](bool poweredOn) {
+    Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit/electrical/avionics_on", [screenBrightnessRef](bool poweredOn) {
         Dataref::getInstance()->executeChangedCallbacksForDataref("sim/cockpit/electrical/instrument_brightness");
+        Dataref::getInstance()->executeChangedCallbacksForDataref(screenBrightnessRef.c_str());
     },
         this);
 
-    Dataref::getInstance()->monitorExistingDataref<int>("757Avionics/fms/warn_flags", [product](int flags) {
-        bool message = (static_cast<uint32_t>(flags) & FlightFactor767FMCProfile::FmsWarnFlagMsg) != 0;
-        product->setLedBrightness(FMCLed::PFP_MSG, message ? 1 : 0);
-        product->setLedBrightness(FMCLed::MCDU_MCDU, message ? 1 : 0);
-    },
-        this);
+    // CDU lamps, left / right (see DOCS/cdu-datarefs-api.txt in the aircraft folder).
+    // A lit lamp reads around 0.4, not 1.
+    const bool isCaptain = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN;
+    const std::vector<std::pair<std::string, std::vector<FMCLed>>> lamps = {
+        {isCaptain ? "war/main/58" : "war/main/76", {FMCLed::PFP_EXEC, FMCLed::MCDU_STATUS}},
+        {isCaptain ? "war/main/51" : "war/main/77", {FMCLed::PFP_CALL_DISPLAY}},
+        {isCaptain ? "war/main/53" : "war/main/79", {FMCLed::PFP_MSG, FMCLed::MCDU_MCDU}},
+        {isCaptain ? "war/main/54" : "war/main/80", {FMCLed::PFP_OFST}},
+        {isCaptain ? "war/main/52" : "war/main/78", {FMCLed::PFP_FAIL, FMCLed::MCDU_FAIL}},
+    };
 
-    Dataref::getInstance()->monitorExistingDataref<float>("war/main/76", [product](float exec) {
-        bool enabled = exec > 0.5f;
-        product->setLedBrightness(FMCLed::PFP_EXEC, enabled ? 1 : 0);
-        product->setLedBrightness(FMCLed::MCDU_STATUS, enabled ? 1 : 0);
-    },
-        this);
+    for (const auto &[dataref, leds] : lamps) {
+        Dataref::getInstance()->monitorExistingDataref<float>(dataref.c_str(), [product, leds](float lit) {
+            for (FMCLed led : leds) {
+                product->setLedBrightness(led, lit > 0.05f ? 1 : 0);
+            }
+        },
+            this);
+    }
 }
 
 bool FlightFactor767FMCProfile::IsEligible() {
@@ -288,8 +304,11 @@ void FlightFactor767FMCProfile::buttonPressed(const FMCButtonDef *button, XPLMCo
             return;
         }
 
-        double currentValue = datarefManager->get<double>(button->dataref.c_str());
-        datarefManager->set<double>(button->dataref.c_str(), std::clamp(currentValue + button->value, 0.0, FlightFactor767FMCProfile::BrightnessMax));
+        // Float to match the screen brightness monitor: set() stores this type in the cache,
+        // and a double there would stop the float monitor from ever firing again
+        float currentValue = datarefManager->get<float>(button->dataref.c_str());
+        float newValue = std::clamp(currentValue + static_cast<float>(button->value), 0.0f, static_cast<float>(FlightFactor767FMCProfile::BrightnessMax));
+        datarefManager->set<float>(button->dataref.c_str(), newValue);
     } else if (phase == xplm_CommandBegin && button->datarefType == FMCDatarefType::EXECUTE_MULTIPLE_CMD_ONCE) {
         std::stringstream ss(button->dataref);
         std::string item;

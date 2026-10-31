@@ -7,6 +7,7 @@
 #include "plugins-menu.h"
 #include "profiles/b58-pap3-mcp-profile.h"
 #include "profiles/cl650-pap3-mcp-profile.h"
+#include "profiles/felis-742-pap3-mcp-profile.h"
 #include "profiles/ff767-pap3-mcp-profile.h"
 #include "profiles/ff777-pap3-mcp-profile.h"
 #include "profiles/fps748-pap3-mcp-profile.h"
@@ -80,6 +81,9 @@ void ProductPAP3MCP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (SparkyB744PAP3MCPProfile::IsEligible()) {
         profile = new SparkyB744PAP3MCPProfile(this);
+        profileReady = true;
+    } else if (Felis742PAP3MCPProfile::IsEligible()) {
+        profile = new Felis742PAP3MCPProfile(this);
         profileReady = true;
     } else if (Laminar737PAP3MCPProfile::IsEligible()) {
         profile = new Laminar737PAP3MCPProfile(this);

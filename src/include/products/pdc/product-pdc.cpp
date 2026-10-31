@@ -4,6 +4,7 @@
 #include "dataref.h"
 #include "plugins-menu.h"
 #include "profiles/cl650-pdc-profile.h"
+#include "profiles/felis-742-pdc-profile.h"
 #include "profiles/ff767-pdc-profile.h"
 #include "profiles/ff777-pdc-profile.h"
 #include "profiles/fps748-pdc-profile.h"
@@ -97,6 +98,9 @@ const char *ProductPDC::activeProfileName() const {
 void ProductPDC::setProfileForCurrentAircraft() {
     if (FPS748PDCProfile::IsEligible()) {
         profile = new FPS748PDCProfile(this);
+        profileReady = true;
+    } else if (Felis742PDCProfile::IsEligible()) {
+        profile = new Felis742PDCProfile(this);
         profileReady = true;
     } else if (XCraftsErjPDCProfile::IsEligible()) {
         profile = new XCraftsErjPDCProfile(this);

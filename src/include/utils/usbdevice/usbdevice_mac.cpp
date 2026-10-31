@@ -60,6 +60,9 @@ bool USBDevice::connect() {
 
         IOHIDQueueScheduleWithRunLoop(hidQueue, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
         IOHIDQueueStart(hidQueue);
+
+        // The device is scheduled through the HID manager's run loop.
+        IOHIDDeviceRegisterInputReportCallback(hidDevice, inputReportBuffer, sizeof(inputReportBuffer), InputReportCallback, this);
     }
 
     connected = true;
@@ -84,6 +87,31 @@ void USBDevice::update() {
         handleHIDValue(value);
         CFRelease(value);
     }
+
+    processQueuedEvents();
+}
+
+void USBDevice::InputReportCallback(void *context, IOReturn result, void *sender, IOHIDReportType type, uint32_t reportID, uint8_t *report, CFIndex reportLength) {
+    auto *self = static_cast<USBDevice *>(context);
+    // Button reports stay on hidQueue; forwarding them too would double every press.
+    if (!self || !self->connected || result != kIOReturnSuccess || !report || reportLength <= 0 || reportID != 0xf0) {
+        return;
+    }
+
+    try {
+        InputEvent event;
+        event.reportId = (int) reportID;
+        // Same layout as Windows/Linux: the report id is byte 0.
+        if (report[0] != reportID) {
+            event.reportData.push_back((uint8_t) reportID);
+        }
+        event.reportData.insert(event.reportData.end(), report, report + reportLength);
+        event.reportLength = (int) event.reportData.size();
+
+        self->processOnMainThread(event);
+    } catch (const std::system_error &e) {
+        return;
+    }
 }
 
 void USBDevice::disconnect() {
@@ -107,6 +135,7 @@ void USBDevice::disconnect() {
     }
 
     if (hidDevice) {
+        IOHIDDeviceRegisterInputReportCallback(hidDevice, inputReportBuffer, sizeof(inputReportBuffer), nullptr, nullptr);
         if (!deviceRemoved) {
             IOHIDDeviceClose(hidDevice, kIOHIDOptionsTypeNone);
         }

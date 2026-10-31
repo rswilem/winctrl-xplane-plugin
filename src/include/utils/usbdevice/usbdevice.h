@@ -60,6 +60,10 @@ class USBDevice {
 #if APL
         IOHIDQueueRef hidQueue = nullptr;
         void handleHIDValue(IOHIDValueRef value);
+        // Raw input reports, used only for 0xF0 command replies; buttons come
+        // through hidQueue.
+        uint8_t inputReportBuffer[256] = {};
+        static void InputReportCallback(void *context, IOReturn result, void *sender, IOHIDReportType type, uint32_t reportID, uint8_t *report, CFIndex reportLength);
 #elif IBM
         USHORT outputReportByteLength = 0;
         std::thread inputThread;

@@ -34,6 +34,35 @@ class ProductFMC : public USBDevice {
         // Empty means "nothing uploaded yet"; cleared on connect().
         std::string uploadedFontKey = {};
 
+        // Display handshake. The firmware needs ~40 ms to render a 0xF2 page and
+        // ~28 ms for refreshLCD, and wedges when new text or drawing arrives
+        // sooner (glyph pages hang it until a power cycle). Each page is followed
+        // by an acked getCDUScreenLogicVersion (0x11b), each drawing by an acked
+        // refreshLCD (0x103); the device answers once done, in order. Nothing new
+        // is sent until that reply, or a timeout.
+        bool displayAckPending = false;
+        uint16_t displayAckFid = 0;
+        std::chrono::steady_clock::time_point displayAckSentAt{};
+        std::chrono::milliseconds displayAckTimeout{0};
+        int displayAckTimeouts = 0;
+        bool pendingForcedPageUpdate = false;
+        // Latest page held back while the display is busy (latest wins).
+        std::vector<uint8_t> deferredTextPage;
+
+        // Queued lcdFillRect/colour blocks, sent by presentDrawing().
+        std::vector<uint8_t> drawStream;
+        uint32_t drawFillColor = 0; // ARGB last sent to the device
+        bool drawFillColorKnown = false;
+
+        void sendTextPage(std::vector<uint8_t> cells);
+        bool displayGateOpen();
+        void serviceTextPage();
+        void waitForDisplayGate();
+        bool isDisplayAck(const uint8_t *report, int reportLength) const;
+        void appendCommandBlock(std::vector<uint8_t> &stream, uint16_t fid, const uint8_t *data, uint32_t length, bool respond);
+        void sendCommandStream(const std::vector<uint8_t> &stream);
+        void expectDisplayAck(uint16_t fid);
+
         void draw(const std::vector<std::vector<char>> *pagePtr = nullptr);
         std::pair<uint8_t, uint8_t> dataFromColFont(char color, bool fontSmall = false);
 
@@ -90,6 +119,21 @@ class ProductFMC : public USBDevice {
 
         void clearDisplay();
         void showBackground(FMCBackgroundVariant variant);
+
+        // Pixel drawing (verified on the MCDU, 2026-10-31). Fills go to a back buffer
+        // that keeps its content across presents and sits under the text layer;
+        // nothing shows until presentDrawing(). Coordinates are in the 640x480 LCD
+        // space; the visible area starts ~20 px in from each edge. The screen init
+        // (connect) clears all drawings.
+        static constexpr uint16_t ScreenWidth = 640;
+        static constexpr uint16_t ScreenHeight = 480;
+        void fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t r, uint8_t g, uint8_t b);
+        // Sends the queued fills plus an acked refreshLCD. False while the display is
+        // still busy with the previous page or drawing: call again next frame.
+        bool presentDrawing();
+        bool hasPendingDrawing() const {
+            return !drawStream.empty();
+        }
 
         void setDeviceVariant(FMCDeviceVariant variant);
 

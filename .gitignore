@@ -118,3 +118,6 @@ CLAUDE.md
 
 # Shared secret for the updater server /upload route. Never commit this.
 build_platforms_upload_token.txt
+
+# Vendor firmware database and SimAppPro RE tooling (local only)
+firmware/

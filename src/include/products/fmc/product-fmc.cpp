@@ -31,7 +31,10 @@
 #include "profiles/zibo-fmc-profile.h"
 #include "usbcontroller.h"
 
+#include <algorithm>
 #include <chrono>
+#include <iterator>
+#include <thread>
 #include <XPLMProcessing.h>
 
 ProductFMC::ProductFMC(HIDDeviceHandle hidDevice, uint16_t vendorId, uint16_t productId, std::string vendorName, std::string productName, FMCHardwareType hardwareType, FMCDeviceVariant variant, unsigned char identifierByte) : USBDevice(hidDevice, vendorId, productId, vendorName, productName), hardwareType(hardwareType), identifierByte(identifierByte), deviceVariant(variant) {
@@ -207,6 +210,10 @@ bool ProductFMC::connect() {
         // A freshly enumerated device is back on its factory font, so nothing we
         // uploaded before survives; the next setFont must not be skipped.
         uploadedFontKey = {};
+        displayAckPending = false;
+        deferredTextPage.clear();
+        drawStream.clear();
+        drawFillColorKnown = false;
 
         uint8_t col_bg[] = {0x00, 0x00, 0x00};
 
@@ -285,6 +292,8 @@ void ProductFMC::blackout() {
     setLedBrightness(FMCLed::SCREEN_BACKLIGHT, 0);
     setAllLedsEnabled(false);
 
+    // Runs right before disconnect: a page deferred behind the handshake would never be sent.
+    waitForDisplayGate();
     clearDisplay();
 }
 
@@ -304,14 +313,17 @@ void ProductFMC::update() {
         return;
     }
 
+    // Also without a profile: the handshake reply and a deferred page (e.g. the
+    // clearDisplay before a profile loads) must still be handled.
+    USBDevice::update();
+    serviceTextPage();
+
     if (!profile) {
         if (shouldRetryProfileMatch()) {
             setProfileForCurrentAircraft();
         }
         return;
     }
-
-    USBDevice::update();
 
     if (++displayUpdateFrameCounter >= std::max(getDisplayUpdateFrameInterval(), 4)) {
         displayUpdateFrameCounter = 0;
@@ -320,11 +332,18 @@ void ProductFMC::update() {
 }
 
 void ProductFMC::didReceiveData(int reportId, uint8_t *report, int reportLength) {
-    if (!connected || !profile || !report || reportLength <= 0) {
+    if (!connected || !report || reportLength <= 0) {
         return;
     }
 
-    if (reportId != 1 || reportLength < 13) {
+    if (reportId == 0xf0) {
+        if (isDisplayAck(report, reportLength)) {
+            displayAckPending = false;
+        }
+        return;
+    }
+
+    if (!profile || reportId != 1 || reportLength < 13) {
         return;
     }
 
@@ -409,6 +428,15 @@ void ProductFMC::updatePage(bool forceUpdate) {
         return;
     }
 
+    // Previous page still rendering. lastUpdateCycle is untouched, so dataref
+    // changes are picked up on the next call; only a forced update must be kept.
+    if (!displayGateOpen()) {
+        pendingForcedPageUpdate = pendingForcedPageUpdate || forceUpdate;
+        return;
+    }
+    forceUpdate = forceUpdate || pendingForcedPageUpdate;
+    pendingForcedPageUpdate = false;
+
     auto datarefManager = Dataref::getInstance();
     bool shouldUpdate = forceUpdate;
 
@@ -467,16 +495,136 @@ void ProductFMC::draw(const std::vector<std::vector<char>> *pagePtr) {
         }
     }
 
-    while (!buf.empty()) {
-        size_t maxLength = std::min<size_t>(63, buf.size());
-        std::vector<uint8_t> usbBuf(buf.begin(), buf.begin() + maxLength);
-        usbBuf.insert(usbBuf.begin(), 0xf2);
-        if (maxLength < 63) {
-            usbBuf.insert(usbBuf.end(), 63 - maxLength, 0);
-        }
-        writeData(usbBuf);
-        buf.erase(buf.begin(), buf.begin() + maxLength);
+    sendTextPage(std::move(buf));
+}
+
+void ProductFMC::sendTextPage(std::vector<uint8_t> cells) {
+    if (!displayGateOpen()) {
+        deferredTextPage = std::move(cells);
+        return;
     }
+    deferredTextPage.clear();
+
+    for (size_t offset = 0; offset < cells.size(); offset += 63) {
+        size_t length = std::min<size_t>(63, cells.size() - offset);
+        std::vector<uint8_t> usbBuf(64, 0);
+        usbBuf[0] = 0xf2;
+        std::copy(cells.begin() + offset, cells.begin() + offset + length, usbBuf.begin() + 1);
+        writeData(usbBuf);
+    }
+
+    // getCDUScreenLogicVersion, acked: answered once the page is rendered.
+    std::vector<uint8_t> sync;
+    appendCommandBlock(sync, 0x11b, nullptr, 0, true);
+    sendCommandStream(sync);
+    expectDisplayAck(0x11b);
+}
+
+void ProductFMC::fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t r, uint8_t g, uint8_t b) {
+    if (w == 0 || h == 0 || x >= ScreenWidth || y >= ScreenHeight) {
+        return;
+    }
+    w = std::min<uint16_t>(w, ScreenWidth - x);
+    h = std::min<uint16_t>(h, ScreenHeight - y);
+
+    uint32_t argb = 0xff000000u | (r << 16) | (g << 8) | b;
+    if (!drawFillColorKnown || argb != drawFillColor) {
+        // Fill colour (0x112), bytes A,R,G,B.
+        const uint8_t colour[] = {0xff, r, g, b};
+        appendCommandBlock(drawStream, 0x112, colour, sizeof(colour), false);
+        drawFillColor = argb;
+        drawFillColorKnown = true;
+    }
+
+    // lcdFillRect (0x110): x, y, w, h as LE uint16.
+    const uint8_t rect[] = {(uint8_t) x, (uint8_t) (x >> 8), (uint8_t) y, (uint8_t) (y >> 8), (uint8_t) w, (uint8_t) (w >> 8), (uint8_t) h, (uint8_t) (h >> 8)};
+    appendCommandBlock(drawStream, 0x110, rect, sizeof(rect), false);
+}
+
+bool ProductFMC::presentDrawing() {
+    if (drawStream.empty()) {
+        return true;
+    }
+    if (!displayGateOpen()) {
+        return false;
+    }
+
+    // refreshLCD (0x103), acked: answered once the back buffer is on screen.
+    appendCommandBlock(drawStream, 0x103, nullptr, 0, true);
+    sendCommandStream(drawStream);
+    drawStream.clear();
+    expectDisplayAck(0x103);
+    return true;
+}
+
+void ProductFMC::appendCommandBlock(std::vector<uint8_t> &stream, uint16_t fid, const uint8_t *data, uint32_t length, bool respond) {
+    // <id> bb 00 00 <fid u16> 00 00 <token:4> <isRespon> <len u32> <data>; token copied from SimAppPro captures.
+    const uint8_t header[] = {identifierByte, 0xbb, 0x00, 0x00, (uint8_t) fid, (uint8_t) (fid >> 8), 0x00, 0x00, 0x76, 0x72, 0x19, 0x00, (uint8_t) (respond ? 1 : 0), (uint8_t) length, (uint8_t) (length >> 8), (uint8_t) (length >> 16), (uint8_t) (length >> 24)};
+    stream.insert(stream.end(), std::begin(header), std::end(header));
+    if (data && length) {
+        stream.insert(stream.end(), data, data + length);
+    }
+}
+
+void ProductFMC::sendCommandStream(const std::vector<uint8_t> &stream) {
+    // 0xF0 reports carry up to 60 stream bytes each; blocks may span reports.
+    uint8_t seq = 1;
+    for (size_t offset = 0; offset < stream.size(); offset += 60) {
+        size_t length = std::min<size_t>(60, stream.size() - offset);
+        std::vector<uint8_t> usbBuf(64, 0);
+        usbBuf[0] = 0xf0;
+        usbBuf[1] = 0x00;
+        usbBuf[2] = seq++;
+        usbBuf[3] = (uint8_t) length;
+        std::copy(stream.begin() + offset, stream.begin() + offset + length, usbBuf.begin() + 4);
+        writeData(usbBuf);
+    }
+}
+
+void ProductFMC::expectDisplayAck(uint16_t fid) {
+    displayAckPending = true;
+    displayAckFid = fid;
+    displayAckSentAt = std::chrono::steady_clock::now();
+    // Packets drain at ~1 per ms, so a backlog ahead of the request (font upload, big drawing) extends the wait.
+    displayAckTimeout = std::chrono::milliseconds(150 + getWriteQueueSize());
+}
+
+bool ProductFMC::displayGateOpen() {
+    if (!displayAckPending) {
+        return true;
+    }
+
+    if (std::chrono::steady_clock::now() - displayAckSentAt < displayAckTimeout) {
+        return false;
+    }
+
+    displayAckPending = false;
+    displayAckTimeouts++;
+    Logger::getInstance()->debug("%s: no display handshake reply (0x%03x) within %lld ms (%d timeouts)\n", productName.c_str(), displayAckFid, (long long) displayAckTimeout.count(), displayAckTimeouts);
+    return true;
+}
+
+void ProductFMC::serviceTextPage() {
+    if (deferredTextPage.empty() || !displayGateOpen()) {
+        return;
+    }
+
+    std::vector<uint8_t> cells = std::move(deferredTextPage);
+    deferredTextPage.clear();
+    sendTextPage(std::move(cells));
+}
+
+void ProductFMC::waitForDisplayGate() {
+    auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(500);
+    while (!displayGateOpen() && std::chrono::steady_clock::now() < deadline) {
+        USBDevice::update();
+        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    }
+}
+
+bool ProductFMC::isDisplayAck(const uint8_t *report, int reportLength) const {
+    // f0 00 <seq> <len> <id> cb 00 00 <fid u16> ...: replies use cb where requests use bb.
+    return reportLength >= 10 && report[1] == 0x00 && report[4] == identifierByte && report[5] == 0xcb && report[8] == (uint8_t) displayAckFid && report[9] == (uint8_t) (displayAckFid >> 8);
 }
 
 std::pair<uint8_t, uint8_t> ProductFMC::dataFromColFont(char color, bool fontSmall) {
@@ -533,17 +681,13 @@ void ProductFMC::writeLineToPage(std::vector<std::vector<char>> &page, int line,
 void ProductFMC::clearDisplay() {
     page = std::vector<std::vector<char>>(ProductFMC::PageLines, std::vector<char>(ProductFMC::PageBytesPerLine, ' '));
 
-    std::vector<uint8_t> blankLine = {};
-    blankLine.push_back(0xf2);
-    for (int i = 0; i < ProductFMC::PageCharsPerLine; ++i) {
-        blankLine.push_back(0x42);
-        blankLine.push_back(0x00);
-        blankLine.push_back(' ');
+    // One full blank page (white space cells) through the paced path.
+    std::vector<uint8_t> cells;
+    cells.reserve(ProductFMC::PageLines * ProductFMC::PageCharsPerLine * 3);
+    for (unsigned int i = 0; i < ProductFMC::PageLines * ProductFMC::PageCharsPerLine; ++i) {
+        cells.insert(cells.end(), {0x42, 0x00, ' '});
     }
-
-    for (int i = 0; i < 16; ++i) {
-        writeData(blankLine);
-    }
+    sendTextPage(std::move(cells));
 
     // The device no longer shows what `page` holds, so the next updatePage()
     // must repaint even when no display dataref changed.

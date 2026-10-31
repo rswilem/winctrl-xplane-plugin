@@ -276,6 +276,20 @@
 		F6FF5F212E4B5CC5002508F6 /* XPLM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6FF5F1E2E4B5CC5002508F6 /* XPLM.framework */; };
 		FF35DA7A0000000000000012 /* ff350-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FF35DA7A0000000000000011 /* ff350-fmc-profile.cpp */; };
 		FF35DA7A0000000000000013 /* ff350-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FF35DA7A0000000000000011 /* ff350-fmc-profile.cpp */; };
+		C2A2E8B2497C3FA12C29D5EC /* felis-742-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23AAFAF72D65D1BD01071823 /* felis-742-fmc-profile.cpp */; };
+		57EF9E58E791B83B5E22627D /* felis-742-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23AAFAF72D65D1BD01071823 /* felis-742-fmc-profile.cpp */; };
+		4730B226291199DA6328D3F6 /* cl650-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0C9F4F4F28542FEDE04C6EC /* cl650-pap3-mcp-profile.cpp */; };
+		9B7934BAE381C955E8AC693A /* cl650-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0C9F4F4F28542FEDE04C6EC /* cl650-pap3-mcp-profile.cpp */; };
+		E7184EB78A4EA145D27D068B /* felis-742-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7605D03085ABE06F3428CEDF /* felis-742-pap3-mcp-profile.cpp */; };
+		49FAA1E3ABCDC6A1E2718082 /* felis-742-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7605D03085ABE06F3428CEDF /* felis-742-pap3-mcp-profile.cpp */; };
+		F52BEC894112874685541B32 /* cl650-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02296FAF895080E97CD49310 /* cl650-pdc-profile.cpp */; };
+		50CDF2EE08DE1FF62D96CA3F /* cl650-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02296FAF895080E97CD49310 /* cl650-pdc-profile.cpp */; };
+		E4DCF2C8EA1EAB8A4BBD9F84 /* felis-742-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1803C839C33523CD0DF01D /* felis-742-pdc-profile.cpp */; };
+		E6959BB6F4822CD99A339DFB /* felis-742-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1803C839C33523CD0DF01D /* felis-742-pdc-profile.cpp */; };
+		D91A475F593C3053EA90F2D8 /* cl650-rmp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E858DBBD741036E1627B4157 /* cl650-rmp-profile.cpp */; };
+		5244FC1C27BBA0427A10B451 /* cl650-rmp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E858DBBD741036E1627B4157 /* cl650-rmp-profile.cpp */; };
+		0FFEACEDF8AB34F22C52BF69 /* felis-742-rmp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7C54AC3F80C0103E680F5E9 /* felis-742-rmp-profile.cpp */; };
+		C2EE6FFCBA54D800D3C0A58A /* felis-742-rmp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7C54AC3F80C0103E680F5E9 /* felis-742-rmp-profile.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -566,6 +580,20 @@
 		F6FF5F1F2E4B5CC5002508F6 /* XPWidgets.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XPWidgets.framework; path = SDK/Libraries/Mac/XPWidgets.framework; sourceTree = "<group>"; };
 		FF35DA7A0000000000000010 /* ff350-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ff350-fmc-profile.h"; sourceTree = "<group>"; };
 		FF35DA7A0000000000000011 /* ff350-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "ff350-fmc-profile.cpp"; sourceTree = "<group>"; };
+		66CE6E5F0EF8F2CF646BFF9B /* felis-742-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "felis-742-fmc-profile.h"; sourceTree = "<group>"; };
+		23AAFAF72D65D1BD01071823 /* felis-742-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "felis-742-fmc-profile.cpp"; sourceTree = "<group>"; };
+		1C9AB43D877449CEB6753E94 /* cl650-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "cl650-pap3-mcp-profile.h"; sourceTree = "<group>"; };
+		E0C9F4F4F28542FEDE04C6EC /* cl650-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cl650-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
+		CC9BDD6A5A0D5AF1CB23985E /* felis-742-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "felis-742-pap3-mcp-profile.h"; sourceTree = "<group>"; };
+		7605D03085ABE06F3428CEDF /* felis-742-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "felis-742-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
+		D69958F2937C18C55C3E2214 /* cl650-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "cl650-pdc-profile.h"; sourceTree = "<group>"; };
+		02296FAF895080E97CD49310 /* cl650-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cl650-pdc-profile.cpp"; sourceTree = "<group>"; };
+		4B64E2D0096EC419AD85A9DB /* felis-742-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "felis-742-pdc-profile.h"; sourceTree = "<group>"; };
+		5C1803C839C33523CD0DF01D /* felis-742-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "felis-742-pdc-profile.cpp"; sourceTree = "<group>"; };
+		63B6E5A60A7DB918D895DC89 /* cl650-rmp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "cl650-rmp-profile.h"; sourceTree = "<group>"; };
+		E858DBBD741036E1627B4157 /* cl650-rmp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cl650-rmp-profile.cpp"; sourceTree = "<group>"; };
+		13365D5B5E9BA9A99A24511A /* felis-742-rmp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "felis-742-rmp-profile.h"; sourceTree = "<group>"; };
+		B7C54AC3F80C0103E680F5E9 /* felis-742-rmp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "felis-742-rmp-profile.cpp"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -618,6 +646,10 @@
 				F6025FE42FDC04DD00C7F37D /* ff777-rmp-profile.cpp */,
 				F67FA47A2FFDA4990027506D /* zibo-rmp-profile.h */,
 				F67FA47B2FFDA4990027506D /* zibo-rmp-profile.cpp */,
+				13365D5B5E9BA9A99A24511A /* felis-742-rmp-profile.h */,
+				B7C54AC3F80C0103E680F5E9 /* felis-742-rmp-profile.cpp */,
+				63B6E5A60A7DB918D895DC89 /* cl650-rmp-profile.h */,
+				E858DBBD741036E1627B4157 /* cl650-rmp-profile.cpp */,
 			);
 			path = profiles;
 			sourceTree = "<group>";
@@ -795,6 +827,8 @@
 				BE235D138BEFE0AA64B3E71E /* sparky744-fmc-profile.cpp */,
 				F6A1493B2E4F04AE00FB8395 /* zibo-fmc-profile.h */,
 				F6A1493C2E4F04AE00FB8395 /* zibo-fmc-profile.cpp */,
+				66CE6E5F0EF8F2CF646BFF9B /* felis-742-fmc-profile.h */,
+				23AAFAF72D65D1BD01071823 /* felis-742-fmc-profile.cpp */,
 				F6A149262E4F03A400FB8395 /* laminar-a333-fmc-profile.h */,
 				F6A149272E4F03A400FB8395 /* laminar-a333-fmc-profile.cpp */,
 				F6A149282E4F03A400FB8395 /* toliss-fmc-profile.h */,
@@ -1009,6 +1043,10 @@
 				F6C6E02C2E8D5DAA00558F46 /* laminar-737-pap3-mcp-profile.cpp */,
 				F6C6E02D2E8D5DAA00558F46 /* zibo-pap3-mcp-profile.h */,
 				F6C6E02E2E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp */,
+				CC9BDD6A5A0D5AF1CB23985E /* felis-742-pap3-mcp-profile.h */,
+				7605D03085ABE06F3428CEDF /* felis-742-pap3-mcp-profile.cpp */,
+				1C9AB43D877449CEB6753E94 /* cl650-pap3-mcp-profile.h */,
+				E0C9F4F4F28542FEDE04C6EC /* cl650-pap3-mcp-profile.cpp */,
 				B5800000000000000000A0FD /* b58-pap3-mcp-profile.h */,
 				B5800000000000000000C0FD /* b58-pap3-mcp-profile.cpp */,
 				F6BBFF042ED741B900FE9D7F /* ff777-pap3-mcp-profile.h */,
@@ -1092,6 +1130,10 @@
 			children = (
 				F6EF561D2F0AC43300AB61F1 /* zibo-pdc-profile.h */,
 				F6EF561E2F0AC43300AB61F1 /* zibo-pdc-profile.cpp */,
+				4B64E2D0096EC419AD85A9DB /* felis-742-pdc-profile.h */,
+				5C1803C839C33523CD0DF01D /* felis-742-pdc-profile.cpp */,
+				D69958F2937C18C55C3E2214 /* cl650-pdc-profile.h */,
+				02296FAF895080E97CD49310 /* cl650-pdc-profile.cpp */,
 				F6CC2B512F0E5F4B00C0A4D8 /* ff767-pdc-profile.h */,
 				F6CC2B4D2F0E5F4B00C0A4D8 /* ff777-pdc-profile.h */,
 				F6CC2B522F0E5F4B00C0A4D8 /* ff767-pdc-profile.cpp */,
@@ -1236,6 +1278,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0FFEACEDF8AB34F22C52BF69 /* felis-742-rmp-profile.cpp in Sources */,
+				D91A475F593C3053EA90F2D8 /* cl650-rmp-profile.cpp in Sources */,
+				E4DCF2C8EA1EAB8A4BBD9F84 /* felis-742-pdc-profile.cpp in Sources */,
+				F52BEC894112874685541B32 /* cl650-pdc-profile.cpp in Sources */,
+				E7184EB78A4EA145D27D068B /* felis-742-pap3-mcp-profile.cpp in Sources */,
+				4730B226291199DA6328D3F6 /* cl650-pap3-mcp-profile.cpp in Sources */,
+				C2A2E8B2497C3FA12C29D5EC /* felis-742-fmc-profile.cpp in Sources */,
 				F6A1493D2E4F04AE00FB8395 /* zibo-fmc-profile.cpp in Sources */,
 				F6C6E0332E8D5DAA00558F46 /* product-pap3-mcp.cpp in Sources */,
 				838AA8B52EEF2918006444F6 /* ff350-fcu-efis-profile.cpp in Sources */,
@@ -1370,6 +1419,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C2EE6FFCBA54D800D3C0A58A /* felis-742-rmp-profile.cpp in Sources */,
+				5244FC1C27BBA0427A10B451 /* cl650-rmp-profile.cpp in Sources */,
+				E6959BB6F4822CD99A339DFB /* felis-742-pdc-profile.cpp in Sources */,
+				50CDF2EE08DE1FF62D96CA3F /* cl650-pdc-profile.cpp in Sources */,
+				49FAA1E3ABCDC6A1E2718082 /* felis-742-pap3-mcp-profile.cpp in Sources */,
+				9B7934BAE381C955E8AC693A /* cl650-pap3-mcp-profile.cpp in Sources */,
+				57EF9E58E791B83B5E22627D /* felis-742-fmc-profile.cpp in Sources */,
 				F635AD462E0579E9005D6CDC /* usbcontroller_mac.cpp in Sources */,
 				F6827E0A2E05652E00382B28 /* WinctrlDesktopApp.swift in Sources */,
 				F6EBDC152FC6CFD1005AFCBD /* zibo-agp-profile.cpp in Sources */,

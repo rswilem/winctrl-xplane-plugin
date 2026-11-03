@@ -40,7 +40,8 @@ FlightFactor767FMCProfile::FlightFactor767FMCProfile(ProductFMC *product) : FMCA
         this);
 
     // CDU lamps, left / right (see DOCS/cdu-datarefs-api.txt in the aircraft folder).
-    // A lit lamp reads around 0.4, not 1.
+    // A lit lamp's value is scaled by the cockpit lamp brightness and can get very small,
+    // so any non-zero value counts as lit.
     const bool isCaptain = product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN;
     const std::vector<std::pair<std::string, std::vector<FMCLed>>> lamps = {
         {isCaptain ? "war/main/58" : "war/main/76", {FMCLed::PFP_EXEC, FMCLed::MCDU_STATUS}},
@@ -53,7 +54,7 @@ FlightFactor767FMCProfile::FlightFactor767FMCProfile(ProductFMC *product) : FMCA
     for (const auto &[dataref, leds] : lamps) {
         Dataref::getInstance()->monitorExistingDataref<float>(dataref.c_str(), [product, leds](float lit) {
             for (FMCLed led : leds) {
-                product->setLedBrightness(led, lit > 0.05f ? 1 : 0);
+                product->setLedBrightness(led, lit > std::numeric_limits<float>::epsilon() ? 1 : 0);
             }
         },
             this);
@@ -107,7 +108,7 @@ const std::vector<FMCButtonDef> &FlightFactor767FMCProfile::buttonDefs() const {
                         {FMCKey::LSK6R, "757Avionics/" + cdu + "/RLSK6", FMCDatarefType::SET_VALUE_PHASED},
                         {std::vector<FMCKey>{FMCKey::PFP_INIT_REF, FMCKey::MCDU_INIT}, "757Avionics/" + cdu + "/init_ref", FMCDatarefType::SET_VALUE_PHASED},
                         {std::vector<FMCKey>{FMCKey::PFP_ROUTE, FMCKey::MCDU_SEC_FPLN}, "757Avionics/" + cdu + "/rte", FMCDatarefType::SET_VALUE_PHASED},
-                        {FMCKey::PFP3_CLB, "757Avionics/" + cdu + "/clb", FMCDatarefType::SET_VALUE_PHASED},
+                        {std::vector<FMCKey>{FMCKey::PFP3_CLB, FMCKey::PFP7_VNAV, FMCKey::PFP4_VNAV}, "757Avionics/" + cdu + "/clb", FMCDatarefType::SET_VALUE_PHASED},
                         {FMCKey::PFP3_CRZ, "757Avionics/" + cdu + "/crz", FMCDatarefType::SET_VALUE_PHASED},
                         {FMCKey::PFP3_DES, "757Avionics/" + cdu + "/des", FMCDatarefType::SET_VALUE_PHASED},
                         {FMCKey::BRIGHTNESS_DOWN, "1-sim/CDU/" + brtSide + "/CDUbrtRotary", FMCDatarefType::ADJUST_VALUE, -0.1},

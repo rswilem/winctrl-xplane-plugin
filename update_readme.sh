@@ -61,6 +61,7 @@ fjs732|FlyJSim 732 TwinJet
 c525|TorqueSim Citation CJ525
 cl650|Hot Start CL650
 felis-742|Felis 747-200 Classic
+aerobask-phenom|Aerobask Phenom 300
 "
 
 # Function to get display name

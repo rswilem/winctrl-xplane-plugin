@@ -399,13 +399,16 @@ void ZiboFCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMComma
         return;
     }
 
-    // Altitude encoder - repeat the native 100 ft command to honour the selected step
     if (button->dataref == "custom_altitude" && phase == xplm_CommandBegin) {
-        const char *cmd = button->value > 0 ? "sim/autopilot/altitude_up" : "sim/autopilot/altitude_down";
-        int steps = std::max(1, altitudeIncrement / 100);
-        for (int i = 0; i < steps; i++) {
-            datarefManager->executeCommand(cmd);
+        if (altitudeIncrement <= 100) {
+            datarefManager->executeCommand(button->value > 0 ? "sim/autopilot/altitude_up" : "sim/autopilot/altitude_down");
+            return;
         }
+
+        float altitude = datarefManager->get<float>("laminar/B738/autopilot/mcp_alt_dial");
+        float target = altitude + (button->value > 0 ? 1.0f : -1.0f) * static_cast<float>(altitudeIncrement);
+        target = std::clamp(std::ceil(target / 100.0f) * 100.0f, 0.0f, 50000.0f);
+        datarefManager->set<int>("laminar/B738/autopilot/mcp_alt_dial", static_cast<int>(target));
         return;
     }
 

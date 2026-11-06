@@ -25,7 +25,7 @@ ZiboAGPProfile::ZiboAGPProfile(ProductAGP *product) : AGPAircraftProfile(product
         this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/annunciator/left_gear_safe", [product](float gearSafe) {
-        product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_CENTER, gearSafe > 0.0f ? 1 : 0);
+        product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_LEFT, gearSafe > 0.0f ? 1 : 0);
     },
         this);
 
@@ -35,7 +35,7 @@ ZiboAGPProfile::ZiboAGPProfile(ProductAGP *product) : AGPAircraftProfile(product
         this);
 
     Dataref::getInstance()->monitorExistingDataref<float>("laminar/B738/annunciator/right_gear_safe", [product](float gearSafe) {
-        product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_CENTER, gearSafe > 0.0f ? 1 : 0);
+        product->setLedBrightness(AGPLed::LDG_GEAR_ARROW_GREEN_RIGHT, gearSafe > 0.0f ? 1 : 0);
     },
         this);
 

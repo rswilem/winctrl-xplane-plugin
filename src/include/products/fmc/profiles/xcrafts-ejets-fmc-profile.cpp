@@ -161,10 +161,11 @@ const std::vector<FMCButtonDef> &XCraftsEjetsFMCProfile::buttonDefs() const {
                         // {std::vector<FMCKey>{FMCKey::PFP4_NAV_RAD, FMCKey::PFP7_NAV_RAD}, "XCrafts/ERJ/" + cdu + "_WW_Key_NAV_RAD"},
                         // {FMCKey::PFP7_ALTN, "XCrafts/ERJ/" + cdu + "_WW_Key_ALTN"},
 
-                        {std::vector<FMCKey>{FMCKey::MCDU_SEC_FPLN, FMCKey::PFP_INIT_REF}, "XCrafts/ERJ/" + cdu + "/Key_NAV,XCrafts/ERJ/" + cdu + "/LSK4"}, // Nav IDENT
-                        {FMCKey::PFP3_CLB, "XCrafts/ERJ/" + cdu + "/Key_PERF,XCrafts/ERJ/" + cdu + "/RSK2"},                                                // Perf CLIMB
-                        {FMCKey::PFP3_CRZ, "XCrafts/ERJ/" + cdu + "/Key_PERF,XCrafts/ERJ/" + cdu + "/LSK2"},                                                // Perf CRUISE
-                        {std::vector<FMCKey>{FMCKey::MCDU_AIRPORT, FMCKey::PFP3_DES}, "XCrafts/ERJ/" + cdu + "/Key_PERF,XCrafts/ERJ/" + cdu + "/LSK3"},     // Perf DESCENT
+                        {FMCKey::PFP_INIT_REF, "XCrafts/ERJ/" + cdu + "/Key_NAV,XCrafts/ERJ/" + cdu + "/LSK4", FMCDatarefType::EXECUTE_MULTIPLE_CMD_ONCE}, // Nav IDENT
+                        {FMCKey::MCDU_SEC_FPLN, "XCrafts/ERJ/" + cdu + "/Key_NAV"},
+                        {FMCKey::PFP3_CLB, "XCrafts/ERJ/" + cdu + "/Key_PERF,XCrafts/ERJ/" + cdu + "/RSK2", FMCDatarefType::EXECUTE_MULTIPLE_CMD_ONCE},                                                // Perf CLIMB
+                        {FMCKey::PFP3_CRZ, "XCrafts/ERJ/" + cdu + "/Key_PERF,XCrafts/ERJ/" + cdu + "/LSK2", FMCDatarefType::EXECUTE_MULTIPLE_CMD_ONCE},                                                // Perf CRUISE
+                        {std::vector<FMCKey>{FMCKey::MCDU_AIRPORT, FMCKey::PFP3_DES}, "XCrafts/ERJ/" + cdu + "/Key_PERF,XCrafts/ERJ/" + cdu + "/LSK3", FMCDatarefType::EXECUTE_MULTIPLE_CMD_ONCE},     // Perf DESCENT
                                                                                                                                                             //        {std::vector<FMCKey>{FMCKey::PFP4_VNAV, FMCKey::PFP7_VNAV}, "XCrafts/ERJ/"+cdu+"/Key_NAV,XCrafts/ERJ/"+cdu+"/LSK3"}, // Nav TOD details
                                                                                                                                                             //        {FMCKey::PFP_HOLD, "XCrafts/ERJ/"+cdu+"/Key_NAV,XCrafts/ERJ/"+cdu+"/LSK3"}, // Nav HOLD
                                                                                                                                                             //        {FMCKey::PFP_FIX, "XCrafts/ERJ/"+cdu+"/Key_NAV,XCrafts/ERJ/"+cdu+"/LSK3"}, // Nav PILOT WAYPOINT
@@ -173,13 +174,13 @@ const std::vector<FMCButtonDef> &XCraftsEjetsFMCProfile::buttonDefs() const {
                         //        {FMCKey::PFP_DEP_ARR, "custom_tbd"},
 
                         {FMCKey::PROG, "XCrafts/ERJ/" + cdu + "/Key_PROG"},
-                        {FMCKey::PFP3_N1_LIMIT, "XCrafts/ERJ/" + cdu + "/Key_TRS"},
+                        {std::vector<FMCKey>{FMCKey::MCDU_FUEL_PRED, FMCKey::PFP3_N1_LIMIT}, "XCrafts/ERJ/" + cdu + "/Key_TRS"},
                         {FMCKey::MCDU_PERF, "XCrafts/ERJ/" + cdu + "/Key_PERF"},
                         {std::vector<FMCKey>{FMCKey::MCDU_INIT, FMCKey::PFP_ROUTE}, "XCrafts/ERJ/" + cdu + "/Key_RTE"},
-                        {std::vector<FMCKey>{FMCKey::MCDU_DATA, FMCKey::PFP4_FMC_COMM, FMCKey::PFP7_FMC_COMM}, "XCrafts/ERJ/" + cdu + "/Key_DLK"},
+                        {std::vector<FMCKey>{FMCKey::MCDU_DATA, FMCKey::MCDU_ATC_COMM, FMCKey::PFP4_FMC_COMM, FMCKey::PFP7_FMC_COMM}, "XCrafts/ERJ/" + cdu + "/Key_DLK"},
                         {std::vector<FMCKey>{FMCKey::MCDU_FPLN, FMCKey::PFP_LEGS}, "XCrafts/ERJ/" + cdu + "/Key_FPL"},
                         {std::vector<FMCKey>{FMCKey::MCDU_RAD_NAV, FMCKey::PFP4_NAV_RAD, FMCKey::PFP7_NAV_RAD}, "XCrafts/ERJ/" + cdu + "/Key_RADIO"},
-                        {FMCKey::MENU, "XCrafts/ERJ/" + cdu + "/Key_DLK"},
+                        {FMCKey::MENU, "XCrafts/ERJ/" + cdu + "/Key_MENU"},
                         {FMCKey::PAGE_PREV, "XCrafts/ERJ/" + cdu + "/Key_PREV"},
                         {FMCKey::PAGE_NEXT, "XCrafts/ERJ/" + cdu + "/Key_NEXT"},
 

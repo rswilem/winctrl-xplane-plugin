@@ -565,3 +565,91 @@ bool Font::ResizeCellHeight(std::vector<std::vector<unsigned char>> &data, unsig
 
     return padGlyphsToHeight(data, cellHeight, cellWidth);
 }
+
+namespace {
+struct CommandStream {
+        std::vector<unsigned char> bytes;
+        std::vector<std::pair<size_t, size_t>> origin;
+        std::vector<std::pair<size_t, size_t>> blocks;
+};
+
+bool parseCommandStream(const std::vector<std::vector<unsigned char>> &data, CommandStream &out) {
+    for (size_t k = 0; k < data.size(); k++) {
+        const auto &p = data[k];
+        if (p.size() < 4 || p[0] != 0xf0 || p[1] != 0x00) {
+            continue;
+        }
+        size_t length = std::min<size_t>(p[3], p.size() - 4);
+        for (size_t i = 0; i < length; i++) {
+            out.bytes.push_back(p[4 + i]);
+            out.origin.emplace_back(k, 4 + i);
+        }
+    }
+
+    size_t pos = 0;
+    while (pos < out.bytes.size()) {
+        if (pos + 17 > out.bytes.size() || out.bytes[pos + 1] != 0xbb) {
+            return false;
+        }
+        size_t end = pos + 17 + readU32(out.bytes, pos + 13);
+        if (end > out.bytes.size()) {
+            return false;
+        }
+        out.blocks.emplace_back(pos, end);
+        pos = end;
+    }
+    return true;
+}
+
+uint16_t blockFunctionId(const CommandStream &stream, size_t pos) {
+    return static_cast<uint16_t>(stream.bytes[pos + 4] | (stream.bytes[pos + 5] << 8));
+}
+} // namespace
+
+bool Font::RemoveCommandBlocks(std::vector<std::vector<unsigned char>> &data, uint16_t functionId) {
+    CommandStream stream;
+    if (!parseCommandStream(data, stream)) {
+        return false;
+    }
+
+    std::vector<bool> drop(stream.bytes.size(), false);
+    bool found = false;
+    for (const auto &[start, end] : stream.blocks) {
+        if (blockFunctionId(stream, start) == functionId) {
+            std::fill(drop.begin() + start, drop.begin() + end, true);
+            found = true;
+        }
+    }
+
+    if (!found) {
+        return false;
+    }
+
+    std::vector<std::vector<unsigned char>> kept(data.size());
+    for (size_t s = 0; s < stream.bytes.size(); s++) {
+        if (!drop[s]) {
+            kept[stream.origin[s].first].push_back(stream.bytes[s]);
+        }
+    }
+
+    std::vector<std::vector<unsigned char>> result;
+    result.reserve(data.size());
+    for (size_t k = 0; k < data.size(); k++) {
+        const auto &p = data[k];
+        if (p.size() < 4 || p[0] != 0xf0 || p[1] != 0x00 || p[3] == 0) {
+            result.push_back(p);
+            continue;
+        }
+        if (kept[k].empty()) {
+            continue;
+        }
+        std::vector<unsigned char> packet(p.size(), 0);
+        std::copy(p.begin(), p.begin() + 3, packet.begin());
+        packet[3] = static_cast<unsigned char>(kept[k].size());
+        std::copy(kept[k].begin(), kept[k].end(), packet.begin() + 4);
+        result.push_back(std::move(packet));
+    }
+
+    data = std::move(result);
+    return true;
+}

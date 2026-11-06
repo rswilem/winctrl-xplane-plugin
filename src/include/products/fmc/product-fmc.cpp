@@ -212,6 +212,9 @@ bool ProductFMC::connect() {
         uploadedFontKey = {};
         displayAckPending = false;
         deferredTextPage.clear();
+        pendingFontPackets.clear();
+        pendingFontFinish = false;
+        drawingPageActive = false;
         drawStream.clear();
         drawFillColorKnown = false;
 
@@ -293,6 +296,8 @@ void ProductFMC::blackout() {
     setAllLedsEnabled(false);
 
     // Runs right before disconnect: a page deferred behind the handshake would never be sent.
+    pendingFontPackets.clear();
+    pendingFontFinish = false;
     waitForDisplayGate();
     clearDisplay();
 }
@@ -316,10 +321,7 @@ void ProductFMC::update() {
     // Also without a profile: the handshake reply and a deferred page (e.g. the
     // clearDisplay before a profile loads) must still be handled.
     USBDevice::update();
-    serviceTextPage();
-    if (hasPendingDrawing()) {
-        presentDrawing();
-    }
+    serviceDisplay();
 
     if (!profile) {
         if (shouldRetryProfileMatch()) {
@@ -433,7 +435,7 @@ void ProductFMC::updatePage(bool forceUpdate) {
 
     // Previous page still rendering. lastUpdateCycle is untouched, so dataref
     // changes are picked up on the next call; only a forced update must be kept.
-    if (!displayGateOpen()) {
+    if (!displayReady()) {
         pendingForcedPageUpdate = pendingForcedPageUpdate || forceUpdate;
         return;
     }
@@ -483,6 +485,11 @@ void ProductFMC::draw(const std::vector<std::vector<char>> *pagePtr) {
     }
 
     const auto &p = pagePtr ? *pagePtr : page;
+    if (!drawStream.empty()) {
+        sendDrawingPage(p);
+        return;
+    }
+
     std::vector<uint8_t> buf;
 
     for (int i = 0; i < ProductFMC::PageLines; ++i) {
@@ -502,12 +509,18 @@ void ProductFMC::draw(const std::vector<std::vector<char>> *pagePtr) {
 }
 
 void ProductFMC::sendTextPage(std::vector<uint8_t> cells) {
-    if (!displayGateOpen()) {
+    if (!displayReady()) {
         deferredTextPage = std::move(cells);
         return;
     }
     deferredTextPage.clear();
+    drawingPageActive = false;
 
+    writeTextReports(cells);
+    sendDisplaySync();
+}
+
+void ProductFMC::writeTextReports(const std::vector<uint8_t> &cells) {
     for (size_t offset = 0; offset < cells.size(); offset += 63) {
         size_t length = std::min<size_t>(63, cells.size() - offset);
         std::vector<uint8_t> usbBuf(64, 0);
@@ -515,8 +528,110 @@ void ProductFMC::sendTextPage(std::vector<uint8_t> cells) {
         std::copy(cells.begin() + offset, cells.begin() + offset + length, usbBuf.begin() + 1);
         writeData(usbBuf);
     }
+}
 
-    // getCDUScreenLogicVersion, acked: answered once the page is rendered.
+void ProductFMC::appendArgbBlock(std::vector<uint8_t> &stream, uint16_t fid, uint32_t argb) {
+    const uint8_t colour[] = {(uint8_t) (argb >> 24), (uint8_t) (argb >> 16), (uint8_t) (argb >> 8), (uint8_t) argb};
+    appendCommandBlock(stream, fid, colour, sizeof(colour), false);
+}
+
+void ProductFMC::appendFillBlock(std::vector<uint8_t> &stream, uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+    const uint8_t rect[] = {(uint8_t) x, (uint8_t) (x >> 8), (uint8_t) y, (uint8_t) (y >> 8), (uint8_t) w, (uint8_t) (w >> 8), (uint8_t) h, (uint8_t) (h >> 8)};
+    appendCommandBlock(stream, 0x110, rect, sizeof(rect), false);
+}
+
+void ProductFMC::sendDrawingPage(const std::vector<std::vector<char>> &p) {
+    static constexpr uint32_t FormatColours[] = {0xff000000, 0xffffa500, 0xffffffff, 0xff00ffff, 0xff00ff3d, 0xffff63ff, 0xffff0000, 0xffffff00, 0xff615c42, 0xff777777, 0xff79735e};
+    static constexpr int FormatColourCount = sizeof(FormatColours) / sizeof(FormatColours[0]);
+    static constexpr uint32_t LargeFontId = 5;
+    static constexpr uint32_t SmallFontId = 6;
+
+    const FMCScreenLayout layout = FMCHardwareMapping::ScreenLayoutForHardware(hardwareType);
+    const uint16_t left = 36 + layout.x;
+    const uint16_t top = 20 + layout.y;
+
+    std::vector<uint8_t> stream;
+    appendArgbBlock(stream, 0x112, FormatColours[0]);
+    appendFillBlock(stream, 0, 0, ScreenWidth, ScreenHeight);
+
+    for (int i = 0; i < ProductFMC::PageLines; ++i) {
+        int column = 0;
+        while (column < ProductFMC::PageCharsPerLine) {
+            const int start = column;
+            int format = -1;
+            bool onlySpaces = true;
+            std::vector<uint8_t> text;
+
+            for (; column < ProductFMC::PageCharsPerLine; ++column) {
+                char color = p[i][column * ProductFMC::PageBytesPerChar];
+                bool fontSmall = p[i][column * ProductFMC::PageBytesPerChar + 1];
+                auto [dataLow, dataHigh] = dataFromColFont(color, fontSmall);
+                int cellFormat = dataLow | (dataHigh << 8);
+                if (format >= 0 && cellFormat != format) {
+                    break;
+                }
+                format = cellFormat;
+
+                char val = p[i][column * ProductFMC::PageBytesPerChar + ProductFMC::PageBytesPerChar - 1];
+                std::vector<uint8_t> glyph;
+                profile->mapCharacter(&glyph, val, fontSmall);
+                glyph.erase(std::remove(glyph.begin(), glyph.end(), 0), glyph.end());
+                if (glyph.empty()) {
+                    glyph.push_back(' ');
+                }
+                onlySpaces = onlySpaces && glyph.size() == 1 && glyph[0] == ' ';
+                text.insert(text.end(), glyph.begin(), glyph.end());
+            }
+
+            const bool small = format / 363 == 1;
+            const int textColour = std::min((format % 363) / 33, FormatColourCount - 1);
+            const int backColour = std::min((format % 33) / 3, FormatColourCount - 1);
+            const uint16_t x = left + start * layout.characterWidth;
+            const uint16_t y = top + i * layout.characterHeight;
+
+            if (backColour != 0) {
+                appendArgbBlock(stream, 0x112, FormatColours[backColour]);
+                appendFillBlock(stream, x, y, (column - start) * layout.characterWidth, layout.characterHeight);
+            }
+
+            if (onlySpaces) {
+                continue;
+            }
+
+            const uint32_t fontId = small ? SmallFontId : LargeFontId;
+            const uint8_t font[] = {(uint8_t) fontId, (uint8_t) (fontId >> 8), (uint8_t) (fontId >> 16), (uint8_t) (fontId >> 24)};
+            appendCommandBlock(stream, 0x111, font, sizeof(font), false);
+            appendArgbBlock(stream, 0x112, FormatColours[textColour]);
+            appendArgbBlock(stream, 0x113, FormatColours[backColour]);
+
+            std::vector<uint8_t> data = {(uint8_t) x, (uint8_t) (x >> 8), (uint8_t) y, (uint8_t) (y >> 8)};
+            data.insert(data.end(), text.begin(), text.end());
+            data.push_back(0x00);
+            appendCommandBlock(stream, 0x114, data.data(), (uint32_t) data.size(), false);
+        }
+    }
+
+    stream.insert(stream.end(), drawStream.begin(), drawStream.end());
+    drawStream.clear();
+    drawFillColorKnown = false;
+    appendCommandBlock(stream, 0x103, nullptr, 0, true);
+
+    if (!drawingPageActive) {
+        std::vector<uint8_t> blank;
+        blank.reserve(ProductFMC::PageLines * ProductFMC::PageCharsPerLine * 3);
+        for (unsigned int i = 0; i < ProductFMC::PageLines * ProductFMC::PageCharsPerLine; ++i) {
+            blank.insert(blank.end(), {0x42, 0x00, ' '});
+        }
+        writeTextReports(blank);
+        drawingPageActive = true;
+    }
+
+    sendCommandStream(stream);
+    expectDisplayAck(0x103);
+}
+
+void ProductFMC::sendDisplaySync() {
+    // getCDUScreenLogicVersion, acked: answered once everything sent before it is done.
     std::vector<uint8_t> sync;
     appendCommandBlock(sync, 0x11b, nullptr, 0, true);
     sendCommandStream(sync);
@@ -548,7 +663,7 @@ bool ProductFMC::presentDrawing() {
     if (drawStream.empty()) {
         return true;
     }
-    if (!displayGateOpen()) {
+    if (!displayReady()) {
         return false;
     }
 
@@ -608,14 +723,53 @@ bool ProductFMC::displayGateOpen() {
     return true;
 }
 
-void ProductFMC::serviceTextPage() {
-    if (deferredTextPage.empty() || !displayGateOpen()) {
+bool ProductFMC::displayReady() {
+    return pendingFontPackets.empty() && !pendingFontFinish && displayGateOpen();
+}
+
+void ProductFMC::serviceDisplay() {
+    if (!displayGateOpen()) {
         return;
     }
 
-    std::vector<uint8_t> cells = std::move(deferredTextPage);
-    deferredTextPage.clear();
-    sendTextPage(std::move(cells));
+    if (!pendingFontPackets.empty()) {
+        for (auto &packet : pendingFontPackets) {
+            writeData(packet);
+        }
+        pendingFontPackets.clear();
+        pendingFontFinish = true;
+        sendDisplaySync();
+        return;
+    }
+
+    if (pendingFontFinish) {
+        pendingFontFinish = false;
+        showBackground(FMCBackgroundVariant::BLACK);
+        setScreenPosition(pendingScreenX, pendingScreenY);
+        sendDisplaySync();
+        return;
+    }
+
+    if (!deferredTextPage.empty()) {
+        std::vector<uint8_t> cells = std::move(deferredTextPage);
+        deferredTextPage.clear();
+        sendTextPage(std::move(cells));
+        return;
+    }
+
+    if (hasPendingDrawing()) {
+        presentDrawing();
+    }
+}
+
+void ProductFMC::queueFontUpload(std::vector<std::vector<unsigned char>> font, unsigned char x, unsigned char y) {
+    Font::RemoveCommandBlocks(font, 0x11d);
+    pendingFontPackets = std::move(font);
+    pendingFontFinish = false;
+    pendingScreenX = x;
+    pendingScreenY = y;
+    lastUpdateCycle = 0;
+    serviceDisplay();
 }
 
 void ProductFMC::waitForDisplayGate() {
@@ -753,17 +907,9 @@ void ProductFMC::setFont(FontVariant preferredVariant, bool force) {
     // parse the structure, so we always send whatever we have.
     Font::ResizeCellHeight(font, layout.characterHeight, layout.characterWidth);
 
-    for (auto &fontBytes : font) {
-        writeData(fontBytes);
-    }
-
-    showBackground(FMCBackgroundVariant::BLACK);
-
-    setScreenPosition(layout.x, layout.y);
-
     uploadedFontKey = fontKeyFor(fontId);
-    lastUpdateCycle = 0;
-    Logger::getInstance()->info("Uploaded font '%s' (%zu packets)\n", uploadedFontKey.c_str(), font.size());
+    Logger::getInstance()->info("Uploading font '%s' (%zu packets)\n", uploadedFontKey.c_str(), font.size());
+    queueFontUpload(std::move(font), layout.x, layout.y);
 }
 
 void ProductFMC::setScreenLayout(FontVariant variant, unsigned char characterHeight, unsigned char characterWidth, unsigned char x, unsigned char y) {
@@ -778,19 +924,12 @@ void ProductFMC::setScreenLayout(FontVariant variant, unsigned char characterHei
         return;
     }
 
-    for (auto &fontBytes : font) {
-        writeData(fontBytes);
-    }
-
-    showBackground(FMCBackgroundVariant::BLACK);
-
-    // Screen position belongs with the character size: apply it in the same update.
-    setScreenPosition(x, y);
-
     // Record the geometry that is actually on the device, not the hardware default,
     // so a following setFont() for the hardware layout is not skipped as a duplicate.
     uploadedFontKey = "variant:" + std::to_string(static_cast<int>(variant)) + "|" + std::to_string(characterWidth) + "x" + std::to_string(characterHeight);
-    lastUpdateCycle = 0;
+
+    // Screen position belongs with the character size: applied after the same upload.
+    queueFontUpload(std::move(font), x, y);
 }
 
 void ProductFMC::setScreenPosition(unsigned char x, unsigned char y) {

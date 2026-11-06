@@ -54,9 +54,23 @@ class ProductFMC : public USBDevice {
         uint32_t drawFillColor = 0; // ARGB last sent to the device
         bool drawFillColorKnown = false;
 
+        bool drawingPageActive = false;
+
+        std::vector<std::vector<unsigned char>> pendingFontPackets;
+        bool pendingFontFinish = false;
+        unsigned char pendingScreenX = 0;
+        unsigned char pendingScreenY = 0;
+
         void sendTextPage(std::vector<uint8_t> cells);
+        void writeTextReports(const std::vector<uint8_t> &cells);
+        void sendDrawingPage(const std::vector<std::vector<char>> &p);
+        void appendArgbBlock(std::vector<uint8_t> &stream, uint16_t fid, uint32_t argb);
+        void appendFillBlock(std::vector<uint8_t> &stream, uint16_t x, uint16_t y, uint16_t w, uint16_t h);
         bool displayGateOpen();
-        void serviceTextPage();
+        bool displayReady();
+        void sendDisplaySync();
+        void serviceDisplay();
+        void queueFontUpload(std::vector<std::vector<unsigned char>> font, unsigned char x, unsigned char y);
         void waitForDisplayGate();
         bool isDisplayAck(const uint8_t *report, int reportLength) const;
         void appendCommandBlock(std::vector<uint8_t> &stream, uint16_t fid, const uint8_t *data, uint32_t length, bool respond);

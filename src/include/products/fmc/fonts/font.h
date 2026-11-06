@@ -3,6 +3,7 @@
 
 #include "fmc-hardware-mapping.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 enum class FontVariant : unsigned char {
@@ -39,6 +40,7 @@ class Font {
         // (default 23, the MCDU authored value). Returns false (and changes nothing)
         // if the font structure could not be parsed.
         static bool ResizeCellHeight(std::vector<std::vector<unsigned char>> &data, unsigned char cellHeight, unsigned char cellWidth = 23);
-};
+
+        static bool RemoveCommandBlocks(std::vector<std::vector<unsigned char>> &data, uint16_t functionId);};
 
 #endif

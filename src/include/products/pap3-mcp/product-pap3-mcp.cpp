@@ -5,6 +5,7 @@
 #include "dataref.h"
 #include "pap3-mcp-lcd-segments.h"
 #include "plugins-menu.h"
+#include "profiles/aerobask-phenom-pap3-mcp-profile.h"
 #include "profiles/b58-pap3-mcp-profile.h"
 #include "profiles/cl650-pap3-mcp-profile.h"
 #include "profiles/felis-742-pap3-mcp-profile.h"
@@ -90,6 +91,9 @@ void ProductPAP3MCP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (B58PAP3MCPProfile::IsEligible()) {
         profile = new B58PAP3MCPProfile(this);
+        profileReady = true;
+    } else if (AerobaskPhenomPAP3MCPProfile::IsEligible()) {
+        profile = new AerobaskPhenomPAP3MCPProfile(this);
         profileReady = true;
     } else if (CL650PAP3MCPProfile::IsEligible()) {
         profile = new CL650PAP3MCPProfile(this);

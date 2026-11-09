@@ -277,6 +277,8 @@
 		FF35DA7A0000000000000012 /* ff350-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FF35DA7A0000000000000011 /* ff350-fmc-profile.cpp */; };
 		FF35DA7A0000000000000013 /* ff350-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FF35DA7A0000000000000011 /* ff350-fmc-profile.cpp */; };
 		C2A2E8B2497C3FA12C29D5EC /* felis-742-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23AAFAF72D65D1BD01071823 /* felis-742-fmc-profile.cpp */; };
+		787A0000000000000000B0F1 /* magknight787-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 787A0000000000000000C0F1 /* magknight787-fmc-profile.cpp */; };
+		787A0000000000000000B0F2 /* magknight787-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 787A0000000000000000C0F1 /* magknight787-fmc-profile.cpp */; };
 		57EF9E58E791B83B5E22627D /* felis-742-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23AAFAF72D65D1BD01071823 /* felis-742-fmc-profile.cpp */; };
 		4730B226291199DA6328D3F6 /* cl650-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0C9F4F4F28542FEDE04C6EC /* cl650-pap3-mcp-profile.cpp */; };
 		9B7934BAE381C955E8AC693A /* cl650-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0C9F4F4F28542FEDE04C6EC /* cl650-pap3-mcp-profile.cpp */; };
@@ -582,6 +584,8 @@
 		FF35DA7A0000000000000011 /* ff350-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "ff350-fmc-profile.cpp"; sourceTree = "<group>"; };
 		66CE6E5F0EF8F2CF646BFF9B /* felis-742-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "felis-742-fmc-profile.h"; sourceTree = "<group>"; };
 		23AAFAF72D65D1BD01071823 /* felis-742-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "felis-742-fmc-profile.cpp"; sourceTree = "<group>"; };
+		787A0000000000000000A0F1 /* magknight787-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "magknight787-fmc-profile.h"; sourceTree = "<group>"; };
+		787A0000000000000000C0F1 /* magknight787-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "magknight787-fmc-profile.cpp"; sourceTree = "<group>"; };
 		1C9AB43D877449CEB6753E94 /* cl650-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "cl650-pap3-mcp-profile.h"; sourceTree = "<group>"; };
 		E0C9F4F4F28542FEDE04C6EC /* cl650-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cl650-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
 		CC9BDD6A5A0D5AF1CB23985E /* felis-742-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "felis-742-pap3-mcp-profile.h"; sourceTree = "<group>"; };
@@ -829,6 +833,8 @@
 				F6A1493C2E4F04AE00FB8395 /* zibo-fmc-profile.cpp */,
 				66CE6E5F0EF8F2CF646BFF9B /* felis-742-fmc-profile.h */,
 				23AAFAF72D65D1BD01071823 /* felis-742-fmc-profile.cpp */,
+				787A0000000000000000A0F1 /* magknight787-fmc-profile.h */,
+				787A0000000000000000C0F1 /* magknight787-fmc-profile.cpp */,
 				F6A149262E4F03A400FB8395 /* laminar-a333-fmc-profile.h */,
 				F6A149272E4F03A400FB8395 /* laminar-a333-fmc-profile.cpp */,
 				F6A149282E4F03A400FB8395 /* toliss-fmc-profile.h */,
@@ -1285,6 +1291,7 @@
 				E7184EB78A4EA145D27D068B /* felis-742-pap3-mcp-profile.cpp in Sources */,
 				4730B226291199DA6328D3F6 /* cl650-pap3-mcp-profile.cpp in Sources */,
 				C2A2E8B2497C3FA12C29D5EC /* felis-742-fmc-profile.cpp in Sources */,
+				787A0000000000000000B0F1 /* magknight787-fmc-profile.cpp in Sources */,
 				F6A1493D2E4F04AE00FB8395 /* zibo-fmc-profile.cpp in Sources */,
 				F6C6E0332E8D5DAA00558F46 /* product-pap3-mcp.cpp in Sources */,
 				838AA8B52EEF2918006444F6 /* ff350-fcu-efis-profile.cpp in Sources */,
@@ -1426,6 +1433,7 @@
 				49FAA1E3ABCDC6A1E2718082 /* felis-742-pap3-mcp-profile.cpp in Sources */,
 				9B7934BAE381C955E8AC693A /* cl650-pap3-mcp-profile.cpp in Sources */,
 				57EF9E58E791B83B5E22627D /* felis-742-fmc-profile.cpp in Sources */,
+				787A0000000000000000B0F2 /* magknight787-fmc-profile.cpp in Sources */,
 				F635AD462E0579E9005D6CDC /* usbcontroller_mac.cpp in Sources */,
 				F6827E0A2E05652E00382B28 /* WinctrlDesktopApp.swift in Sources */,
 				F6EBDC152FC6CFD1005AFCBD /* zibo-agp-profile.cpp in Sources */,

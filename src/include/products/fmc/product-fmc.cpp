@@ -19,6 +19,7 @@
 #include "profiles/jar330-fmc-profile.h"
 #include "profiles/laminar-a333-fmc-profile.h"
 #include "profiles/laminar-citx-fmc-profile.h"
+#include "profiles/magknight787-fmc-profile.h"
 #include "profiles/pa28-fmc-profile.h"
 #include "profiles/q4xp-fmc-profile.h"
 #include "profiles/rotatemd11-fmc-profile.h"
@@ -180,6 +181,10 @@ void ProductFMC::setProfileForCurrentAircraft() {
     } else if (Felis742LTNFMCProfile::IsEligible()) {
         clearDisplay();
         profile = new Felis742LTNFMCProfile(this);
+        profileReady = true;
+    } else if (Magknight787FMCProfile::IsEligible()) {
+        clearDisplay();
+        profile = new Magknight787FMCProfile(this);
         profileReady = true;
     } else {
         profile = nullptr;

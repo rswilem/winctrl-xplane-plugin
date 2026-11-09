@@ -484,10 +484,11 @@ void XCraftsEjetsFMCProfile::drawRadioLines(bool visible) {
     const uint16_t comBottom = top + 5 * layout.characterHeight;
     const uint16_t navBottom = top + 9 * layout.characterHeight;
     const uint8_t shade = visible ? 0xff : 0x00;
+    const uint16_t thickness = 4;
 
-    product->fillRect(left, comBottom - 1, width, 2, shade, shade, shade);
-    product->fillRect(left, navBottom - 1, width, 2, shade, shade, shade);
-    product->fillRect(left + width / 2 - 1, top + layout.characterHeight, 2, navBottom - top - layout.characterHeight, shade, shade, shade);
+    product->fillRect(left, comBottom - 1, width, thickness, shade, shade, shade);
+    product->fillRect(left, navBottom - 1, width, thickness, shade, shade, shade);
+    product->fillRect(left + width / 2 - 1, top + layout.characterHeight, thickness, navBottom - top - layout.characterHeight, shade, shade, shade);
 
     radioLinesVisible = visible;
 }

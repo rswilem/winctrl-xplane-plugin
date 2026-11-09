@@ -15,6 +15,12 @@ class ZiboAGPProfile : public AGPAircraftProfile {
         void buttonPressed(const AGPButtonDef *button, XPLMCommandPhase phase) override;
 
         void updateDisplays() override;
+
+    private:
+        int clockTarget = 0;
+        int clockPressesLeft = 0;
+
+        void stepClock();
 };
 
 #endif

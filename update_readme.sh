@@ -62,6 +62,7 @@ c525|TorqueSim Citation CJ525
 cl650|Hot Start CL650
 felis-742|Felis 747-200 Classic
 magknight787|Magknight 787
+aerobask-phenom|Aerobask Phenom 300
 "
 
 # Function to get display name

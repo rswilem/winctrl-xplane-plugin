@@ -3,6 +3,7 @@
 #include "appstate.h"
 #include "dataref.h"
 #include "plugins-menu.h"
+#include "profiles/aerobask-phenom-rmp-profile.h"
 #include "profiles/cl650-rmp-profile.h"
 #include "profiles/felis-742-rmp-profile.h"
 #include "profiles/ff777-rmp-profile.h"
@@ -78,6 +79,9 @@ void ProductRMP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (FF777RMPProfile::IsEligible()) {
         profile = new FF777RMPProfile(this);
+        profileReady = true;
+    } else if (AerobaskPhenomRMPProfile::IsEligible()) {
+        profile = new AerobaskPhenomRMPProfile(this);
         profileReady = true;
     } else if (CL650RMPProfile::IsEligible()) {
         profile = new CL650RMPProfile(this);

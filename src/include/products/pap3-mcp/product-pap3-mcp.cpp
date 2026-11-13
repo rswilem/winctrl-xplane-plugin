@@ -5,6 +5,7 @@
 #include "dataref.h"
 #include "pap3-mcp-lcd-segments.h"
 #include "plugins-menu.h"
+#include "profiles/aerobask-phenom-pap3-mcp-profile.h"
 #include "profiles/b58-pap3-mcp-profile.h"
 #include "profiles/cl650-pap3-mcp-profile.h"
 #include "profiles/felis-742-pap3-mcp-profile.h"
@@ -90,6 +91,9 @@ void ProductPAP3MCP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (B58PAP3MCPProfile::IsEligible()) {
         profile = new B58PAP3MCPProfile(this);
+        profileReady = true;
+    } else if (AerobaskPhenomPAP3MCPProfile::IsEligible()) {
+        profile = new AerobaskPhenomPAP3MCPProfile(this);
         profileReady = true;
     } else if (CL650PAP3MCPProfile::IsEligible()) {
         profile = new CL650PAP3MCPProfile(this);
@@ -198,12 +202,13 @@ void ProductPAP3MCP::updateDisplays(bool force) {
         return;
     }
 
-    bool shouldUpdate = force;
+    // The first update always runs, so a profile without display datarefs still sets the windows
+    bool shouldUpdate = force || !lastUpdateCycle;
     auto datarefManager = Dataref::getInstance();
     datarefManager->pollDisplayDatarefs(profile->displayDatarefs());
 
     for (const std::string &dataref : profile->displayDatarefs()) {
-        if (!lastUpdateCycle || datarefManager->getCachedLastUpdate(dataref.c_str()) > lastUpdateCycle) {
+        if (datarefManager->getCachedLastUpdate(dataref.c_str()) > lastUpdateCycle) {
             shouldUpdate = true;
             break;
         }

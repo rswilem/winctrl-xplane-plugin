@@ -5,6 +5,7 @@
 #include "dataref.h"
 #include "plugins-menu.h"
 #include "profiles/a220-fmc-profile.h"
+#include "profiles/aerobask-phenom-fmc-profile.h"
 #include "profiles/bae146-fmc-profile.h"
 #include "profiles/c525-fmc-profile.h"
 #include "profiles/ff350-fmc-profile.h"
@@ -185,6 +186,10 @@ void ProductFMC::setProfileForCurrentAircraft() {
     } else if (Magknight787FMCProfile::IsEligible()) {
         clearDisplay();
         profile = new Magknight787FMCProfile(this);
+        profileReady = true;
+    } else if (AerobaskPhenomFMCProfile::IsEligible()) {
+        clearDisplay();
+        profile = new AerobaskPhenomFMCProfile(this);
         profileReady = true;
     } else {
         profile = nullptr;

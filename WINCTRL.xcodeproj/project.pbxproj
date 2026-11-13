@@ -292,6 +292,8 @@
 		5244FC1C27BBA0427A10B451 /* cl650-rmp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E858DBBD741036E1627B4157 /* cl650-rmp-profile.cpp */; };
 		0FFEACEDF8AB34F22C52BF69 /* felis-742-rmp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7C54AC3F80C0103E680F5E9 /* felis-742-rmp-profile.cpp */; };
 		C2EE6FFCBA54D800D3C0A58A /* felis-742-rmp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7C54AC3F80C0103E680F5E9 /* felis-742-rmp-profile.cpp */; };
+		9C28A0033010000000AA0001 /* pa28-rmp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C28A0013010000000AA0001 /* pa28-rmp-profile.cpp */; };
+		9C28A0043010000000AA0001 /* pa28-rmp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C28A0013010000000AA0001 /* pa28-rmp-profile.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -598,6 +600,8 @@
 		E858DBBD741036E1627B4157 /* cl650-rmp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cl650-rmp-profile.cpp"; sourceTree = "<group>"; };
 		13365D5B5E9BA9A99A24511A /* felis-742-rmp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "felis-742-rmp-profile.h"; sourceTree = "<group>"; };
 		B7C54AC3F80C0103E680F5E9 /* felis-742-rmp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "felis-742-rmp-profile.cpp"; sourceTree = "<group>"; };
+		9C28A0023010000000AA0001 /* pa28-rmp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "pa28-rmp-profile.h"; sourceTree = "<group>"; };
+		9C28A0013010000000AA0001 /* pa28-rmp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "pa28-rmp-profile.cpp"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -652,6 +656,8 @@
 				F67FA47B2FFDA4990027506D /* zibo-rmp-profile.cpp */,
 				13365D5B5E9BA9A99A24511A /* felis-742-rmp-profile.h */,
 				B7C54AC3F80C0103E680F5E9 /* felis-742-rmp-profile.cpp */,
+				9C28A0023010000000AA0001 /* pa28-rmp-profile.h */,
+				9C28A0013010000000AA0001 /* pa28-rmp-profile.cpp */,
 				63B6E5A60A7DB918D895DC89 /* cl650-rmp-profile.h */,
 				E858DBBD741036E1627B4157 /* cl650-rmp-profile.cpp */,
 			);
@@ -1285,6 +1291,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0FFEACEDF8AB34F22C52BF69 /* felis-742-rmp-profile.cpp in Sources */,
+				9C28A0033010000000AA0001 /* pa28-rmp-profile.cpp in Sources */,
 				D91A475F593C3053EA90F2D8 /* cl650-rmp-profile.cpp in Sources */,
 				E4DCF2C8EA1EAB8A4BBD9F84 /* felis-742-pdc-profile.cpp in Sources */,
 				F52BEC894112874685541B32 /* cl650-pdc-profile.cpp in Sources */,
@@ -1427,6 +1434,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C2EE6FFCBA54D800D3C0A58A /* felis-742-rmp-profile.cpp in Sources */,
+				9C28A0043010000000AA0001 /* pa28-rmp-profile.cpp in Sources */,
 				5244FC1C27BBA0427A10B451 /* cl650-rmp-profile.cpp in Sources */,
 				E6959BB6F4822CD99A339DFB /* felis-742-pdc-profile.cpp in Sources */,
 				50CDF2EE08DE1FF62D96CA3F /* cl650-pdc-profile.cpp in Sources */,

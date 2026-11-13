@@ -26,7 +26,7 @@ TolissFMCProfile::TolissFMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
     },
         this);
 
-    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/DUBrightness", [product](const std::vector<float> &brightness) {
+    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/DUBrightness", [this, product](const std::vector<float> &brightness) {
         if (brightness.size() < 8) {
             return;
         }
@@ -46,9 +46,7 @@ TolissFMCProfile::TolissFMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
 
         uint8_t screenBrightness = hasPower ? brightness[product->deviceVariant == FMCDeviceVariant::VARIANT_CAPTAIN ? 6 : 7] * 255 : 0;
 
-        // Read com power to simulate bus switching flicker
-        bool hasComPower = Dataref::getInstance()->get<bool>("sim/cockpit2/radios/actuators/com1_power");
-        if (!hasComPower) {
+        if (!mcduBusPowered) {
             screenBrightness = 0;
         }
 
@@ -62,11 +60,65 @@ TolissFMCProfile::TolissFMCProfile(ProductFMC *product) : FMCAircraftProfile(pro
     },
         this);
 
-    Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit2/radios/actuators/com1_power", [product](bool enabled) {
+    std::vector<std::string> rmpSwitchRefs;
+    for (const char *ref : {"AirbusFBW/RMP1Switch", "AirbusFBW/RMP2Switch", "AirbusFBW/RMP3Switch"}) {
+        if (Dataref::getInstance()->exists(ref)) {
+            rmpSwitchRefs.push_back(ref);
+        }
+    }
+
+    std::string icao = Dataref::getInstance()->get<std::string>("sim/aircraft/view/acf_ICAO");
+    std::vector<size_t> mcduDcBuses;
+    if (icao.starts_with("A31") || icao.starts_with("A32") || icao.starts_with("A20") || icao.starts_with("A21")) {
+        mcduDcBuses = {2, 3};
+    } else if (icao.starts_with("A339")) {
+        mcduDcBuses = {7};
+    }
+
+    bool useDcBusVoltages = !mcduDcBuses.empty() && Dataref::getInstance()->exists("AirbusFBW/DCBusVoltages");
+
+    auto refreshMcduBusPowered = [this, rmpSwitchRefs, mcduDcBuses, useDcBusVoltages]() {
+        bool anyRmpOn = rmpSwitchRefs.empty();
+        for (const std::string &ref : rmpSwitchRefs) {
+            anyRmpOn = anyRmpOn || Dataref::getInstance()->get<int>(ref.c_str()) != 0;
+        }
+
+        bool powered = true;
+        if (anyRmpOn) {
+            powered = Dataref::getInstance()->get<bool>("sim/cockpit2/radios/actuators/com1_power");
+        } else if (useDcBusVoltages) {
+            std::vector<float> voltages = Dataref::getInstance()->get<std::vector<float>>("AirbusFBW/DCBusVoltages");
+            for (size_t bus : mcduDcBuses) {
+                powered = powered && (bus >= voltages.size() || voltages[bus] > 0.0f);
+            }
+        }
+
+        if (powered == mcduBusPowered) {
+            return;
+        }
+
+        mcduBusPowered = powered;
         Dataref::getInstance()->executeChangedCallbacksForDataref("AirbusFBW/DUBrightness");
-        Dataref::getInstance()->executeChangedCallbacksForDataref(ifXPlane11("AirbusFBW/MCDUIntegBrightness", "AirbusFBW/MCDUIntegBrightness_Raw"));
+    };
+
+    Dataref::getInstance()->monitorExistingDataref<bool>("sim/cockpit2/radios/actuators/com1_power", [refreshMcduBusPowered](bool) {
+        refreshMcduBusPowered();
     },
         this);
+
+    for (const std::string &ref : rmpSwitchRefs) {
+        Dataref::getInstance()->monitorExistingDataref<int>(ref.c_str(), [refreshMcduBusPowered](int) {
+            refreshMcduBusPowered();
+        },
+            this);
+    }
+
+    if (useDcBusVoltages) {
+        Dataref::getInstance()->monitorExistingDataref<std::vector<float>>("AirbusFBW/DCBusVoltages", [refreshMcduBusPowered](const std::vector<float> &) {
+            refreshMcduBusPowered();
+        },
+            this);
+    }
 
     Dataref::getInstance()->monitorExistingDataref<int>("AirbusFBW/AnnunMode", [this, product](int annunMode) {
         product->setAllLedsEnabled(annunMode == 2);

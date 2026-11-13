@@ -11,6 +11,7 @@ class TolissFMCProfile : public FMCAircraftProfile {
         bool scratchpadPaddingActive = false;
         bool isSelfTest = false;
         unsigned char selfTestDisplayHelper = 0;
+        bool mcduBusPowered = true;
 
     public:
         TolissFMCProfile(ProductFMC *product);

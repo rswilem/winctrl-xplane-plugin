@@ -756,6 +756,12 @@ void ProductFMC::serviceDisplay() {
         pendingFontFinish = false;
         showBackground(FMCBackgroundVariant::BLACK);
         setScreenPosition(pendingScreenX, pendingScreenY);
+
+        std::map<uint8_t, uint8_t> brightnessToRestore = std::move(lastLedBrightness);
+        lastLedBrightness.clear();
+        for (const auto &[led, brightness] : brightnessToRestore) {
+            setLedBrightness(static_cast<FMCLed>(led), brightness);
+        }
         sendDisplaySync();
         return;
     }

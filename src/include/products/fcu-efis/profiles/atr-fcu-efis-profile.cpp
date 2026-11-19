@@ -65,9 +65,9 @@ ATRFCUEfisProfile::ATRFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraftP
 
 
 // Retroilluminazione pulsanti: il dataref fornisce un valore da 0 a 1,
-    // il LED vuole un valore da 0 a 255.
     Dataref::getInstance()->monitorExistingDataref<float>("DWSim/ATR_Series/lit/cockpit/mipPed/brightness", [product](float brightness) {
-        uint8_t target = brightnessToLed(brightness);
+        float level = std::isfinite(brightness) ? std::clamp(brightness, 0.0f, 1.0f) : 0.0f;
+        uint8_t target = static_cast<uint8_t>(std::clamp(std::lround(level * 255.0f), 0L, 255L));
         product->setLedBrightness(FCUEfisLed::BACKLIGHT, target);
         product->setLedBrightness(FCUEfisLed::EXPED_BACKLIGHT, target);
         product->setLedBrightness(FCUEfisLed::EFISL_BACKLIGHT, target);

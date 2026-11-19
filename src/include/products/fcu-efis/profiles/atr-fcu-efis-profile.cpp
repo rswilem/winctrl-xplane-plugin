@@ -15,15 +15,8 @@
 static const std::string ATR_ALT_SEL = "DWSim/ATR_Series/afcs/alt_sel_ft";
 static const std::string ATR_HDG_SEL = "DWSim/ATR_Series/afcs/hdg_sel_deg";
 
-
-
-// DA COMPLETARE: nomi dei dataref di velocita' (IAS) e V/S selezionate.
-// Finche' restano vuoti, il display relativo mostra solo zeri.
 static const std::string ATR_SPD_SEL = "DWSim/ATR_Series/afcs/spd_target_kt";
 static const std::string ATR_VS_SEL = "DWSim/ATR_Series/afcs/vs_target_fpm";
-
-// Baro: dataref standard di X-Plane, come nel profilo Q4XP.
-// Se l'ATR usa dataref propri, sostituirli qui.
 static const std::string ATR_BARO_LEFT = "sim/cockpit/misc/barometer_setting";
 static const std::string ATR_BARO_RIGHT = "sim/cockpit/misc/barometer_setting2";
 
@@ -55,9 +48,35 @@ static float readOptional(const std::string &name, float fallback = 0.0f) {
     return static_cast<float>(dm->getCached<T>(name.c_str()));
 }
 
+// Converte una luminosita' da 0..1 (anche 0.2, 0.3, ...) in un valore LED 0..255.
+// Valori fuori scala vengono limitati; valori non numerici diventano 0.
+static uint8_t brightnessToLed(float level) {
+    if (!std::isfinite(level)) {
+        return 0;
+    }
+
+    float clamped = std::clamp(level, 0.0f, 1.0f);
+    long scaled = std::lround(clamped * 255.0f);
+    return static_cast<uint8_t>(std::clamp(scaled, 0L, 255L));
+}
+
 ATRFCUEfisProfile::ATRFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraftProfile(product) {
     XPLMDebugString("WINCTRL: ATR FCU/EFIS profile loaded\n");
 
+
+// Retroilluminazione pulsanti: il dataref fornisce un valore da 0 a 1,
+    // il LED vuole un valore da 0 a 255.
+    Dataref::getInstance()->monitorExistingDataref<float>("DWSim/ATR_Series/lit/cockpit/mipPed/brightness", [product](float brightness) {
+        uint8_t target = brightnessToLed(brightness);
+        product->setLedBrightness(FCUEfisLed::BACKLIGHT, target);
+        product->setLedBrightness(FCUEfisLed::EXPED_BACKLIGHT, target);
+        product->setLedBrightness(FCUEfisLed::EFISL_BACKLIGHT, target);
+        product->setLedBrightness(FCUEfisLed::EFISR_BACKLIGHT, target);
+        product->forceStateSync();
+    },
+        this);
+
+/*
     product->setLedBrightness(FCUEfisLed::BACKLIGHT, BUTTON_BACKLIGHT);
     product->setLedBrightness(FCUEfisLed::EXPED_BACKLIGHT, BUTTON_BACKLIGHT);
     product->setLedBrightness(FCUEfisLed::EFISL_BACKLIGHT, BUTTON_BACKLIGHT);
@@ -69,6 +88,16 @@ ATRFCUEfisProfile::ATRFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraftP
     product->setLedBrightness(FCUEfisLed::OVERALL_GREEN, 255);
     product->setLedBrightness(FCUEfisLed::EFISL_OVERALL_GREEN, 255);
     product->setLedBrightness(FCUEfisLed::EFISR_OVERALL_GREEN, 255);
+*/
+
+    product->setLedBrightness(FCUEfisLed::SCREEN_BACKLIGHT, 128);
+    product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, 128);
+    product->setLedBrightness(FCUEfisLed::EFISR_SCREEN_BACKLIGHT, 128);
+    product->setLedBrightness(FCUEfisLed::OVERALL_GREEN, 255);
+    product->setLedBrightness(FCUEfisLed::EFISL_OVERALL_GREEN, 255);
+    product->setLedBrightness(FCUEfisLed::EFISR_OVERALL_GREEN, 255);
+
+
     product->forceStateSync();
 }
 
@@ -99,7 +128,6 @@ const std::vector<std::string> &ATRFCUEfisProfile::displayDatarefs() const {
 }
 
 const std::unordered_map<uint16_t, FCUEfisButtonDef> &ATRFCUEfisProfile::buttonDefs() const {
-    // Pulsanti e manopole sono gestiti altrove: nessuna associazione qui.
     static const std::unordered_map<uint16_t, FCUEfisButtonDef> buttons = {
         // FCU buttons
         {3,  {"AP1",  "DWSim/ATR_Series/commands/front/afcs/apPushButton"}},
@@ -204,7 +232,7 @@ void ATRFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.vsHorizontalLine = false;
     data.vsVerticalLine = false;
 
-    // EFIS Baro (stessa gestione del profilo Q4XP; 29.92 se il dataref manca)
+    // EFIS Baro
     float baro1 = readOptional<BaroType>(ATR_BARO_LEFT, 29.92f);
     data.efisLeft.displayEnabled = true;
     data.efisLeft.unitIsInHg = false;

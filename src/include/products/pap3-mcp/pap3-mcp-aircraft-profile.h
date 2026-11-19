@@ -77,6 +77,9 @@ struct PAP3MCPDisplayData {
 
         bool spdMach = false; // Speed window is in MACH mode (renders ".XX"/".XXX" instead of IAS)
 
+        bool headingTrk = false;
+        bool vsFpa = false;
+
         // Special display flags
         bool digitA = false; // Special 'A' digit for the SPD window
         bool digitB = false; // Special '8' digit for bank angle

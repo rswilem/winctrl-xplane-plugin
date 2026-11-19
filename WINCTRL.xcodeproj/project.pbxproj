@@ -235,9 +235,11 @@
 		F6C6E0302E8D5DAA00558F46 /* product-pap3-mcp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6C6E02A2E8D5DAA00558F46 /* product-pap3-mcp.cpp */; };
 		F6C6E0312E8D5DAA00558F46 /* laminar-737-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6C6E02C2E8D5DAA00558F46 /* laminar-737-pap3-mcp-profile.cpp */; };
 		F6C6E0322E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6C6E02E2E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp */; };
+		98EC64D8A3396AA09FD9638E /* toliss-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F040A3CF01C147E3CA09D /* toliss-pap3-mcp-profile.cpp */; };
 		F6C6E0332E8D5DAA00558F46 /* product-pap3-mcp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6C6E02A2E8D5DAA00558F46 /* product-pap3-mcp.cpp */; };
 		F6C6E0342E8D5DAA00558F46 /* laminar-737-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6C6E02C2E8D5DAA00558F46 /* laminar-737-pap3-mcp-profile.cpp */; };
 		F6C6E0352E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6C6E02E2E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp */; };
+		E3A625EEF44C777DFD93443F /* toliss-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F040A3CF01C147E3CA09D /* toliss-pap3-mcp-profile.cpp */; };
 		F6CC2B492F0E4E5100C0A4D8 /* ff777-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8321A6012ED27B1E00E3746A /* ff777-fcu-efis-profile.cpp */; };
 		F6CC2B4A2F0E4E5500C0A4D8 /* ff350-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 838AA8B42EEF2918006444F6 /* ff350-fcu-efis-profile.cpp */; };
 		F6CC2B4B2F0E4E5500C0A4D8 /* ff767-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83124BCF2EE0A3D700C34D9D /* ff767-fcu-efis-profile.cpp */; };
@@ -266,8 +268,10 @@
 		F6EBDC142FC6CFD1005AFCBD /* zibo-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC132FC6CFD1005AFCBD /* zibo-agp-profile.cpp */; };
 		F6EBDC152FC6CFD1005AFCBD /* zibo-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC132FC6CFD1005AFCBD /* zibo-agp-profile.cpp */; };
 		F6EF56242F0AC43300AB61F1 /* zibo-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EF561E2F0AC43300AB61F1 /* zibo-pdc-profile.cpp */; };
+		7D570AC28F1B7B91EC5835D1 /* toliss-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F9AC86F38BBB3871F5C9FD6 /* toliss-pdc-profile.cpp */; };
 		F6EF56252F0AC43300AB61F1 /* product-pdc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EF56222F0AC43300AB61F1 /* product-pdc.cpp */; };
 		F6EF56262F0AC43300AB61F1 /* zibo-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EF561E2F0AC43300AB61F1 /* zibo-pdc-profile.cpp */; };
+		22484F33C3EB75ACB3D109DB /* toliss-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F9AC86F38BBB3871F5C9FD6 /* toliss-pdc-profile.cpp */; };
 		F6EF56272F0AC43300AB61F1 /* product-pdc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EF56222F0AC43300AB61F1 /* product-pdc.cpp */; };
 		F6F6F4E92EBF976E00321C19 /* ButtonIdentificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F6F4E72EBF976E00321C19 /* ButtonIdentificationView.swift */; };
 		F6F6F4EA2EBF976E00321C19 /* ButtonMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F6F4E82EBF976E00321C19 /* ButtonMapping.swift */; };
@@ -553,7 +557,9 @@
 		F6C6E02B2E8D5DAA00558F46 /* laminar-737-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "laminar-737-pap3-mcp-profile.h"; sourceTree = "<group>"; };
 		F6C6E02C2E8D5DAA00558F46 /* laminar-737-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "laminar-737-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
 		F6C6E02D2E8D5DAA00558F46 /* zibo-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zibo-pap3-mcp-profile.h"; sourceTree = "<group>"; };
+		A20DA20342FD42EE09A17EBE /* toliss-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "toliss-pap3-mcp-profile.h"; sourceTree = "<group>"; };
 		F6C6E02E2E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "zibo-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
+		8D8F040A3CF01C147E3CA09D /* toliss-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "toliss-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
 		F6CC2B512F0E5F4B00C0A4D8 /* ff767-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ff767-pdc-profile.h"; sourceTree = "<group>"; };
 		F6CC2B4D2F0E5F4B00C0A4D8 /* ff777-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ff777-pdc-profile.h"; sourceTree = "<group>"; };
 		F6CC2B522F0E5F4B00C0A4D8 /* ff767-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "ff767-pdc-profile.cpp"; sourceTree = "<group>"; };
@@ -581,7 +587,9 @@
 		F6EBDC122FC6CFD1005AFCBD /* zibo-agp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zibo-agp-profile.h"; sourceTree = "<group>"; };
 		F6EBDC132FC6CFD1005AFCBD /* zibo-agp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "zibo-agp-profile.cpp"; sourceTree = "<group>"; };
 		F6EF561D2F0AC43300AB61F1 /* zibo-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zibo-pdc-profile.h"; sourceTree = "<group>"; };
+		6644253901E7A345EE57AFFA /* toliss-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "toliss-pdc-profile.h"; sourceTree = "<group>"; };
 		F6EF561E2F0AC43300AB61F1 /* zibo-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "zibo-pdc-profile.cpp"; sourceTree = "<group>"; };
+		7F9AC86F38BBB3871F5C9FD6 /* toliss-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "toliss-pdc-profile.cpp"; sourceTree = "<group>"; };
 		F6EF56202F0AC43300AB61F1 /* pdc-aircraft-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "pdc-aircraft-profile.h"; sourceTree = "<group>"; };
 		F6EF56212F0AC43300AB61F1 /* product-pdc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "product-pdc.h"; sourceTree = "<group>"; };
 		F6EF56222F0AC43300AB61F1 /* product-pdc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "product-pdc.cpp"; sourceTree = "<group>"; };
@@ -1074,7 +1082,9 @@
 				F6C6E02B2E8D5DAA00558F46 /* laminar-737-pap3-mcp-profile.h */,
 				F6C6E02C2E8D5DAA00558F46 /* laminar-737-pap3-mcp-profile.cpp */,
 				F6C6E02D2E8D5DAA00558F46 /* zibo-pap3-mcp-profile.h */,
+				A20DA20342FD42EE09A17EBE /* toliss-pap3-mcp-profile.h */,
 				F6C6E02E2E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp */,
+				8D8F040A3CF01C147E3CA09D /* toliss-pap3-mcp-profile.cpp */,
 				CC9BDD6A5A0D5AF1CB23985E /* felis-742-pap3-mcp-profile.h */,
 				7605D03085ABE06F3428CEDF /* felis-742-pap3-mcp-profile.cpp */,
 				1C9AB43D877449CEB6753E94 /* cl650-pap3-mcp-profile.h */,
@@ -1163,7 +1173,9 @@
 			isa = PBXGroup;
 			children = (
 				F6EF561D2F0AC43300AB61F1 /* zibo-pdc-profile.h */,
+				6644253901E7A345EE57AFFA /* toliss-pdc-profile.h */,
 				F6EF561E2F0AC43300AB61F1 /* zibo-pdc-profile.cpp */,
+				7F9AC86F38BBB3871F5C9FD6 /* toliss-pdc-profile.cpp */,
 				4B64E2D0096EC419AD85A9DB /* felis-742-pdc-profile.h */,
 				5C1803C839C33523CD0DF01D /* felis-742-pdc-profile.cpp */,
 				D69958F2937C18C55C3E2214 /* cl650-pdc-profile.h */,
@@ -1334,6 +1346,7 @@
 				B5800000000000000000B0F3 /* b58-pap3-mcp-profile.cpp in Sources */,
 				AEB000000000000000000021 /* aerobask-phenom-pap3-mcp-profile.cpp in Sources */,
 				F6C6E0352E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp in Sources */,
+				E3A625EEF44C777DFD93443F /* toliss-pap3-mcp-profile.cpp in Sources */,
 				F60ABAEA2FBE134D001C91EF /* jar330-fmc-profile.cpp in Sources */,
 				F60ABADA2FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.cpp in Sources */,
 				F60F7FDE2FC9B681000EA4E2 /* rotatemd11-agp-profile.cpp in Sources */,
@@ -1393,6 +1406,7 @@
 				F6BBFF0A2ED741B900FE9D7F /* rotatemd11-pap3-mcp-profile.cpp in Sources */,
 				F60F7FDA2FC9B67B000EA4E2 /* rotatemd11-tcas-profile.cpp in Sources */,
 				F6EF56242F0AC43300AB61F1 /* zibo-pdc-profile.cpp in Sources */,
+				7D570AC28F1B7B91EC5835D1 /* toliss-pdc-profile.cpp in Sources */,
 				F6EF56252F0AC43300AB61F1 /* product-pdc.cpp in Sources */,
 				F603CFA52FCECBA1005DF928 /* ff777-joystick-profile.cpp in Sources */,
 				F603CFA62FCECBA1005DF928 /* zibo-joystick-profile.cpp in Sources */,
@@ -1501,6 +1515,7 @@
 				F6BB75782E32634700C2B21F /* product-fcu-efis.cpp in Sources */,
 				F672B7243017AA8A00A7D1BC /* uns1-decode.cpp in Sources */,
 				F6EF56262F0AC43300AB61F1 /* zibo-pdc-profile.cpp in Sources */,
+				22484F33C3EB75ACB3D109DB /* toliss-pdc-profile.cpp in Sources */,
 				F6EF56272F0AC43300AB61F1 /* product-pdc.cpp in Sources */,
 				F6A77E742ED3514600061D03 /* toliss-agp-profile.cpp in Sources */,
 				AF9A28D42FB71A19004849B1 /* pa28-agp-profile.cpp in Sources */,
@@ -1575,6 +1590,7 @@
 				AEB000000000000000000022 /* aerobask-phenom-pap3-mcp-profile.cpp in Sources */,
 				F6C2086B2FC9702A006973EE /* rotatemd11-fcu-efis-profile.cpp in Sources */,
 				F6C6E0322E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp in Sources */,
+				98EC64D8A3396AA09FD9638E /* toliss-pap3-mcp-profile.cpp in Sources */,
 				F6A0E6F32FDCA55200BEC19C /* xplane-bindings.cpp in Sources */,
 				F6CC2B4A2F0E4E5500C0A4D8 /* ff350-fcu-efis-profile.cpp in Sources */,
 				F6CC2B4B2F0E4E5500C0A4D8 /* ff767-fcu-efis-profile.cpp in Sources */,

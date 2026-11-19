@@ -9,6 +9,7 @@
 #include "profiles/ff767-pdc-profile.h"
 #include "profiles/ff777-pdc-profile.h"
 #include "profiles/fps748-pdc-profile.h"
+#include "profiles/toliss-pdc-profile.h"
 #include "profiles/xcrafts-ejets-pdc-profile.h"
 #include "profiles/xcrafts-erj-pdc-profile.h"
 #include "profiles/zibo-pdc-profile.h"
@@ -123,6 +124,9 @@ void ProductPDC::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (CL650PDCProfile::IsEligible()) {
         profile = new CL650PDCProfile(this);
+        profileReady = true;
+    } else if (TolissPDCProfile::IsEligible()) {
+        profile = new TolissPDCProfile(this);
         profileReady = true;
     } else {
         profile = nullptr;

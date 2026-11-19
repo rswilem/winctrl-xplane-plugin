@@ -16,6 +16,7 @@
 #include "profiles/rotatemd11-pap3-mcp-profile.h"
 #include "profiles/sparky744-pap3-mcp-profile.h"
 #include "profiles/stratosphere77w-pap3-mcp-profile.h"
+#include "profiles/toliss-pap3-mcp-profile.h"
 #include "profiles/xcrafts-ejets-pap3-mcp-profile.h"
 #include "profiles/xcrafts-erj-pap3-mcp-profile.h"
 #include "profiles/zibo-pap3-mcp-profile.h"
@@ -97,6 +98,9 @@ void ProductPAP3MCP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (CL650PAP3MCPProfile::IsEligible()) {
         profile = new CL650PAP3MCPProfile(this);
+        profileReady = true;
+    } else if (TolissPAP3MCPProfile::IsEligible()) {
+        profile = new TolissPAP3MCPProfile(this);
         profileReady = true;
     } else {
         profile = nullptr;
@@ -230,6 +234,8 @@ void ProductPAP3MCP::updateDisplays(bool force) {
         displayData.verticalSpeedVisible != oldDisplayData.verticalSpeedVisible ||
         displayData.speedVisible != oldDisplayData.speedVisible ||
         displayData.spdMach != oldDisplayData.spdMach ||
+        displayData.headingTrk != oldDisplayData.headingTrk ||
+        displayData.vsFpa != oldDisplayData.vsFpa ||
         displayData.headingVisible != oldDisplayData.headingVisible ||
         displayData.altitudeVisible != oldDisplayData.altitudeVisible ||
         displayData.crsCapt != oldDisplayData.crsCapt ||
@@ -398,10 +404,10 @@ void ProductPAP3MCP::sendLCDDisplay(const std::string &speed, int heading, int a
             drawDigit(G1, payload, HDG_UNITS, u);
             // No dot for HDG display
             setFlag(payload, OFF_26, DOT_HDG, false);
-            setFlag(payload, OFF_36, LBL_HDG_L, displayData.showLabels && true);
-            setFlag(payload, OFF_32, LBL_HDG_R, displayData.showLabels && true);
-            setFlag(payload, OFF_2E, LBL_TRK_L, displayData.showLabels && false);
-            setFlag(payload, OFF_2A, LBL_TRK_R, displayData.showLabels && false);
+            setFlag(payload, OFF_36, LBL_HDG_L, displayData.showLabels && !displayData.headingTrk);
+            setFlag(payload, OFF_32, LBL_HDG_R, displayData.showLabels && !displayData.headingTrk);
+            setFlag(payload, OFF_2E, LBL_TRK_L, displayData.showLabels && displayData.headingTrk);
+            setFlag(payload, OFF_2A, LBL_TRK_R, displayData.showLabels && displayData.headingTrk);
         }
 
         // ALT: 5 digits
@@ -423,7 +429,20 @@ void ProductPAP3MCP::sendLCDDisplay(const std::string &speed, int heading, int a
         }
 
         // VVI: sign + 4 digits
-        if (displayData.verticalSpeedVisible) {
+        if (displayData.verticalSpeedVisible && displayData.vsFpa) {
+            const int tenths = static_cast<int>(std::round(displayData.verticalSpeed * 10.0f));
+            const int absTenths = std::clamp(std::abs(tenths), 0, 99);
+            drawDigit(G2, payload, VSPD_TENS, absTenths / 10);
+            drawDigit(G2, payload, VSPD_UNITS, absTenths % 10);
+            setFlag(payload, OFF_1B, DOT_VSPD, true);
+
+            setFlag(payload, OFF_1F, VSPD_MINUS, tenths != 0);
+            setFlag(payload, OFF_2C, VSPD_PLUS_TOP, tenths > 0);
+            setFlag(payload, OFF_28, VSPD_PLUS_BOT, tenths > 0);
+
+            setFlag(payload, OFF_38, LBL_VS, false);
+            setFlag(payload, OFF_34, LBL_FPA, displayData.showLabels);
+        } else if (displayData.verticalSpeedVisible) {
             const int v = static_cast<int>(displayData.verticalSpeed);
             const int absV = std::clamp(std::abs(v), 0, 9999);
             int k, h, t, u;
@@ -456,11 +475,13 @@ void ProductPAP3MCP::sendLCDDisplay(const std::string &speed, int heading, int a
             drawVviDashes(payload);
             // Show VS label even when inactive if configured
             if (displayData.showLabelsWhenInactive) {
-                setFlag(payload, OFF_38, LBL_VS, true);
+                setFlag(payload, OFF_38, LBL_VS, !displayData.vsFpa);
+                setFlag(payload, OFF_34, LBL_FPA, displayData.vsFpa);
             }
         } else if (displayData.showLabelsWhenInactive) {
             // Just show the label without dashes
-            setFlag(payload, OFF_38, LBL_VS, true);
+            setFlag(payload, OFF_38, LBL_VS, !displayData.vsFpa);
+            setFlag(payload, OFF_34, LBL_FPA, displayData.vsFpa);
         }
 
         // FO CRS: 3 digits
@@ -487,8 +508,10 @@ void ProductPAP3MCP::sendLCDDisplay(const std::string &speed, int heading, int a
                 drawHdgDashes(payload);
                 // Show HDG label even when inactive if configured
                 if (displayData.showLabelsWhenInactive) {
-                    setFlag(payload, OFF_36, LBL_HDG_L, true);
-                    setFlag(payload, OFF_32, LBL_HDG_R, true);
+                    setFlag(payload, OFF_36, LBL_HDG_L, !displayData.headingTrk);
+                    setFlag(payload, OFF_32, LBL_HDG_R, !displayData.headingTrk);
+                    setFlag(payload, OFF_2E, LBL_TRK_L, displayData.headingTrk);
+                    setFlag(payload, OFF_2A, LBL_TRK_R, displayData.headingTrk);
                 }
             }
             // Note: V/S dashes are now handled in the main VVI section above

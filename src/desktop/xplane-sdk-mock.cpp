@@ -11,7 +11,6 @@
 #include <XPLMDataAccess.h>
 #include <XPLMDisplay.h>
 #include <XPLMMenus.h>
-#include <XPLMNavigation.h>
 #include <XPLMProcessing.h>
 #include <XPLMScenery.h>
 #include <XPLMUtilities.h>
@@ -587,15 +586,8 @@ void XPLMRegisterFlightLoopCallback(XPLMFlightLoop_f inFlightLoop, float inInter
 void XPLMUnregisterFlightLoopCallback(XPLMFlightLoop_f inFlightLoop, void *inRefcon) {
 }
 
-int XPLMCountFMSFlightPlanEntries(XPLMNavFlightPlan inFlightPlan) {
-    return 0;
-}
-
-int XPLMGetDestinationFMSFlightPlanEntry(XPLMNavFlightPlan inFlightPlan) {
-    return 0;
-}
-
-void XPLMGetFMSFlightPlanEntryInfo(XPLMNavFlightPlan inFlightPlan, int inIndex, XPLMNavType *outType, char *outID, XPLMNavRef *outRef, int *outAltitude, float *outLat, float *outLon) {
+void *XPLMFindSymbol(const char *inString) {
+    return nullptr;
 }
 
 float XPLMGetMagneticVariation(double latitude, double longitude) {

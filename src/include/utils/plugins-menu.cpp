@@ -274,6 +274,33 @@ int PluginsMenu::addPersistentItem(const std::string &name, const MenuItemConten
     return addItemInternal(name, content, true, checked, submenuId);
 }
 
+void PluginsMenu::forgetSubmenuDescendants(int submenuItemId) {
+    auto childrenIt = submenuChildren.find(submenuItemId);
+    if (childrenIt == submenuChildren.end()) {
+        return;
+    }
+
+    std::vector<int> children = std::move(childrenIt->second);
+    submenuChildren.erase(childrenIt);
+
+    for (int childId : children) {
+        auto childSubmenuIt = submenus.find(childId);
+        if (childSubmenuIt != submenus.end()) {
+            XPLMMenuID childMenuId = childSubmenuIt->second.first;
+            forgetSubmenuDescendants(childId);
+            XPLMDestroyMenu(childMenuId);
+            submenus.erase(childId);
+        }
+
+        menuCallbacks.erase(childId);
+        itemNames.erase(childId);
+        persistentItems.erase(childId);
+        itemToMenuId.erase(childId);
+        bindingCountItems.erase(childId);
+        bindingToggleItems.erase(childId);
+    }
+}
+
 void PluginsMenu::removeItem(int itemId) {
     if (mainMenuId == nullptr) {
         return;
@@ -296,25 +323,10 @@ void PluginsMenu::removeItem(int itemId) {
         // If this is a submenu, destroy it and all its children
         auto submenuIt = submenus.find(itemId);
         if (submenuIt != submenus.end()) {
-            XPLMDestroyMenu(submenuIt->second.first);
-
-            // Recursively clean up children
-            auto childrenIt = submenuChildren.find(itemId);
-            if (childrenIt != submenuChildren.end()) {
-                for (int childId : childrenIt->second) {
-                    menuCallbacks.erase(childId);
-                    itemNames.erase(childId);
-                    persistentItems.erase(childId);
-                    itemToMenuId.erase(childId);
-                    submenus.erase(childId);
-                    submenuChildren.erase(childId);
-                    bindingCountItems.erase(childId);
-                    bindingToggleItems.erase(childId);
-                }
-                submenuChildren.erase(childrenIt);
-            }
-
-            submenus.erase(submenuIt);
+            XPLMMenuID submenuMenuId = submenuIt->second.first;
+            forgetSubmenuDescendants(itemId);
+            XPLMDestroyMenu(submenuMenuId);
+            submenus.erase(itemId);
         }
 
         // Remove from the menu it belongs to

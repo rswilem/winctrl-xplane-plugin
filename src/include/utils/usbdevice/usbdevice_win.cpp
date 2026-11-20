@@ -220,7 +220,7 @@ void USBDevice::forceStateSync() {
 }
 
 bool USBDevice::writeData(std::vector<uint8_t> data) {
-    if (hidDevice == INVALID_HANDLE_VALUE || !connected || data.empty()) {
+    if (hidDevice == INVALID_HANDLE_VALUE || !connected || data.empty() || writesRejected) {
         return false;
     }
 
@@ -340,7 +340,7 @@ void USBDevice::writeThreadLoop() {
                     }
                     if (!delivered) {
                         lastError = error;
-                        if (error == ERROR_DEVICE_NOT_CONNECTED || error == ERROR_INVALID_HANDLE) {
+                        if (error == ERROR_DEVICE_NOT_CONNECTED || error == ERROR_INVALID_HANDLE || error == ERROR_INVALID_PARAMETER) {
                             fatal = true;
                         }
                     }
@@ -351,7 +351,7 @@ void USBDevice::writeThreadLoop() {
                     delivered = true;
                 } else {
                     lastError = GetLastError();
-                    if (lastError == ERROR_DEVICE_NOT_CONNECTED || lastError == ERROR_INVALID_HANDLE) {
+                    if (lastError == ERROR_DEVICE_NOT_CONNECTED || lastError == ERROR_INVALID_HANDLE || lastError == ERROR_INVALID_PARAMETER) {
                         fatal = true;
                     }
                 }
@@ -366,6 +366,22 @@ void USBDevice::writeThreadLoop() {
             }
             // Not delivered, not fatal, attempts remain: retry the SAME packet
             // in place (same queue position, since it is already dequeued).
+        }
+
+        if (unhealthy && lastError == ERROR_INVALID_PARAMETER) {
+            writesRejected = true;
+            size_t discarded = 0;
+            {
+                std::lock_guard<std::mutex> lock(writeQueueMutex);
+                discarded = writeQueue.size() + 1;
+                std::queue<std::vector<uint8_t>> empty;
+                std::swap(writeQueue, empty);
+                writeQueueSize.store(0);
+            }
+
+            Logger::getInstance()->warn("Device %s (vendorId: 0x%04X, productId: 0x%04X) rejects output reports (error 87, INVALID_PARAMETER), discarding %zu packet(s). Lights, displays and vibration stay off until the device is reconnected; input keeps working. Under Wine/Proton, pass the device through as raw HID.\n",
+                productName.empty() ? "Unknown" : productName.c_str(), vendorId, productId, discarded);
+            continue;
         }
 
         if (unhealthy) {

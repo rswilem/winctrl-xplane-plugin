@@ -51,6 +51,7 @@ class PluginsMenu {
 
         static void handleMenuAction(void *mRef, void *iRef);
         void ensureMenuExists();
+        void forgetSubmenuDescendants(int submenuItemId);
         int addItemInternal(const std::string &name, const MenuItemContent &content, bool persistent, bool checked, int submenuId);
         void addMenuItemsToMenu(XPLMMenuID parentMenu, const std::vector<MenuItem> &items, bool persistent);
         void appendXPlaneBindingItems(XPLMMenuID parentMenu, uint16_t productId, bool persistent, int parentSubmenuId);

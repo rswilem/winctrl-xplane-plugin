@@ -53,6 +53,7 @@ class USBDevice {
         std::thread writeThread;
         std::atomic<bool> writeThreadRunning{false};
         std::atomic<size_t> writeQueueSize{0};
+        std::atomic<bool> writesRejected{false};
 
         void processQueuedEvents();
         void writeThreadLoop();

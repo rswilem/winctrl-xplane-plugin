@@ -11,10 +11,10 @@ README="$SCRIPT_DIR/README.md"
 
 echo "Updating compatibility matrix in README.md..."
 
-# Device display names (pipe-separated: flag|key|display_name)
+# Device display names (pipe-separated: flag|key|display_name), in column order.
+# The joystick and throttles go last; devices missing from this list are placed before them.
 # flag: 0 = normal, 1 = always show checkmark, 2 = hide from matrix
 DEVICE_NAMES="
-1|joystick|Joystick (URSA MINOR Airline L+R, ORION Joystick Base II)
 0|fmc|FMC (MCDU, PFP 3N/4/7)
 0|pap3-mcp|3N PAP MCP
 0|pdc|3N / 3M PDC
@@ -24,6 +24,7 @@ DEVICE_NAMES="
 0|tcas|32 TCAS
 0|rmp|32 RMP
 0|nws|32 NWS
+1|joystick|Joystick (URSA MINOR Airline L+R, ORION Joystick Base II)
 0|ursa-minor-throttle|URSA MINOR 32 Throttle Metal (+ optional 32 PAC Metal)
 1|orion-throttle|ORION Throttle Base II
 "
@@ -163,33 +164,48 @@ while IFS= read -r aircraft; do
     fi
 done < "$UNIQUE_AIRCRAFT"
 
-AIRCRAFT_COUNT=$(grep -c . "$ORDERED_AIRCRAFT" || true)
+# Order the device columns: DEVICE_NAMES order, with any devices missing from it placed
+# before the joystick, which starts the peripherals
+ORDERED_DEVICES="$TEMP_DIR/ordered_devices.list"
+UNMAPPED_DEVICES="$TEMP_DIR/unmapped_devices.list"
+> "$ORDERED_DEVICES"
+> "$UNMAPPED_DEVICES"
 
-# Build markdown table header with nbsp for spacing
-MATRIX="| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Device&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-SEPARATOR="|---"
+sort "$DEVICES_FOUND" | uniq | while IFS='|' read -r device_key device_flag device_display; do
+    [ -z "$device_key" ] && continue
+    [ "$device_flag" = "2" ] && continue
+    if ! echo "$DEVICE_NAMES" | grep -q "^[0-9]|$device_key|"; then
+        echo "$device_key|$device_flag|$device_display" >> "$UNMAPPED_DEVICES"
+    fi
+done
 
-while read -r aircraft; do
-    [ -z "$aircraft" ] && continue
-    MATRIX="$MATRIX | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $aircraft"
-    SEPARATOR="$SEPARATOR | ---"
-done < "$ORDERED_AIRCRAFT"
-
-MATRIX="$MATRIX |"$'\n'"$SEPARATOR |"
-
-# Build rows for each device (in DEVICE_NAMES order first, then new ones)
-# First, devices in DEVICE_NAMES order
 while IFS='|' read -r device_flag device_key device_display; do
     [ -z "$device_key" ] && continue
+    [ "$device_key" = "joystick" ] && cat "$UNMAPPED_DEVICES" >> "$ORDERED_DEVICES"
     [ -d "$PRODUCTS_DIR/$device_key/profiles" ] || continue
     # Skip if flag is 2 (hide from matrix)
     [ "$device_flag" = "2" ] && continue
-    
-    MATRIX="$MATRIX"$'\n'"| **$device_display**"
-    
-    # Check compatibility for each aircraft
-    while read -r aircraft; do
-        [ -z "$aircraft" ] && continue
+    echo "$device_key|$device_flag|$device_display" >> "$ORDERED_DEVICES"
+done <<< "$DEVICE_NAMES"
+
+# Build markdown table header: aircraft vertically, devices horizontally. The aircraft column is
+# padded with nbsp so its names stay on one line.
+MATRIX="| Aircraft&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+SEPARATOR="|---"
+
+while IFS='|' read -r device_key device_flag device_display; do
+    MATRIX="$MATRIX | $device_display"
+    SEPARATOR="$SEPARATOR | :---:"
+done < "$ORDERED_DEVICES"
+
+MATRIX="$MATRIX |"$'\n'"$SEPARATOR |"
+
+# Build a row for each aircraft
+while read -r aircraft; do
+    [ -z "$aircraft" ] && continue
+    MATRIX="$MATRIX"$'\n'"| **$aircraft**"
+
+    while IFS='|' read -r device_key device_flag device_display; do
         if [ "$device_flag" = "1" ]; then
             # Always show checkmark if flag is 1
             MATRIX="$MATRIX | &check;"
@@ -198,46 +214,9 @@ while IFS='|' read -r device_flag device_key device_display; do
         else
             MATRIX="$MATRIX | &nbsp;"
         fi
-    done < "$ORDERED_AIRCRAFT"
+    done < "$ORDERED_DEVICES"
     MATRIX="$MATRIX |"
-done <<< "$DEVICE_NAMES"
-
-# Then, add any devices found but not in DEVICE_NAMES mapping
-sort "$DEVICES_FOUND" | uniq > "$TEMP_DIR/unique_devices.list"
-
-while IFS='|' read -r device_key device_flag device_display; do
-    [ -z "$device_key" ] && continue
-    # Skip if flag is 2 (hide from matrix)
-    [ "$device_flag" = "2" ] && continue
-    # Check if device is already in DEVICE_NAMES
-    in_mapping=0
-    while IFS='|' read -r mapped_flag mapped_key _; do
-        [ -z "$mapped_key" ] && continue
-        if [ "$mapped_key" = "$device_key" ]; then
-            in_mapping=1
-            break
-        fi
-    done <<< "$DEVICE_NAMES"
-    
-    # Only add if not already in mapping
-    if [ $in_mapping -eq 0 ]; then
-        MATRIX="$MATRIX"$'\n'"| **$device_display**"
-        
-        # Check compatibility for each aircraft
-        while read -r aircraft; do
-            [ -z "$aircraft" ] && continue
-            if [ "$device_flag" = "1" ]; then
-                # Always show checkmark if flag is 1
-                MATRIX="$MATRIX | &check;"
-            elif grep -q "^$device_key:[^:]*:$aircraft\$" "$PROFILE_DB"; then
-                MATRIX="$MATRIX | &check;"
-            else
-                MATRIX="$MATRIX | &nbsp;"
-            fi
-        done < "$ORDERED_AIRCRAFT"
-        MATRIX="$MATRIX |"
-    fi
-done < "$TEMP_DIR/unique_devices.list"
+done < "$ORDERED_AIRCRAFT"
 
 # Update README between markers
 START_MARKER="### Compatibility Matrix"
@@ -254,7 +233,7 @@ while IFS= read -r line; do
         if echo "$line" | grep -q "^$START_MARKER"; then
             BEFORE="$BEFORE$line"$'\n'
             # Add intro text
-            BEFORE="$BEFORE"$'\n'"The matrix below shows device and aircraft compatibility. Devices are listed vertically, aircraft horizontally."$'\n'
+            BEFORE="$BEFORE"$'\n'"The matrix below shows device and aircraft compatibility. Aircraft are listed vertically, devices horizontally."$'\n'
             read_before=0
             in_matrix=1
         else

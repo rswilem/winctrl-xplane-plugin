@@ -9,6 +9,7 @@
 #include "profiles/rotatemd11-ursa-minor-throttle-profile.h"
 #include "profiles/toliss-ursa-minor-throttle-profile.h"
 #include "profiles/xcrafts-ejets-ursa-minor-throttle-profile.h"
+#include "profiles/fps-ejets-ursa-minor-throttle-profile.h"
 #include "profiles/xcrafts-erj-ursa-minor-throttle-profile.h"
 #include "profiles/zibo-ursa-minor-throttle-profile.h"
 #include "segment-display.h"
@@ -62,6 +63,9 @@ void ProductUrsaMinorThrottle::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (XCraftsEjetsUrsaMinorThrottleProfile::IsEligible()) {
         profile = new XCraftsEjetsUrsaMinorThrottleProfile(this);
+        profileReady = true;
+    } else if (FPSEjetsUrsaMinorThrottleProfile::IsEligible()) {
+        profile = new FPSEjetsUrsaMinorThrottleProfile(this);
         profileReady = true;
     } else if (FF777UrsaMinorThrottleProfile::IsEligible()) {
         profile = new FF777UrsaMinorThrottleProfile(this);

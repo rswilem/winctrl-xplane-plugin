@@ -65,13 +65,21 @@
 		F60ABAC92FBDA72B001C91EF /* zibo-tcas-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAC82FBDA72B001C91EF /* zibo-tcas-profile.cpp */; };
 		F60ABACA2FBDA72B001C91EF /* zibo-tcas-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAC82FBDA72B001C91EF /* zibo-tcas-profile.cpp */; };
 		F60ABACD2FBDF029001C91EF /* xcrafts-ejets-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABACC2FBDF029001C91EF /* xcrafts-ejets-fcu-efis-profile.cpp */; };
+		7378A8012EA2FA11AA3C76F5 /* fps-ejets-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E527E496C7CC40C5C0A47272 /* fps-ejets-fcu-efis-profile.cpp */; };
 		F60ABACE2FBDF029001C91EF /* xcrafts-ejets-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABACC2FBDF029001C91EF /* xcrafts-ejets-fcu-efis-profile.cpp */; };
+		41B9E84A7C7708F790CA0468 /* fps-ejets-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E527E496C7CC40C5C0A47272 /* fps-ejets-fcu-efis-profile.cpp */; };
 		F60ABAD12FBDF034001C91EF /* xcrafts-ejets-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAD02FBDF034001C91EF /* xcrafts-ejets-pap3-mcp-profile.cpp */; };
+		625D18633E355F85EE3E0076 /* fps-ejets-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65BD16C88F4582167A9E0694 /* fps-ejets-pap3-mcp-profile.cpp */; };
 		F60ABAD22FBDF034001C91EF /* xcrafts-ejets-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAD02FBDF034001C91EF /* xcrafts-ejets-pap3-mcp-profile.cpp */; };
+		C244BDC3C0414344465EC58A /* fps-ejets-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65BD16C88F4582167A9E0694 /* fps-ejets-pap3-mcp-profile.cpp */; };
 		F60ABAD52FBDF03F001C91EF /* xcrafts-ejets-ursa-minor-throttle-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAD42FBDF03F001C91EF /* xcrafts-ejets-ursa-minor-throttle-profile.cpp */; };
+		2E1858C3B099754E110C2524 /* fps-ejets-ursa-minor-throttle-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB3E6213537C6A90C16CE655 /* fps-ejets-ursa-minor-throttle-profile.cpp */; };
 		F60ABAD62FBDF03F001C91EF /* xcrafts-ejets-ursa-minor-throttle-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAD42FBDF03F001C91EF /* xcrafts-ejets-ursa-minor-throttle-profile.cpp */; };
+		E15E43240DB072120F0E77BE /* fps-ejets-ursa-minor-throttle-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB3E6213537C6A90C16CE655 /* fps-ejets-ursa-minor-throttle-profile.cpp */; };
 		F60ABAD92FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAD82FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.cpp */; };
+		0EED0539FF8F883A43CE4938 /* fps-ejets-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6730124C7ECD298ED2FA522D /* fps-ejets-fmc-profile.cpp */; };
 		F60ABADA2FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAD82FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.cpp */; };
+		201632444942DBDEBD40DF9D /* fps-ejets-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6730124C7ECD298ED2FA522D /* fps-ejets-fmc-profile.cpp */; };
 		F60ABADD2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABADC2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.cpp */; };
 		F60ABADE2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABADC2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.cpp */; };
 		F60ABAE12FBDF352001C91EF /* xcrafts-erj-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F60ABAE02FBDF352001C91EF /* xcrafts-erj-pap3-mcp-profile.cpp */; };
@@ -258,13 +266,17 @@
 		F6E73EE32ED9CCA7000A8B6A /* product-ursa-minor-throttle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6E73EDE2ED9CCA7000A8B6A /* product-ursa-minor-throttle.cpp */; };
 		F6E73EE42ED9CCA7000A8B6A /* toliss-ursa-minor-throttle-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6E73EDB2ED9CCA7000A8B6A /* toliss-ursa-minor-throttle-profile.cpp */; };
 		F6EBDC042FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC032FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp */; };
+		0576110E8657A69CB3A03366 /* fps-ejets-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C27F0E47B862055EF4016260 /* fps-ejets-pdc-profile.cpp */; };
 		F6EBDC052FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC032FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp */; };
+		904FA377FE17BD383FE86213 /* fps-ejets-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C27F0E47B862055EF4016260 /* fps-ejets-pdc-profile.cpp */; };
 		F6EBDC082FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC072FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp */; };
 		F6EBDC092FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC072FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp */; };
 		F6EBDC0C2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC0B2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp */; };
 		F6EBDC0D2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC0B2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp */; };
 		F6EBDC102FC6CA46005AFCBD /* xcrafts-ejets-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC0F2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.cpp */; };
+		0796390955ED3462DF889860 /* fps-ejets-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C36263423DDEA5666C8F1815 /* fps-ejets-agp-profile.cpp */; };
 		F6EBDC112FC6CA46005AFCBD /* xcrafts-ejets-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC0F2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.cpp */; };
+		663EDF27F6EE72B747D8C04E /* fps-ejets-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C36263423DDEA5666C8F1815 /* fps-ejets-agp-profile.cpp */; };
 		F6EBDC142FC6CFD1005AFCBD /* zibo-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC132FC6CFD1005AFCBD /* zibo-agp-profile.cpp */; };
 		F6EBDC152FC6CFD1005AFCBD /* zibo-agp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EBDC132FC6CFD1005AFCBD /* zibo-agp-profile.cpp */; };
 		F6EF56242F0AC43300AB61F1 /* zibo-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6EF561E2F0AC43300AB61F1 /* zibo-pdc-profile.cpp */; };
@@ -373,13 +385,21 @@
 		F60ABAC72FBDA72B001C91EF /* zibo-tcas-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zibo-tcas-profile.h"; sourceTree = "<group>"; };
 		F60ABAC82FBDA72B001C91EF /* zibo-tcas-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "zibo-tcas-profile.cpp"; sourceTree = "<group>"; };
 		F60ABACB2FBDF029001C91EF /* xcrafts-ejets-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-ejets-fcu-efis-profile.h"; sourceTree = "<group>"; };
+		7A11B42600C84CD1A96BDCFE /* fps-ejets-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "fps-ejets-fcu-efis-profile.h"; sourceTree = "<group>"; };
 		F60ABACC2FBDF029001C91EF /* xcrafts-ejets-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-ejets-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
+		E527E496C7CC40C5C0A47272 /* fps-ejets-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "fps-ejets-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
 		F60ABACF2FBDF034001C91EF /* xcrafts-ejets-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-ejets-pap3-mcp-profile.h"; sourceTree = "<group>"; };
+		80A03D9C3A40776B833A840C /* fps-ejets-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "fps-ejets-pap3-mcp-profile.h"; sourceTree = "<group>"; };
 		F60ABAD02FBDF034001C91EF /* xcrafts-ejets-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-ejets-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
+		65BD16C88F4582167A9E0694 /* fps-ejets-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "fps-ejets-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
 		F60ABAD32FBDF03F001C91EF /* xcrafts-ejets-ursa-minor-throttle-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-ejets-ursa-minor-throttle-profile.h"; sourceTree = "<group>"; };
+		8DD88251EFD2A791E7D40C81 /* fps-ejets-ursa-minor-throttle-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "fps-ejets-ursa-minor-throttle-profile.h"; sourceTree = "<group>"; };
 		F60ABAD42FBDF03F001C91EF /* xcrafts-ejets-ursa-minor-throttle-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-ejets-ursa-minor-throttle-profile.cpp"; sourceTree = "<group>"; };
+		FB3E6213537C6A90C16CE655 /* fps-ejets-ursa-minor-throttle-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "fps-ejets-ursa-minor-throttle-profile.cpp"; sourceTree = "<group>"; };
 		F60ABAD72FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-ejets-fmc-profile.h"; sourceTree = "<group>"; };
+		2D2E5B9AA85FC2E8E7BFF17A /* fps-ejets-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "fps-ejets-fmc-profile.h"; sourceTree = "<group>"; };
 		F60ABAD82FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-ejets-fmc-profile.cpp"; sourceTree = "<group>"; };
+		6730124C7ECD298ED2FA522D /* fps-ejets-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "fps-ejets-fmc-profile.cpp"; sourceTree = "<group>"; };
 		F60ABADB2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-erj-fmc-profile.h"; sourceTree = "<group>"; };
 		F60ABADC2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-erj-fmc-profile.cpp"; sourceTree = "<group>"; };
 		F60ABADF2FBDF352001C91EF /* xcrafts-erj-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-erj-pap3-mcp-profile.h"; sourceTree = "<group>"; };
@@ -577,13 +597,17 @@
 		F6E73EDE2ED9CCA7000A8B6A /* product-ursa-minor-throttle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "product-ursa-minor-throttle.cpp"; sourceTree = "<group>"; };
 		F6E73EDF2ED9CCA7000A8B6A /* ursa-minor-throttle-aircraft-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ursa-minor-throttle-aircraft-profile.h"; sourceTree = "<group>"; };
 		F6EBDC022FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-ejets-pdc-profile.h"; sourceTree = "<group>"; };
+		8311D36C9F65D2E81CEF3F90 /* fps-ejets-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "fps-ejets-pdc-profile.h"; sourceTree = "<group>"; };
 		F6EBDC032FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-ejets-pdc-profile.cpp"; sourceTree = "<group>"; };
+		C27F0E47B862055EF4016260 /* fps-ejets-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "fps-ejets-pdc-profile.cpp"; sourceTree = "<group>"; };
 		F6EBDC062FC6C497005AFCBD /* xcrafts-erj-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-erj-pdc-profile.h"; sourceTree = "<group>"; };
 		F6EBDC072FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-erj-pdc-profile.cpp"; sourceTree = "<group>"; };
 		F6EBDC0A2FC6C740005AFCBD /* xcrafts-erj-agp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-erj-agp-profile.h"; sourceTree = "<group>"; };
 		F6EBDC0B2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-erj-agp-profile.cpp"; sourceTree = "<group>"; };
 		F6EBDC0E2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "xcrafts-ejets-agp-profile.h"; sourceTree = "<group>"; };
+		CC7F95CF8B3B2C7CDF5D82D6 /* fps-ejets-agp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "fps-ejets-agp-profile.h"; sourceTree = "<group>"; };
 		F6EBDC0F2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "xcrafts-ejets-agp-profile.cpp"; sourceTree = "<group>"; };
+		C36263423DDEA5666C8F1815 /* fps-ejets-agp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "fps-ejets-agp-profile.cpp"; sourceTree = "<group>"; };
 		F6EBDC122FC6CFD1005AFCBD /* zibo-agp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zibo-agp-profile.h"; sourceTree = "<group>"; };
 		F6EBDC132FC6CFD1005AFCBD /* zibo-agp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "zibo-agp-profile.cpp"; sourceTree = "<group>"; };
 		F6EF561D2F0AC43300AB61F1 /* zibo-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zibo-pdc-profile.h"; sourceTree = "<group>"; };
@@ -882,7 +906,9 @@
 				F671B5DC2EA96BBE00141EF2 /* rotatemd11-fmc-profile.h */,
 				F671B5DD2EA96BBE00141EF2 /* rotatemd11-fmc-profile.cpp */,
 				F60ABAD72FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.h */,
+				2D2E5B9AA85FC2E8E7BFF17A /* fps-ejets-fmc-profile.h */,
 				F60ABAD82FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.cpp */,
+				6730124C7ECD298ED2FA522D /* fps-ejets-fmc-profile.cpp */,
 				F60ABADB2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.h */,
 				F60ABADC2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.cpp */,
 				F60ABAE72FBE134D001C91EF /* jar330-fmc-profile.h */,
@@ -930,7 +956,9 @@
 				F6EBDC0A2FC6C740005AFCBD /* xcrafts-erj-agp-profile.h */,
 				F6EBDC0B2FC6C740005AFCBD /* xcrafts-erj-agp-profile.cpp */,
 				F6EBDC0E2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.h */,
+				CC7F95CF8B3B2C7CDF5D82D6 /* fps-ejets-agp-profile.h */,
 				F6EBDC0F2FC6CA45005AFCBD /* xcrafts-ejets-agp-profile.cpp */,
+				C36263423DDEA5666C8F1815 /* fps-ejets-agp-profile.cpp */,
 				F6EBDC122FC6CFD1005AFCBD /* zibo-agp-profile.h */,
 				F6EBDC132FC6CFD1005AFCBD /* zibo-agp-profile.cpp */,
 				F60F7FDB2FC9B681000EA4E2 /* rotatemd11-agp-profile.h */,
@@ -1044,7 +1072,9 @@
 				AF9A28C82FB71A19004849B1 /* pa28-fcu-efis-profile.h */,
 				AF9A28C92FB71A19004849B1 /* pa28-fcu-efis-profile.cpp */,
 				F60ABACB2FBDF029001C91EF /* xcrafts-ejets-fcu-efis-profile.h */,
+				7A11B42600C84CD1A96BDCFE /* fps-ejets-fcu-efis-profile.h */,
 				F60ABACC2FBDF029001C91EF /* xcrafts-ejets-fcu-efis-profile.cpp */,
+				E527E496C7CC40C5C0A47272 /* fps-ejets-fcu-efis-profile.cpp */,
 				F60ABAE32FBDF78D001C91EF /* xcrafts-erj-fcu-efis-profile.h */,
 				F60ABAE42FBDF78D001C91EF /* xcrafts-erj-fcu-efis-profile.cpp */,
 				F60ABAEB2FBE1355001C91EF /* jar330-fcu-efis-profile.h */,
@@ -1104,7 +1134,9 @@
 				70CD41F4F55F8138250EEACD /* sparky744-pap3-mcp-profile.h */,
 				7E13DD4D95F3A91328C88046 /* sparky744-pap3-mcp-profile.cpp */,
 				F60ABACF2FBDF034001C91EF /* xcrafts-ejets-pap3-mcp-profile.h */,
+				80A03D9C3A40776B833A840C /* fps-ejets-pap3-mcp-profile.h */,
 				F60ABAD02FBDF034001C91EF /* xcrafts-ejets-pap3-mcp-profile.cpp */,
+				65BD16C88F4582167A9E0694 /* fps-ejets-pap3-mcp-profile.cpp */,
 				F60ABADF2FBDF352001C91EF /* xcrafts-erj-pap3-mcp-profile.h */,
 				F60ABAE02FBDF352001C91EF /* xcrafts-erj-pap3-mcp-profile.cpp */,
 				F68B54582FCA23E300EB9EB3 /* stratosphere77w-pap3-mcp-profile.h */,
@@ -1147,7 +1179,9 @@
 				AF9A28EB2FB71A19004849B1 /* pa28-ursa-minor-throttle-profile.h */,
 				AF9A28E82FB71A19004849B1 /* pa28-ursa-minor-throttle-profile.cpp */,
 				F60ABAD32FBDF03F001C91EF /* xcrafts-ejets-ursa-minor-throttle-profile.h */,
+				8DD88251EFD2A791E7D40C81 /* fps-ejets-ursa-minor-throttle-profile.h */,
 				F60ABAD42FBDF03F001C91EF /* xcrafts-ejets-ursa-minor-throttle-profile.cpp */,
+				FB3E6213537C6A90C16CE655 /* fps-ejets-ursa-minor-throttle-profile.cpp */,
 				F6B520E62FC7676F00A04562 /* xcrafts-erj-ursa-minor-throttle-profile.h */,
 				F6B520E72FC7676F00A04562 /* xcrafts-erj-ursa-minor-throttle-profile.cpp */,
 				F60F7FDF2FC9B694000EA4E2 /* rotatemd11-ursa-minor-throttle-profile.h */,
@@ -1187,7 +1221,9 @@
 				F6CC2B522F0E5F4B00C0A4D8 /* ff767-pdc-profile.cpp */,
 				F6CC2B4E2F0E5F4B00C0A4D8 /* ff777-pdc-profile.cpp */,
 				F6EBDC022FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.h */,
+				8311D36C9F65D2E81CEF3F90 /* fps-ejets-pdc-profile.h */,
 				F6EBDC032FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp */,
+				C27F0E47B862055EF4016260 /* fps-ejets-pdc-profile.cpp */,
 				F6EBDC062FC6C497005AFCBD /* xcrafts-erj-pdc-profile.h */,
 				F6EBDC072FC6C497005AFCBD /* xcrafts-erj-pdc-profile.cpp */,
 				F60D39C22FD0D3C800C792EB /* fps748-pdc-profile.h */,
@@ -1349,6 +1385,7 @@
 				E3A625EEF44C777DFD93443F /* toliss-pap3-mcp-profile.cpp in Sources */,
 				F60ABAEA2FBE134D001C91EF /* jar330-fmc-profile.cpp in Sources */,
 				F60ABADA2FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.cpp in Sources */,
+				201632444942DBDEBD40DF9D /* fps-ejets-fmc-profile.cpp in Sources */,
 				F60F7FDE2FC9B681000EA4E2 /* rotatemd11-agp-profile.cpp in Sources */,
 				F60ABAE62FBDF78D001C91EF /* xcrafts-erj-fcu-efis-profile.cpp in Sources */,
 				F633E3D92FBE25B100CBE019 /* zibo-fcu-efis-profile.cpp in Sources */,
@@ -1359,6 +1396,7 @@
 				E164E7F621BA6932F4BE9D64 /* sparky744-fmc-profile.cpp in Sources */,
 				F6A1493F2E4F04AE00FB8395 /* ff777-fmc-profile.cpp in Sources */,
 				F60ABACD2FBDF029001C91EF /* xcrafts-ejets-fcu-efis-profile.cpp in Sources */,
+				7378A8012EA2FA11AA3C76F5 /* fps-ejets-fcu-efis-profile.cpp in Sources */,
 				F6A149402E4F04AE00FB8395 /* ixeg733-fmc-profile.cpp in Sources */,
 				F60ABADE2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.cpp in Sources */,
 				F6BB757A2E32634700C2B21F /* product-fcu-efis.cpp in Sources */,
@@ -1427,10 +1465,14 @@
 				F6B0007B2F8FE329001FE040 /* toliss-tcas-profile.cpp in Sources */,
 				AF9A28E12FB71A19004849B1 /* pa28-tcas-profile.cpp in Sources */,
 				F6EBDC042FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp in Sources */,
+				0576110E8657A69CB3A03366 /* fps-ejets-pdc-profile.cpp in Sources */,
 				F60ABAC62FBDA135001C91EF /* fps748-tcas-profile.cpp in Sources */,
 				F60ABAD62FBDF03F001C91EF /* xcrafts-ejets-ursa-minor-throttle-profile.cpp in Sources */,
+				E15E43240DB072120F0E77BE /* fps-ejets-ursa-minor-throttle-profile.cpp in Sources */,
 				F6EBDC102FC6CA46005AFCBD /* xcrafts-ejets-agp-profile.cpp in Sources */,
+				0796390955ED3462DF889860 /* fps-ejets-agp-profile.cpp in Sources */,
 				F60ABAD12FBDF034001C91EF /* xcrafts-ejets-pap3-mcp-profile.cpp in Sources */,
+				625D18633E355F85EE3E0076 /* fps-ejets-pap3-mcp-profile.cpp in Sources */,
 				5D2C5F88110970AC7E4A6F6C /* sparky744-tcas-profile.cpp in Sources */,
 				8321A6022ED27B1E00E3746A /* ff777-fcu-efis-profile.cpp in Sources */,
 				F681E21F2FC9E5A30009D9FB /* stratosphere77w-fmc-profile.cpp in Sources */,
@@ -1491,6 +1533,7 @@
 				F6827E0A2E05652E00382B28 /* WinctrlDesktopApp.swift in Sources */,
 				F6EBDC152FC6CFD1005AFCBD /* zibo-agp-profile.cpp in Sources */,
 				F6EBDC112FC6CA46005AFCBD /* xcrafts-ejets-agp-profile.cpp in Sources */,
+				663EDF27F6EE72B747D8C04E /* fps-ejets-agp-profile.cpp in Sources */,
 				F672B71F3017AA4500A7D1BC /* fjs732-fmc-profile.cpp in Sources */,
 				F672B7203017AA4500A7D1BC /* c525-fmc-profile.cpp in Sources */,
 				F68B545B2FCA23E300EB9EB3 /* stratosphere77w-pap3-mcp-profile.cpp in Sources */,
@@ -1529,6 +1572,7 @@
 				F6BB75792E32634700C2B21F /* toliss-fcu-efis-profile.cpp in Sources */,
 				F63BC99A2E30D73E00ACBBB0 /* appstate.cpp in Sources */,
 				F60ABAD92FBDF04F001C91EF /* xcrafts-ejets-fmc-profile.cpp in Sources */,
+				0EED0539FF8F883A43CE4938 /* fps-ejets-fmc-profile.cpp in Sources */,
 				F64BE3EE2E1BF625003C1B73 /* usbcontroller_lin.cpp in Sources */,
 				F60ABADD2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.cpp in Sources */,
 				F68164E52E3161FD00319E9D /* usbcontroller.cpp in Sources */,
@@ -1538,6 +1582,7 @@
 				F6A149462E4F37ED00FB8395 /* FMCControlView.swift in Sources */,
 				F6C3455F2E187AB700D7C987 /* xplane-sdk-mock.cpp in Sources */,
 				F6EBDC052FC6C38F005AFCBD /* xcrafts-ejets-pdc-profile.cpp in Sources */,
+				904FA377FE17BD383FE86213 /* fps-ejets-pdc-profile.cpp in Sources */,
 				F6A149322E4F03A400FB8395 /* product-fmc.cpp in Sources */,
 				F67FE8152E895BAC00C4243C /* laminar-a333-fcu-efis-profile.cpp in Sources */,
 				F60F7FDD2FC9B681000EA4E2 /* rotatemd11-agp-profile.cpp in Sources */,
@@ -1558,6 +1603,7 @@
 				F6FBC55F2E3A3E15004E5F42 /* FCUEfisControlView.swift in Sources */,
 				F69FF22D2E1D13CB00F9D2D9 /* GenericDeviceView.swift in Sources */,
 				F60ABAD52FBDF03F001C91EF /* xcrafts-ejets-ursa-minor-throttle-profile.cpp in Sources */,
+				2E1858C3B099754E110C2524 /* fps-ejets-ursa-minor-throttle-profile.cpp in Sources */,
 				F67FA47D2FFDA4990027506D /* zibo-rmp-profile.cpp in Sources */,
 				F64653602FDAFB23001F7640 /* profile-cleanup.cpp in Sources */,
 				F69FF22E2E1D13CB00F9D2D9 /* DeviceModel.swift in Sources */,
@@ -1599,11 +1645,13 @@
 				F647201E2E16CF6D00C9976B /* usbdevice.cpp in Sources */,
 				F6C69C0F2EC0DAE300BFDA65 /* laminar-737-fcu-efis-profile.cpp in Sources */,
 				F60ABAD22FBDF034001C91EF /* xcrafts-ejets-pap3-mcp-profile.cpp in Sources */,
+				C244BDC3C0414344465EC58A /* fps-ejets-pap3-mcp-profile.cpp in Sources */,
 				5DBA92312E6F4D71007328BC /* ff767-fmc-profile.cpp in Sources */,
 				FF35DA7A0000000000000013 /* ff350-fmc-profile.cpp in Sources */,
 				F6354FBA2FC457B200D67444 /* xcrafts-erj-tcas-profile.cpp in Sources */,
 				F633E3DA2FBE25B100CBE019 /* zibo-fcu-efis-profile.cpp in Sources */,
 				F60ABACE2FBDF029001C91EF /* xcrafts-ejets-fcu-efis-profile.cpp in Sources */,
+				41B9E84A7C7708F790CA0468 /* fps-ejets-fcu-efis-profile.cpp in Sources */,
 				F69575072FFE7B74006C0A76 /* toliss-nws-profile.cpp in Sources */,
 				F69575082FFE7B74006C0A76 /* product-nws.cpp in Sources */,
 				F67961962E31357E008031F1 /* usbdevice_lin.cpp in Sources */,

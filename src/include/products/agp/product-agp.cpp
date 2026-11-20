@@ -8,6 +8,7 @@
 #include "profiles/rotatemd11-agp-profile.h"
 #include "profiles/toliss-agp-profile.h"
 #include "profiles/xcrafts-ejets-agp-profile.h"
+#include "profiles/fps-ejets-agp-profile.h"
 #include "profiles/xcrafts-erj-agp-profile.h"
 #include "profiles/zibo-agp-profile.h"
 #include "segment-display.h"
@@ -50,6 +51,9 @@ const char *ProductAGP::activeProfileName() const {
 void ProductAGP::setProfileForCurrentAircraft() {
     if (XCraftsEjetsAGPProfile::IsEligible()) {
         profile = new XCraftsEjetsAGPProfile(this);
+        profileReady = true;
+    } else if (FPSEjetsAGPProfile::IsEligible()) {
+        profile = new FPSEjetsAGPProfile(this);
         profileReady = true;
     } else if (RotateMD11AGPProfile::IsEligible()) {
         profile = new RotateMD11AGPProfile(this);

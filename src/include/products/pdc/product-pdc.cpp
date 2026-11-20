@@ -11,6 +11,7 @@
 #include "profiles/fps748-pdc-profile.h"
 #include "profiles/toliss-pdc-profile.h"
 #include "profiles/xcrafts-ejets-pdc-profile.h"
+#include "profiles/fps-ejets-pdc-profile.h"
 #include "profiles/xcrafts-erj-pdc-profile.h"
 #include "profiles/zibo-pdc-profile.h"
 
@@ -109,6 +110,9 @@ void ProductPDC::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (XCraftsEjetsPDCProfile::IsEligible()) {
         profile = new XCraftsEjetsPDCProfile(this);
+        profileReady = true;
+    } else if (FPSEjetsPDCProfile::IsEligible()) {
+        profile = new FPSEjetsPDCProfile(this);
         profileReady = true;
     } else if (ZiboPDCProfile::IsEligible()) {
         profile = new ZiboPDCProfile(this);

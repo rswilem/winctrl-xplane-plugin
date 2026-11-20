@@ -18,6 +18,7 @@
 #include "profiles/stratosphere77w-pap3-mcp-profile.h"
 #include "profiles/toliss-pap3-mcp-profile.h"
 #include "profiles/xcrafts-ejets-pap3-mcp-profile.h"
+#include "profiles/fps-ejets-pap3-mcp-profile.h"
 #include "profiles/xcrafts-erj-pap3-mcp-profile.h"
 #include "profiles/zibo-pap3-mcp-profile.h"
 
@@ -62,6 +63,9 @@ void ProductPAP3MCP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (XCraftsEjetsPAP3MCPProfile::IsEligible()) {
         profile = new XCraftsEjetsPAP3MCPProfile(this);
+        profileReady = true;
+    } else if (FPSEjetsPAP3MCPProfile::IsEligible()) {
+        profile = new FPSEjetsPAP3MCPProfile(this);
         profileReady = true;
     } else if (XCraftsErjPAP3MCPProfile::IsEligible()) {
         profile = new XCraftsErjPAP3MCPProfile(this);

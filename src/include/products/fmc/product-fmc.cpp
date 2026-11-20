@@ -30,6 +30,7 @@
 #include "profiles/cl650-fmc-profile.h"
 #include "profiles/toliss-fmc-profile.h"
 #include "profiles/xcrafts-ejets-fmc-profile.h"
+#include "profiles/fps-ejets-fmc-profile.h"
 #include "profiles/xcrafts-erj-fmc-profile.h"
 #include "profiles/zibo-fmc-profile.h"
 #include "usbcontroller.h"
@@ -127,6 +128,10 @@ void ProductFMC::setProfileForCurrentAircraft() {
     } else if (XCraftsEjetsFMCProfile::IsEligible()) {
         clearDisplay();
         profile = new XCraftsEjetsFMCProfile(this);
+        profileReady = true;
+    } else if (FPSEjetsFMCProfile::IsEligible()) {
+        clearDisplay();
+        profile = new FPSEjetsFMCProfile(this);
         profileReady = true;
     } else if (XCraftsErjFMCProfile::IsEligible()) {
         clearDisplay();

@@ -27,6 +27,7 @@
 #include "profiles/stratosphere77w-fcu-efis-profile.h"
 #include "profiles/toliss-fcu-efis-profile.h"
 #include "profiles/xcrafts-ejets-fcu-efis-profile.h"
+#include "profiles/fps-ejets-fcu-efis-profile.h"
 #include "profiles/xcrafts-erj-fcu-efis-profile.h"
 #include "profiles/zibo-fcu-efis-profile.h"
 #include "segment-display.h"
@@ -78,6 +79,9 @@ void ProductFCUEfis::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (XCraftsEjetsFCUEfisProfile::IsEligible()) {
         profile = new XCraftsEjetsFCUEfisProfile(this);
+        profileReady = true;
+    } else if (FPSEjetsFCUEfisProfile::IsEligible()) {
+        profile = new FPSEjetsFCUEfisProfile(this);
         profileReady = true;
     } else if (XCraftsErjFCUEfisProfile::IsEligible()) {
         profile = new XCraftsErjFCUEfisProfile(this);

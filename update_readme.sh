@@ -33,6 +33,7 @@ AIRCRAFT_NAMES="
 toliss|ToLiss A3xx
 zibo|Zibo / LevelUp 737
 xcrafts-ejets|X-Crafts E-Jets
+fps-ejets|FPS E-Jets
 xcrafts-erj|X-Crafts ERJ
 ff767|FlightFactor 767
 ff777|FlightFactor 777

@@ -65,6 +65,7 @@ cl650|Hot Start CL650
 felis-742|Felis 747-200 Classic
 magknight787|Magknight 787
 aerobask-phenom|Aerobask Phenom 300
+tu-154-ce|Tu-154B2 CE
 "
 
 # Function to get display name

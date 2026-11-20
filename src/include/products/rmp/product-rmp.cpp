@@ -9,6 +9,7 @@
 #include "profiles/ff777-rmp-profile.h"
 #include "profiles/pa28-rmp-profile.h"
 #include "profiles/toliss-rmp-profile.h"
+#include "profiles/tu-154-ce-rmp-profile.h"
 #include "profiles/zibo-rmp-profile.h"
 #include "segment-display.h"
 
@@ -82,6 +83,9 @@ void ProductRMP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (AerobaskPhenomRMPProfile::IsEligible()) {
         profile = new AerobaskPhenomRMPProfile(this);
+        profileReady = true;
+    } else if (Tu154CERMPProfile::IsEligible()) {
+        profile = new Tu154CERMPProfile(this);
         profileReady = true;
     } else if (CL650RMPProfile::IsEligible()) {
         profile = new CL650RMPProfile(this);

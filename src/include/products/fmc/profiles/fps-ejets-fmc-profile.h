@@ -13,12 +13,15 @@ class FPSEjetsFMCProfile : public FMCAircraftProfile {
         std::vector<std::string> lineDatarefs;
         std::vector<FMCButtonDef> buttons;
         std::unordered_map<FMCKey, const FMCButtonDef *> keyMap;
+        bool radioLinesVisible = false;
         static std::string UfmcPrefix();
         std::string BrightnessDataref() const;
         void updateBacklight();
+        void drawRadioLines(bool visible);
 
     public:
         FPSEjetsFMCProfile(ProductFMC *product);
+        ~FPSEjetsFMCProfile();
 
         static bool IsEligible();
 

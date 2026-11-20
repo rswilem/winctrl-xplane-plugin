@@ -95,6 +95,12 @@ FPSEjetsFMCProfile::FPSEjetsFMCProfile(ProductFMC *product) : FMCAircraftProfile
     updateBacklight();
 }
 
+FPSEjetsFMCProfile::~FPSEjetsFMCProfile() {
+    if (radioLinesVisible) {
+        drawRadioLines(false);
+    }
+}
+
 std::string FPSEjetsFMCProfile::UfmcPrefix() {
     return Dataref::getInstance()->exists("SSG/UFMC/LINE_1") ? "SSG" : "FJCC";
 }
@@ -157,15 +163,110 @@ void FPSEjetsFMCProfile::mapCharacter(std::vector<uint8_t> *buffer, uint8_t char
             buffer->insert(buffer->end(), FMCSpecialCharacter::DEGREES.begin(), FMCSpecialCharacter::DEGREES.end());
             break;
 
+        case ',':
+            buffer->insert(buffer->end(), FMCSpecialCharacter::DIAMOND.begin(), FMCSpecialCharacter::DIAMOND.end());
+            break;
+
+        case '{':
+            buffer->push_back('[');
+            break;
+
+        case '}':
+            buffer->push_back(']');
+            break;
+
+        case '<':
+            buffer->insert(buffer->end(), FMCSpecialCharacter::FILLED_TRIANGLE_LEFT.begin(), FMCSpecialCharacter::FILLED_TRIANGLE_LEFT.end());
+            break;
+
+        case '>':
+            buffer->insert(buffer->end(), FMCSpecialCharacter::FILLED_TRIANGLE_RIGHT.begin(), FMCSpecialCharacter::FILLED_TRIANGLE_RIGHT.end());
+            break;
+
         default:
             buffer->push_back(character);
             break;
     }
 }
 
+namespace {
+    struct FPSEjetsCell {
+            char character = ' ';
+            std::string codes;
+    };
+
+    std::vector<FPSEjetsCell> parseCells(const std::string &text) {
+        std::vector<FPSEjetsCell> cells;
+        std::string pending;
+        for (size_t i = 0; i < text.size(); ++i) {
+            char c = text[i];
+            if (c == 0x00) {
+                break;
+            }
+            if (c == ';' && i + 1 < text.size() && text[i + 1] == ';') {
+                continue;
+            }
+            if (c == ';' && i + 1 < text.size()) {
+                pending += text[++i];
+                continue;
+            }
+            if (c == '[' && i + 1 < text.size() && text[i + 1] == ']') {
+                cells.push_back({'#', pending});
+                pending.clear();
+                ++i;
+                continue;
+            }
+            cells.push_back({c, pending});
+            pending.clear();
+        }
+        return cells;
+    }
+
+    void eraseCell(std::vector<FPSEjetsCell> &cells, size_t index) {
+        if (index + 1 < cells.size()) {
+            cells[index + 1].codes = cells[index].codes + cells[index + 1].codes;
+        }
+        cells.erase(cells.begin() + index);
+    }
+
+    size_t leadingSpaces(const std::vector<FPSEjetsCell> &cells) {
+        size_t count = 0;
+        while (count < cells.size() && cells[count].character == ' ') {
+            count++;
+        }
+        return count;
+    }
+
+    struct FPSEjetsGap {
+            size_t start = 0;
+            size_t length = 0;
+    };
+
+    std::vector<FPSEjetsGap> interiorGaps(const std::vector<FPSEjetsCell> &cells) {
+        std::vector<FPSEjetsGap> gaps;
+        size_t i = leadingSpaces(cells);
+        while (i < cells.size()) {
+            if (cells[i].character != ' ') {
+                i++;
+                continue;
+            }
+            size_t start = i;
+            while (i < cells.size() && cells[i].character == ' ') {
+                i++;
+            }
+            if (i < cells.size()) {
+                gaps.push_back({start, i - start});
+            }
+        }
+        return gaps;
+    }
+}
+
 void FPSEjetsFMCProfile::updatePage(std::vector<std::vector<char>> &page) {
     page = std::vector<std::vector<char>>(ProductFMC::PageLines, std::vector<char>(ProductFMC::PageCharsPerLine * ProductFMC::PageBytesPerChar, ' '));
 
+    const size_t width = ProductFMC::PageCharsPerLine;
+    bool onRadioPage = false;
     auto datarefManager = Dataref::getInstance();
     for (const auto &ref : displayDatarefs()) {
         std::smatch match;
@@ -178,63 +279,167 @@ void FPSEjetsFMCProfile::updatePage(std::vector<std::vector<char>> &page) {
             continue;
         }
 
-        std::string text = datarefManager->getCached<std::string>(ref.c_str());
-        if (text.empty()) {
+        std::vector<FPSEjetsCell> cells = parseCells(datarefManager->getCached<std::string>(ref.c_str()));
+        while (!cells.empty() && cells.back().character == ' ') {
+            cells.pop_back();
+        }
+        if (cells.empty()) {
             continue;
         }
 
-        auto visibleLength = [](const std::string &s) {
-            int len = 0;
-            for (int i = 0; i < (int) s.size(); ++i) {
-                if ((unsigned char) s[i] == 0x00) {
-                    break;
-                }
-                if (s[i] == ';' && i + 1 < (int) s.size()) {
-                    ++i;
-                    continue;
-                }
-                if (s[i] == '[' && i + 1 < (int) s.size() && s[i + 1] == ']') {
-                    ++i;
-                    ++len;
-                    continue;
-                }
-                ++len;
+        size_t leading = leadingSpaces(cells);
+        if (leading > 0 && leading < cells.size() && cells[leading].character == '<') {
+            for (size_t i = 0; i < leading; ++i) {
+                eraseCell(cells, 0);
             }
-            return len;
-        };
-
-        while (visibleLength(text) > (int) ProductFMC::PageCharsPerLine) {
-            int mid = text.size() / 2;
-            int found = -1;
-            for (int d = 0; d <= mid; ++d) {
-                if (mid + d < (int) text.size() && text[mid + d] == ' ') {
-                    found = mid + d;
-                    break;
-                }
-                if (mid - d >= 0 && text[mid - d] == ' ') {
-                    found = mid - d;
-                    break;
-                }
-            }
-            if (found == -1) {
-                break;
-            }
-            text.erase(found, 1);
         }
 
-        char currentColor = 'W';
-        const bool lineFontSmall = lineIndex % 2 == 1;
-        bool fontSmall = lineFontSmall;
-        int displayPos = 0;
-
-        for (int i = 0; i < (int) text.size() && displayPos < ProductFMC::PageCharsPerLine; ++i) {
-            unsigned char c = text[i];
-            if (c == 0x00) {
-                break;
+        while (cells.size() > width) {
+            auto gaps = interiorGaps(cells);
+            auto widest = std::max_element(gaps.begin(), gaps.end(), [](const FPSEjetsGap &a, const FPSEjetsGap &b) {
+                return a.length < b.length;
+            });
+            if (widest != gaps.end() && widest->length >= 2) {
+                eraseCell(cells, widest->start);
+                continue;
             }
+            if (leadingSpaces(cells) > 0) {
+                eraseCell(cells, 0);
+                continue;
+            }
+            if (!gaps.empty()) {
+                size_t middle = cells.size() / 2;
+                auto nearest = std::min_element(gaps.begin(), gaps.end(), [middle](const FPSEjetsGap &a, const FPSEjetsGap &b) {
+                    return std::abs(static_cast<long>(a.start) - static_cast<long>(middle)) < std::abs(static_cast<long>(b.start) - static_cast<long>(middle));
+                });
+                eraseCell(cells, nearest->start);
+                continue;
+            }
+            cells.resize(width);
+        }
 
-            if (c == ';' && i + 1 < (int) text.size()) {
-                char code = text[i + 1];
+        for (size_t i = 1; i < cells.size() && cells.size() < width; ++i) {
+            bool colorChange = std::any_of(cells[i].codes.begin(), cells[i].codes.end(), [](char code) {
+                return std::isalpha(static_cast<unsigned char>(code));
+            });
+            if (colorChange && cells[i].character != ' ' && cells[i - 1].character != ' ') {
+                cells.insert(cells.begin() + i, FPSEjetsCell{});
+                i++;
+            }
+        }
+
+        size_t splitIndex = cells.size();
+        size_t insertAt = cells.size();
+        auto gaps = interiorGaps(cells);
+        auto lastWideGap = std::find_if(gaps.rbegin(), gaps.rend(), [](const FPSEjetsGap &gap) {
+            return gap.length >= 2;
+        });
+        size_t lastFieldMarker = 0;
+        size_t lead = leadingSpaces(cells);
+        if (lineIndex > 0 && lead < 3 && lead + 2 < cells.size() && cells[lead].character != ' ' && cells[lead + 1].character == ' ' && cells[lead + 2].character == ' ') {
+            while (lead + 2 < cells.size() && cells[lead + 2].character == ' ') {
+                eraseCell(cells, lead + 1);
+            }
+            for (size_t i = cells.size() - 1; i > lead + 2; --i) {
+                if (cells[i].character != ' ' && cells[i - 1].character == ' ' && !cells[i].codes.empty()) {
+                    lastFieldMarker = i;
+                    break;
+                }
+            }
+            gaps = interiorGaps(cells);
+            lastWideGap = std::find_if(gaps.rbegin(), gaps.rend(), [](const FPSEjetsGap &gap) {
+                return gap.length >= 2;
+            });
+        }
+
+        size_t pageNumberStart = cells.size();
+        if (lineIndex == 0) {
+            while (pageNumberStart > 0 && (std::isdigit(static_cast<unsigned char>(cells[pageNumberStart - 1].character)) || cells[pageNumberStart - 1].character == '/')) {
+                pageNumberStart--;
+            }
+            bool hasSlash = std::any_of(cells.begin() + pageNumberStart, cells.end(), [](const FPSEjetsCell &cell) {
+                return cell.character == '/';
+            });
+            if (!hasSlash || pageNumberStart == 0 || cells[pageNumberStart].character == '/') {
+                pageNumberStart = cells.size();
+            }
+        }
+
+        if (pageNumberStart < cells.size()) {
+            size_t titleStart = leadingSpaces(cells);
+            size_t titleEnd = pageNumberStart;
+            while (titleEnd > titleStart && cells[titleEnd - 1].character == ' ') {
+                titleEnd--;
+            }
+            size_t titleLength = titleEnd - titleStart;
+            size_t pageNumberLength = cells.size() - pageNumberStart;
+            size_t centered = (width - titleLength + 1) / 2;
+            if (titleLength > 0 && centered + titleLength + 1 + pageNumberLength <= width) {
+                std::vector<FPSEjetsCell> title(cells.begin() + titleStart, cells.begin() + titleEnd);
+                std::vector<FPSEjetsCell> pageNumber(cells.begin() + pageNumberStart, cells.end());
+                std::string leadingCodes;
+                for (size_t i = 0; i < titleStart; ++i) {
+                    leadingCodes += cells[i].codes;
+                }
+                title.front().codes = leadingCodes + title.front().codes;
+                cells.assign(centered, FPSEjetsCell{});
+                cells.insert(cells.end(), title.begin(), title.end());
+                cells.push_back(FPSEjetsCell{});
+                pageNumberStart = cells.size();
+                cells.insert(cells.end(), pageNumber.begin(), pageNumber.end());
+            }
+            insertAt = pageNumberStart;
+            splitIndex = pageNumberStart;
+        } else if (lastFieldMarker > 0 && lastWideGap == gaps.rend()) {
+            insertAt = lastFieldMarker;
+            splitIndex = lastFieldMarker;
+        } else if (lastWideGap != gaps.rend()) {
+            insertAt = lastWideGap->start;
+            splitIndex = lastWideGap->start + lastWideGap->length;
+        } else if (lineIndex > 0 && leadingSpaces(cells) >= 3) {
+            insertAt = 0;
+            splitIndex = 0;
+        } else if (lineIndex > 0 && cells.size() >= 3 && cells.back().character == '>') {
+            size_t start = cells.size() - 1;
+            if (cells[start - 1].character == ' ') {
+                start--;
+            }
+            while (start > 0 && cells[start - 1].character != ' ') {
+                start--;
+            }
+            size_t letters = std::count_if(cells.begin() + start, cells.end(), [](const FPSEjetsCell &cell) {
+                return std::isalpha(static_cast<unsigned char>(cell.character));
+            });
+            if (cells[leadingSpaces(cells)].character == '<') {
+                for (size_t i = cells.size() - 1; i > leadingSpaces(cells); --i) {
+                    if (cells[i].character != ' ' && cells[i - 1].character == ' ' && !cells[i].codes.empty()) {
+                        insertAt = i;
+                        splitIndex = i;
+                        break;
+                    }
+                }
+            } else if (letters >= 2 && start > leadingSpaces(cells)) {
+                splitIndex = start;
+                insertAt = start;
+            }
+        }
+
+        if (insertAt < cells.size() && cells.size() < width) {
+            size_t padding = width - cells.size();
+            cells.insert(cells.begin() + insertAt, padding, FPSEjetsCell{});
+            splitIndex += padding;
+        }
+
+        const bool lineFontSmall = lineIndex % 2 == 1;
+        char currentColor = 'W';
+        bool fontSmall = lineFontSmall;
+        std::string visibleText;
+        for (size_t i = 0; i < cells.size() && i < width; ++i) {
+            if (i == splitIndex) {
+                currentColor = 'W';
+                fontSmall = lineFontSmall;
+            }
+            for (char code : cells[i].codes) {
                 if (code == '2') {
                     fontSmall = true;
                 } else if (code == '4') {
@@ -243,23 +448,43 @@ void FPSEjetsFMCProfile::updatePage(std::vector<std::vector<char>> &page) {
                     currentColor = code;
                     fontSmall = lineFontSmall;
                 }
-                i++;
-                continue;
             }
 
-            if (c == '[' && i + 1 < (int) text.size() && text[i + 1] == ']') {
-                product->writeLineToPage(page, lineIndex, displayPos, "#", currentColor, fontSmall);
-                displayPos++;
-                i++;
-                continue;
+            char c = static_cast<char>(toupper(static_cast<unsigned char>(cells[i].character)));
+            visibleText += c;
+            if (c != ' ') {
+                product->writeLineToPage(page, lineIndex, static_cast<int>(i), std::string(1, c), currentColor, fontSmall);
             }
+        }
 
-            if (c != 0x20) {
-                product->writeLineToPage(page, lineIndex, displayPos, std::string(1, toupper(c)), currentColor, fontSmall);
-            }
-            displayPos++;
+        if (lineIndex == 0 && visibleText.find("RADIO") != std::string::npos) {
+            onRadioPage = true;
         }
     }
+
+    if (onRadioPage || radioLinesVisible) {
+        drawRadioLines(onRadioPage);
+    }
+}
+
+void FPSEjetsFMCProfile::drawRadioLines(bool visible) {
+    FMCScreenLayout layout = FMCHardwareMapping::ScreenLayoutForHardware(product->hardwareType);
+    const uint16_t left = 36 + layout.x;
+    const uint16_t top = 20 + layout.y;
+    const uint16_t width = ProductFMC::PageCharsPerLine * layout.characterWidth;
+    const uint16_t comBottom = top + 5 * layout.characterHeight;
+    const uint16_t navBottom = top + 9 * layout.characterHeight;
+    const uint16_t thickness = 4;
+
+    radioLinesVisible = visible;
+    if (!visible) {
+        product->fillRect(0, 0, 1, 1, 0x00, 0x00, 0x00);
+        return;
+    }
+
+    product->fillRect(left, comBottom - 1, width, thickness, 0xff, 0xff, 0xff);
+    product->fillRect(left, navBottom - 1, width, thickness, 0xff, 0xff, 0xff);
+    product->fillRect(left + width / 2 + layout.characterWidth / 2 - thickness / 2, top + layout.characterHeight, thickness, navBottom - top - layout.characterHeight, 0xff, 0xff, 0xff);
 }
 
 void FPSEjetsFMCProfile::buttonPressed(const FMCButtonDef *button, XPLMCommandPhase phase) {

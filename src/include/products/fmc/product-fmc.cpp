@@ -8,6 +8,7 @@
 #include "profiles/aerobask-phenom-fmc-profile.h"
 #include "profiles/bae146-fmc-profile.h"
 #include "profiles/c525-fmc-profile.h"
+#include "profiles/dwsim-atr72-fmc-profile.h"
 #include "profiles/ff350-fmc-profile.h"
 #include "profiles/ffa320-fmc-profile.h"
 #include "profiles/ff767-fmc-profile.h"
@@ -190,6 +191,10 @@ void ProductFMC::setProfileForCurrentAircraft() {
     } else if (AerobaskPhenomFMCProfile::IsEligible()) {
         clearDisplay();
         profile = new AerobaskPhenomFMCProfile(this);
+        profileReady = true;
+    } else if (DWSimATR72FMCProfile::IsEligible()) {
+        clearDisplay();
+        profile = new DWSimATR72FMCProfile(this);
         profileReady = true;
     } else {
         profile = nullptr;

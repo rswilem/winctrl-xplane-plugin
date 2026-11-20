@@ -30,6 +30,7 @@
 #include "profiles/xcrafts-erj-fcu-efis-profile.h"
 #include "profiles/zibo-fcu-efis-profile.h"
 #include "segment-display.h"
+#include "profiles/atr-fcu-efis-profile.h"
 
 #include <algorithm>
 #include <cstring>
@@ -83,6 +84,9 @@ void ProductFCUEfis::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (Q4XPFCUEfisProfile::IsEligible()) {
         profile = new Q4XPFCUEfisProfile(this);
+        profileReady = true;
+    } else if (ATRFCUEfisProfile::IsEligible()) {
+        profile = new ATRFCUEfisProfile(this);
         profileReady = true;
     } else if (CL650FCUEfisProfile::IsEligible()) {
         profile = new CL650FCUEfisProfile(this);

@@ -1,4 +1,4 @@
-#include "atr-fcu-efis-profile.h"
+#include "dwsim-atr72-fcu-efis-profile.h"
 
 #include "dataref.h"
 #include "product-fcu-efis.h"
@@ -60,7 +60,7 @@ static uint8_t brightnessToLed(float level) {
     return static_cast<uint8_t>(std::clamp(scaled, 0L, 255L));
 }
 
-ATRFCUEfisProfile::ATRFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraftProfile(product) {
+DWSimATR72FCUEfisProfile::DWSimATR72FCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraftProfile(product) {
     XPLMDebugString("WINCTRL: ATR FCU/EFIS profile loaded\n");
 
 
@@ -101,14 +101,14 @@ ATRFCUEfisProfile::ATRFCUEfisProfile(ProductFCUEfis *product) : FCUEfisAircraftP
     product->forceStateSync();
 }
 
-ATRFCUEfisProfile::~ATRFCUEfisProfile() {
+DWSimATR72FCUEfisProfile::~DWSimATR72FCUEfisProfile() {
 }
 
-bool ATRFCUEfisProfile::IsEligible() {
+bool DWSimATR72FCUEfisProfile::IsEligible() {
     return Dataref::getInstance()->exists("DWSim/ATR_Series/afcs/alt_sel_ft");
 }
 
-const std::vector<std::string> &ATRFCUEfisProfile::displayDatarefs() const {
+const std::vector<std::string> &DWSimATR72FCUEfisProfile::displayDatarefs() const {
     static const std::vector<std::string> datarefs = [] {
         std::vector<std::string> list = {
             ATR_ALT_SEL,
@@ -127,7 +127,7 @@ const std::vector<std::string> &ATRFCUEfisProfile::displayDatarefs() const {
     return datarefs;
 }
 
-const std::unordered_map<uint16_t, FCUEfisButtonDef> &ATRFCUEfisProfile::buttonDefs() const {
+const std::unordered_map<uint16_t, FCUEfisButtonDef> &DWSimATR72FCUEfisProfile::buttonDefs() const {
     static const std::unordered_map<uint16_t, FCUEfisButtonDef> buttons = {
         // FCU buttons
         {3,  {"AP1",  "DWSim/ATR_Series/commands/front/afcs/apPushButton"}},
@@ -174,7 +174,7 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &ATRFCUEfisProfile::buttonD
     return buttons;
 }
 
-void ATRFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
+void DWSimATR72FCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.displayEnabled = true;
 
     // Speed
@@ -224,7 +224,7 @@ void ATRFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
         std::ostringstream oss;
         oss << std::setw(4) << std::setfill('0') << vsAbs;
         data.verticalSpeed = oss.str();
-        data.vsSign = negative;
+        data.vsSign = !negative;
     }
     data.vsMode = true;
     data.fpaMode = false;
@@ -244,7 +244,7 @@ void ATRFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.efisRight.setBaro(baro2, false);
 }
 
-void ATRFCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMCommandPhase phase) {
+void DWSimATR72FCUEfisProfile::buttonPressed(const FCUEfisButtonDef *button, XPLMCommandPhase phase) {
     if (!button || button->dataref.empty() || phase == xplm_CommandContinue) {
         return;
     }

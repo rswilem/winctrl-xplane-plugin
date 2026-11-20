@@ -118,6 +118,7 @@ DWSimATR72FMCProfile::DWSimATR72FMCProfile(ProductFMC *product) :
         product->setLedBrightness(FMCLed::BACKLIGHT, static_cast<uint8_t>(std::clamp(level, 0.0f, 1.0f) * 255));
     },
         this);
+    dataref->executeChangedCallbacksForDataref(kPedestalBrightness);
 
     dataref->monitorExistingDataref<bool>(screenRef(kScreenOn).c_str(), [this](bool) {
         updateScreenBacklight();
@@ -154,8 +155,7 @@ DWSimATR72FMCProfile::DWSimATR72FMCProfile(ProductFMC *product) :
 }
 
 bool DWSimATR72FMCProfile::IsEligible() {
-    auto dataref = Dataref::getInstance();
-    return dataref->get<std::string>("sim/aircraft/view/acf_ICAO") == "AT76" && dataref->exists("DWSim/ATR_Series/lit/mcdu1/exec");
+    return Dataref::getInstance()->exists("DWSim/ATR_Series/afcs/alt_sel_ft");
 }
 
 std::string DWSimATR72FMCProfile::mcdu() const {

@@ -115,13 +115,17 @@
 		F635AD502E058FFC005D6CDC /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F635AD4F2E058FFC005D6CDC /* IOKit.framework */; platformFilters = (ios, maccatalyst, macos, tvos, xros, ); };
 		F63BC99A2E30D73E00ACBBB0 /* appstate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6AF9ECB2D078ED400530297 /* appstate.cpp */; };
 		F6402E452FFDB71B00998B2D /* q4xp-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6402E442FFDB71B00998B2D /* q4xp-fmc-profile.cpp */; };
+		D5DA19F360EBD00A7A58A982 /* dwsim-atr72-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 315B33EB4E4FF8006DE6BE6E /* dwsim-atr72-fmc-profile.cpp */; };
 		F6402E462FFDB71B00998B2D /* cl650-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6402E422FFDB71B00998B2D /* cl650-fmc-profile.cpp */; };
 		F6402E472FFDB71B00998B2D /* q4xp-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6402E442FFDB71B00998B2D /* q4xp-fmc-profile.cpp */; };
+		EAC34FEAEDB164F960515C1D /* dwsim-atr72-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 315B33EB4E4FF8006DE6BE6E /* dwsim-atr72-fmc-profile.cpp */; };
 		F6402E482FFDB71B00998B2D /* cl650-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6402E422FFDB71B00998B2D /* cl650-fmc-profile.cpp */; };
 		F6402E4D2FFDB72E00998B2D /* cl650-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6402E4A2FFDB72E00998B2D /* cl650-fcu-efis-profile.cpp */; };
 		F6402E4E2FFDB72E00998B2D /* q4xp-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6402E4C2FFDB72E00998B2D /* q4xp-fcu-efis-profile.cpp */; };
+		8707B9FB4BD9E9609415F67F /* dwsim-atr72-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 35C210237B09CF220F84DD10 /* dwsim-atr72-fcu-efis-profile.cpp */; };
 		F6402E4F2FFDB72E00998B2D /* cl650-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6402E4A2FFDB72E00998B2D /* cl650-fcu-efis-profile.cpp */; };
 		F6402E502FFDB72E00998B2D /* q4xp-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F6402E4C2FFDB72E00998B2D /* q4xp-fcu-efis-profile.cpp */; };
+		EBA9C4DFABD71668C75DA285 /* dwsim-atr72-fcu-efis-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 35C210237B09CF220F84DD10 /* dwsim-atr72-fcu-efis-profile.cpp */; };
 		F646535F2FDAFB23001F7640 /* profile-cleanup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F646535E2FDAFB23001F7640 /* profile-cleanup.cpp */; };
 		F64653602FDAFB23001F7640 /* profile-cleanup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F646535E2FDAFB23001F7640 /* profile-cleanup.cpp */; };
 		F647201E2E16CF6D00C9976B /* usbdevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F647201D2E16CF6D00C9976B /* usbdevice.cpp */; };
@@ -439,11 +443,15 @@
 		F6402E412FFDB71B00998B2D /* cl650-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "cl650-fmc-profile.h"; sourceTree = "<group>"; };
 		F6402E422FFDB71B00998B2D /* cl650-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cl650-fmc-profile.cpp"; sourceTree = "<group>"; };
 		F6402E432FFDB71B00998B2D /* q4xp-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "q4xp-fmc-profile.h"; sourceTree = "<group>"; };
+		6D02A19F7CC1DAD4AEE353F5 /* dwsim-atr72-fmc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "dwsim-atr72-fmc-profile.h"; sourceTree = "<group>"; };
 		F6402E442FFDB71B00998B2D /* q4xp-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "q4xp-fmc-profile.cpp"; sourceTree = "<group>"; };
+		315B33EB4E4FF8006DE6BE6E /* dwsim-atr72-fmc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "dwsim-atr72-fmc-profile.cpp"; sourceTree = "<group>"; };
 		F6402E492FFDB72E00998B2D /* cl650-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "cl650-fcu-efis-profile.h"; sourceTree = "<group>"; };
 		F6402E4A2FFDB72E00998B2D /* cl650-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cl650-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
 		F6402E4B2FFDB72E00998B2D /* q4xp-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "q4xp-fcu-efis-profile.h"; sourceTree = "<group>"; };
+		F7EFFC5C5E243C71B1F12D97 /* dwsim-atr72-fcu-efis-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "dwsim-atr72-fcu-efis-profile.h"; sourceTree = "<group>"; };
 		F6402E4C2FFDB72E00998B2D /* q4xp-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "q4xp-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
+		35C210237B09CF220F84DD10 /* dwsim-atr72-fcu-efis-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "dwsim-atr72-fcu-efis-profile.cpp"; sourceTree = "<group>"; };
 		F646535D2FDAFB23001F7640 /* profile-cleanup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "profile-cleanup.h"; sourceTree = "<group>"; };
 		F646535E2FDAFB23001F7640 /* profile-cleanup.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "profile-cleanup.cpp"; sourceTree = "<group>"; };
 		F647201D2E16CF6D00C9976B /* usbdevice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = usbdevice.cpp; sourceTree = "<group>"; };
@@ -919,6 +927,8 @@
 				F6402E422FFDB71B00998B2D /* cl650-fmc-profile.cpp */,
 				F6402E432FFDB71B00998B2D /* q4xp-fmc-profile.h */,
 				F6402E442FFDB71B00998B2D /* q4xp-fmc-profile.cpp */,
+				6D02A19F7CC1DAD4AEE353F5 /* dwsim-atr72-fmc-profile.h */,
+				315B33EB4E4FF8006DE6BE6E /* dwsim-atr72-fmc-profile.cpp */,
 				F672B7193017AA4500A7D1BC /* c525-fmc-profile.h */,
 				F672B71A3017AA4500A7D1BC /* c525-fmc-profile.cpp */,
 				F672B71B3017AA4500A7D1BC /* fjs732-fmc-profile.h */,
@@ -1091,6 +1101,8 @@
 				F6402E4A2FFDB72E00998B2D /* cl650-fcu-efis-profile.cpp */,
 				F6402E4B2FFDB72E00998B2D /* q4xp-fcu-efis-profile.h */,
 				F6402E4C2FFDB72E00998B2D /* q4xp-fcu-efis-profile.cpp */,
+				F7EFFC5C5E243C71B1F12D97 /* dwsim-atr72-fcu-efis-profile.h */,
+				35C210237B09CF220F84DD10 /* dwsim-atr72-fcu-efis-profile.cpp */,
 			);
 			path = profiles;
 			sourceTree = "<group>";
@@ -1407,7 +1419,9 @@
 				F67FA47C2FFDA4990027506D /* zibo-rmp-profile.cpp in Sources */,
 				F6402E4D2FFDB72E00998B2D /* cl650-fcu-efis-profile.cpp in Sources */,
 				F6402E4E2FFDB72E00998B2D /* q4xp-fcu-efis-profile.cpp in Sources */,
+				8707B9FB4BD9E9609415F67F /* dwsim-atr72-fcu-efis-profile.cpp in Sources */,
 				F6402E472FFDB71B00998B2D /* q4xp-fmc-profile.cpp in Sources */,
+				EAC34FEAEDB164F960515C1D /* dwsim-atr72-fmc-profile.cpp in Sources */,
 				F6402E482FFDB71B00998B2D /* cl650-fmc-profile.cpp in Sources */,
 				F60ABAEE2FBE1355001C91EF /* jar330-fcu-efis-profile.cpp in Sources */,
 				F69575052FFE7B74006C0A76 /* toliss-nws-profile.cpp in Sources */,
@@ -1555,6 +1569,7 @@
 				F64BE3ED2E1BF625003C1B73 /* usbcontroller_win.cpp in Sources */,
 				F6402E4F2FFDB72E00998B2D /* cl650-fcu-efis-profile.cpp in Sources */,
 				F6402E502FFDB72E00998B2D /* q4xp-fcu-efis-profile.cpp in Sources */,
+				EBA9C4DFABD71668C75DA285 /* dwsim-atr72-fcu-efis-profile.cpp in Sources */,
 				F6BB75782E32634700C2B21F /* product-fcu-efis.cpp in Sources */,
 				F672B7243017AA8A00A7D1BC /* uns1-decode.cpp in Sources */,
 				F6EF56262F0AC43300AB61F1 /* zibo-pdc-profile.cpp in Sources */,
@@ -1577,6 +1592,7 @@
 				F60ABADD2FBDF33E001C91EF /* xcrafts-erj-fmc-profile.cpp in Sources */,
 				F68164E52E3161FD00319E9D /* usbcontroller.cpp in Sources */,
 				F6402E452FFDB71B00998B2D /* q4xp-fmc-profile.cpp in Sources */,
+				D5DA19F360EBD00A7A58A982 /* dwsim-atr72-fmc-profile.cpp in Sources */,
 				F6402E462FFDB71B00998B2D /* cl650-fmc-profile.cpp in Sources */,
 				F6C345512E18797400D7C987 /* dataref.cpp in Sources */,
 				F6A149462E4F37ED00FB8395 /* FMCControlView.swift in Sources */,

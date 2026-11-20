@@ -58,6 +58,7 @@ a220|Deanarica A220-300
 bae146|JustFlight 146
 pa28|JustFlight PA-28
 q4xp|FlyJSim Q4XP
+dwsim-atr72|DeltaWing ATR 72-600
 fjs732|FlyJSim 732 TwinJet
 c525|TorqueSim Citation CJ525
 cl650|Hot Start CL650

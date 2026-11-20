@@ -1,5 +1,5 @@
-#ifndef ATR_FCU_EFIS_PROFILE_H
-#define ATR_FCU_EFIS_PROFILE_H
+#ifndef DWSIM_ATR72_FCU_EFIS_PROFILE_H
+#define DWSIM_ATR72_FCU_EFIS_PROFILE_H
 
 #include "fcu-efis-aircraft-profile.h"
 
@@ -7,10 +7,10 @@
 #include <string>
 #include <unordered_map>
 
-class ATRFCUEfisProfile : public FCUEfisAircraftProfile {
+class DWSimATR72FCUEfisProfile : public FCUEfisAircraftProfile {
     public:
-        ATRFCUEfisProfile(ProductFCUEfis *product);
-        ~ATRFCUEfisProfile();
+        DWSimATR72FCUEfisProfile(ProductFCUEfis *product);
+        ~DWSimATR72FCUEfisProfile();
 
         static bool IsEligible();
 

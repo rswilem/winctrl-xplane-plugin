@@ -10,6 +10,7 @@
 #include "profiles/c172-laminar-fcu-efis-profile.h"
 #include "profiles/cis-seneca-fcu-efis-profile.h"
 #include "profiles/cl650-fcu-efis-profile.h"
+#include "profiles/dwsim-atr72-fcu-efis-profile.h"
 #include "profiles/ff350-fcu-efis-profile.h"
 #include "profiles/ffa320-fcu-efis-profile.h"
 #include "profiles/ff767-fcu-efis-profile.h"
@@ -31,7 +32,6 @@
 #include "profiles/xcrafts-erj-fcu-efis-profile.h"
 #include "profiles/zibo-fcu-efis-profile.h"
 #include "segment-display.h"
-#include "profiles/atr-fcu-efis-profile.h"
 
 #include <algorithm>
 #include <cstring>
@@ -89,8 +89,8 @@ void ProductFCUEfis::setProfileForCurrentAircraft() {
     } else if (Q4XPFCUEfisProfile::IsEligible()) {
         profile = new Q4XPFCUEfisProfile(this);
         profileReady = true;
-    } else if (ATRFCUEfisProfile::IsEligible()) {
-        profile = new ATRFCUEfisProfile(this);
+    } else if (DWSimATR72FCUEfisProfile::IsEligible()) {
+        profile = new DWSimATR72FCUEfisProfile(this);
         profileReady = true;
     } else if (CL650FCUEfisProfile::IsEligible()) {
         profile = new CL650FCUEfisProfile(this);

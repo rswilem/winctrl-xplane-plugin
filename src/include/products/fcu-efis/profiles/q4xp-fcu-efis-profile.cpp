@@ -146,7 +146,7 @@ void Q4XPFCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
         std::ostringstream oss;
         oss << std::setw(4) << std::setfill('0') << vsAbs;
         data.verticalSpeed = oss.str();
-        data.vsSign = negative;
+        data.vsSign = !negative;
     }
     data.vsMode = true;
     data.fpaMode = false;

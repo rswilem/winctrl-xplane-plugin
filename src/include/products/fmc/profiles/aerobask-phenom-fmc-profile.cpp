@@ -5,24 +5,30 @@
 
 #include <algorithm>
 
-// Aerobask Phenom 300: its pedestal keyboard is X-Plane's GCU 478, mapped onto the FMC. The G1000
-// shows its pages on the MFD, so the FMC screen stays dark and only the keys are used. The FMS
-// knob is on the arrow keys: left/right turn the outer ring, up/down the inner one.
+// Aerobask Phenom 300: its pedestal keyboard is X-Plane's GCU 478, mapped onto the FMC. The FMS
+// knob is on the arrow keys: left/right turn the outer ring, up/down the inner one. The screen
+// shows the G1000 flight plan, scrolled with the line select keys.
 
 namespace {
     constexpr const char *kAvionicsOn = "sim/cockpit/electrical/avionics_on";
     constexpr const char *kPanelBrightness = "sim/cockpit2/electrical/panel_brightness_ratio";
+    constexpr const char *kDisplayBrightness = "sim/cockpit2/electrical/instrument_brightness_ratio_manual";
 
     const std::string kGcu = "sim/GPS/gcu478/";
 } // namespace
 
 AerobaskPhenomFMCProfile::AerobaskPhenomFMCProfile(ProductFMC *product) :
-    FMCAircraftProfile(product) {
+    FMCAircraftProfile(product),
+    flightPlanPage(product) {
     product->setAllLedsEnabled(false);
-    product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, 0);
 
-    // Same lighting as the MCP and PDC
+    // The keys follow the panel lighting like the MCP and PDC, the screen the G1000 displays
     Dataref::getInstance()->monitorExistingDataref<std::vector<float>>(kPanelBrightness, [this](const std::vector<float> &) {
+        updateBacklight();
+    },
+        this);
+
+    Dataref::getInstance()->monitorExistingDataref<std::vector<float>>(kDisplayBrightness, [this](const std::vector<float> &) {
         updateBacklight();
     },
         this);
@@ -107,6 +113,10 @@ const std::vector<FMCButtonDef> &AerobaskPhenomFMCProfile::buttonDefs() const {
         {FMCKey::KEYX, kGcu + "X"},
         {FMCKey::KEYY, kGcu + "Y"},
         {FMCKey::KEYZ, kGcu + "Z"},
+
+        // Scroll the flight plan page
+        FMCFlightPlanPage::scrollUpButton(),
+        FMCFlightPlanPage::scrollDownButton(),
     };
     return buttons;
 }
@@ -133,20 +143,21 @@ const std::unordered_map<FMCKey, const FMCButtonDef *> &AerobaskPhenomFMCProfile
 }
 
 const std::map<char, FMCTextColor> &AerobaskPhenomFMCProfile::colorMap() const {
-    static const std::map<char, FMCTextColor> colors = {};
-    return colors;
+    return FMCFlightPlanPage::colorMap();
 }
 
 void AerobaskPhenomFMCProfile::mapCharacter(std::vector<uint8_t> *buffer, uint8_t character, bool isFontSmall) {
-    buffer->push_back(character);
+    if (!FMCFlightPlanPage::mapCharacter(buffer, character)) {
+        buffer->push_back(character);
+    }
 }
 
 void AerobaskPhenomFMCProfile::updatePage(std::vector<std::vector<char>> &page) {
-    page = std::vector<std::vector<char>>(ProductFMC::PageLines, std::vector<char>(ProductFMC::PageCharsPerLine * ProductFMC::PageBytesPerChar, ' '));
+    flightPlanPage.updatePage(page);
 }
 
 void AerobaskPhenomFMCProfile::buttonPressed(const FMCButtonDef *button, XPLMCommandPhase phase) {
-    if (!button || button->dataref.empty() || phase == xplm_CommandContinue) {
+    if (!button || button->dataref.empty() || phase == xplm_CommandContinue || flightPlanPage.buttonPressed(button, phase)) {
         return;
     }
 
@@ -159,4 +170,8 @@ void AerobaskPhenomFMCProfile::updateBacklight() {
     bool powered = dataref->getCached<bool>(kAvionicsOn);
     float level = powered && !levels.empty() ? std::clamp(levels[0], 0.0f, 1.0f) : 0.0f;
     product->setLedBrightness(FMCLed::BACKLIGHT, static_cast<uint8_t>(level * 255));
+
+    std::vector<float> displayLevels = dataref->getCached<std::vector<float>>(kDisplayBrightness);
+    float displayLevel = powered && !displayLevels.empty() ? std::clamp(displayLevels[0], 0.0f, 1.0f) : 0.0f;
+    product->setLedBrightness(FMCLed::SCREEN_BACKLIGHT, static_cast<uint8_t>(displayLevel * 255));
 }

@@ -2,9 +2,12 @@
 #define AEROBASK_PHENOM_FMC_PROFILE_H
 
 #include "fmc-aircraft-profile.h"
+#include "fmc-flight-plan-page.h"
 
 class AerobaskPhenomFMCProfile : public FMCAircraftProfile {
     private:
+        FMCFlightPlanPage flightPlanPage;
+
         void updateBacklight();
 
     public:

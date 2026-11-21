@@ -75,20 +75,16 @@ DWSimATR72FCUEfisProfile::DWSimATR72FCUEfisProfile(ProductFCUEfis *product) : FC
         product->forceStateSync();
     },
         this);
-
-/*
-    product->setLedBrightness(FCUEfisLed::BACKLIGHT, BUTTON_BACKLIGHT);
-    product->setLedBrightness(FCUEfisLed::EXPED_BACKLIGHT, BUTTON_BACKLIGHT);
-    product->setLedBrightness(FCUEfisLed::EFISL_BACKLIGHT, BUTTON_BACKLIGHT);
-    product->setLedBrightness(FCUEfisLed::EFISR_BACKLIGHT, BUTTON_BACKLIGHT);
-
-    product->setLedBrightness(FCUEfisLed::SCREEN_BACKLIGHT, SCREEN_BACKLIGHT);
-    product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, SCREEN_BACKLIGHT);
-    product->setLedBrightness(FCUEfisLed::EFISR_SCREEN_BACKLIGHT, SCREEN_BACKLIGHT);
-    product->setLedBrightness(FCUEfisLed::OVERALL_GREEN, 255);
-    product->setLedBrightness(FCUEfisLed::EFISL_OVERALL_GREEN, 255);
-    product->setLedBrightness(FCUEfisLed::EFISR_OVERALL_GREEN, 255);
-*/
+    
+    Dataref::getInstance()->monitorExistingDataref<int>("DWSim/ATR_Series/afcs/ap_engaged", [product](int engaged) {
+        product->setLedBrightness(FCUEfisLed::AP1_GREEN, engaged ? 255 : 0);
+    },
+        this);
+        
+    Dataref::getInstance()->monitorExistingDataref<int>("DWSim/ATR_Series/afcs/yd_engaged", [product](int engaged) {
+        product->setLedBrightness(FCUEfisLed::ATHR_GREEN, engaged ? 255 : 0);
+    },
+        this);
 
     product->setLedBrightness(FCUEfisLed::SCREEN_BACKLIGHT, 128);
     product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, 128);
@@ -96,7 +92,6 @@ DWSimATR72FCUEfisProfile::DWSimATR72FCUEfisProfile(ProductFCUEfis *product) : FC
     product->setLedBrightness(FCUEfisLed::OVERALL_GREEN, 255);
     product->setLedBrightness(FCUEfisLed::EFISL_OVERALL_GREEN, 255);
     product->setLedBrightness(FCUEfisLed::EFISR_OVERALL_GREEN, 255);
-
 
     product->forceStateSync();
 }
@@ -130,12 +125,15 @@ const std::vector<std::string> &DWSimATR72FCUEfisProfile::displayDatarefs() cons
 const std::unordered_map<uint16_t, FCUEfisButtonDef> &DWSimATR72FCUEfisProfile::buttonDefs() const {
     static const std::unordered_map<uint16_t, FCUEfisButtonDef> buttons = {
         // FCU buttons
-        {3,  {"AP1",  "DWSim/ATR_Series/commands/front/afcs/apPushButton"}},
-        {4,  {"AP2",  ""}},
-        {7,  {"METRIC", ""}},
+        {0, {"MACH", "DWSim/ATR_Series/commands/front/133vm/warnPushButton/toggle"}},
+        {3, {"AP1",  "DWSim/ATR_Series/commands/front/afcs/apPushButton"}},
+        // {4, {"AP2",  "DWSim/ATR_Series/commands/front/afcs/apPushButton"}},
+        {5, {"A/THR", "DWSim/ATR_Series/commands/front/afcs/ydPushButton"}},
+        {6, {"EXPED", "DWSim/ATR_Series/commands/front/afcs/bcPushButton"}},
+        {7, {"METRIC", ""}},
 
         // Speed encoder
-        {9,  {"SPD DEC",  "DWSim/ATR_Series/commands/front/icp/left/spdTgtRotationKnob/rotateLeft"}},
+        {9, {"SPD DEC",  "DWSim/ATR_Series/commands/front/icp/left/spdTgtRotationKnob/rotateLeft"}},
         {10, {"SPD INC",  "DWSim/ATR_Series/commands/front/icp/left/spdTgtRotationKnob/rotateRight"}},
         {11, {"SPD PUSH", "DWSim/ATR_Series/commands/front/afcs/iasPushButton"}},
         {12, {"SPD PULL", "DWSim/ATR_Series/commands/front/icp/left/autoManPushButton/toggle"}},
@@ -144,7 +142,7 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &DWSimATR72FCUEfisProfile::
         {13, {"HDG DEC",  "DWSim/ATR_Series/commands/front/afcs/headingKnob/rotateLeft"}},
         {14, {"HDG INC",  "DWSim/ATR_Series/commands/front/afcs/headingKnob/rotateRight"}},
         {15, {"HDG PUSH", "DWSim/ATR_Series/commands/front/afcs/hdgPushButton"}},
-        {16, {"HDG PULL", ""}},
+        {16, {"HDG PULL", "DWSim/ATR_Series/commands/front/afcs/headingKnob/push"}},
 
         // Altitude encoder
         {17, {"ALT DEC",  "DWSim/ATR_Series/commands/front/afcs/altSel/rotateLeft"}},
@@ -173,7 +171,9 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &DWSimATR72FCUEfisProfile::
 
     return buttons;
 }
+/*
 
+*/
 void DWSimATR72FCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.displayEnabled = true;
 

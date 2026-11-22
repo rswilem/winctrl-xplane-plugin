@@ -29,6 +29,7 @@
 #include "profiles/stratosphere77w-fmc-profile.h"
 #include "profiles/cl650-fmc-profile.h"
 #include "profiles/toliss-fmc-profile.h"
+#include "profiles/tu-154-ce-fmc-profile.h"
 #include "profiles/xcrafts-ejets-fmc-profile.h"
 #include "profiles/fps-ejets-fmc-profile.h"
 #include "profiles/xcrafts-erj-fmc-profile.h"
@@ -192,6 +193,10 @@ void ProductFMC::setProfileForCurrentAircraft() {
     } else if (Magknight787FMCProfile::IsEligible()) {
         clearDisplay();
         profile = new Magknight787FMCProfile(this);
+        profileReady = true;
+    } else if (Tu154CEFMCProfile::IsEligible()) {
+        clearDisplay();
+        profile = new Tu154CEFMCProfile(this);
         profileReady = true;
     } else if (AerobaskPhenomFMCProfile::IsEligible()) {
         clearDisplay();

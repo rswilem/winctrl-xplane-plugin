@@ -8,6 +8,7 @@
 #include "profiles/aerobask-phenom-pap3-mcp-profile.h"
 #include "profiles/b58-pap3-mcp-profile.h"
 #include "profiles/cl650-pap3-mcp-profile.h"
+#include "profiles/dwsim-atr72-pap3-mcp-profile.h"
 #include "profiles/felis-742-pap3-mcp-profile.h"
 #include "profiles/ff767-pap3-mcp-profile.h"
 #include "profiles/ff777-pap3-mcp-profile.h"
@@ -104,6 +105,9 @@ void ProductPAP3MCP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (Tu154CEPAP3MCPProfile::IsEligible()) {
         profile = new Tu154CEPAP3MCPProfile(this);
+        profileReady = true;
+    } else if (DWSimATR72PAP3MCPProfile::IsEligible()) {
+        profile = new DWSimATR72PAP3MCPProfile(this);
         profileReady = true;
     } else if (CL650PAP3MCPProfile::IsEligible()) {
         profile = new CL650PAP3MCPProfile(this);

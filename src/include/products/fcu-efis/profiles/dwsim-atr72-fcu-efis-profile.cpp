@@ -14,24 +14,26 @@
 // ---------------------------------------------------------------------------
 static const std::string ATR_ALT_SEL = "DWSim/ATR_Series/afcs/alt_sel_ft";
 static const std::string ATR_HDG_SEL = "DWSim/ATR_Series/afcs/hdg_sel_deg";
+static const std::string ATR_CRS_CAPT_SEL = "DWSim/ATR_Series/afcs/crs_capt_deg";
+static const std::string ATR_SPD_MODE = "DWSim/ATR_Series/afcs/spd_mode_auto";
+
+//static const std::string ATR_CRS_FO_SEL = "DWSim/ATR_Series/afcs/crs_fo_deg";
 
 static const std::string ATR_SPD_SEL = "DWSim/ATR_Series/afcs/spd_target_kt";
 static const std::string ATR_VS_SEL = "DWSim/ATR_Series/afcs/vs_target_fpm";
 static const std::string ATR_BARO_LEFT = "sim/cockpit/misc/barometer_setting";
 static const std::string ATR_BARO_RIGHT = "sim/cockpit/misc/barometer_setting2";
 
+//DWSim/ATR_Series/datarefs/front/afcs/vilsKnobLeft/rotation (0=FMC1,1=ILS1,2=ILS2, 3=FMC2)
+//DWSim/ATR_Series/afcs/crs_capt_deg
+
 // Tipo di ciascun dataref (float o int, lo mostra DataRefTool).
 // Se un dataref e' int, cambiare qui il tipo corrispondente in int.
-using AltSelType = float;
-using HdgSelType = float;
-using SpdSelType = float;
-using VsSelType = float;
-using BaroType = float;
-
-// Luminosita' fissa dei LED di retroilluminazione (0-255).
-// Il Q4XP la legge da un dataref luci del cockpit; per l'ATR e' fissa.
-static constexpr uint8_t BUTTON_BACKLIGHT = 255;
-static constexpr uint8_t SCREEN_BACKLIGHT = 255;
+// using AltSelType = float;
+// using HdgSelType = float;
+// using SpdSelType = float;
+// using VsSelType = float;
+// using BaroType = float;
 
 // Legge un dataref opzionale: fallback se il nome e' vuoto o il dataref non esiste.
 template <typename T>
@@ -75,7 +77,7 @@ DWSimATR72FCUEfisProfile::DWSimATR72FCUEfisProfile(ProductFCUEfis *product) : FC
         product->forceStateSync();
     },
         this);
-    
+
     Dataref::getInstance()->monitorExistingDataref<int>("DWSim/ATR_Series/afcs/ap_engaged", [product](int engaged) {
         product->setLedBrightness(FCUEfisLed::AP1_GREEN, engaged ? 255 : 0);
     },
@@ -85,10 +87,18 @@ DWSimATR72FCUEfisProfile::DWSimATR72FCUEfisProfile(ProductFCUEfis *product) : FC
         product->setLedBrightness(FCUEfisLed::ATHR_GREEN, engaged ? 255 : 0);
     },
         this);
+    
+    Dataref::getInstance()->monitorExistingDataref<std::string>("DWSim/ATR_Series/afcs/fma_lat_active", [product](std::string engaged) {
+        product->setLedBrightness(FCUEfisLed::LOC_GREEN, engaged == "LNAV" ? 255 : 0
+        );
+    },
+        this);
 
-    product->setLedBrightness(FCUEfisLed::SCREEN_BACKLIGHT, 128);
-    product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, 128);
-    product->setLedBrightness(FCUEfisLed::EFISR_SCREEN_BACKLIGHT, 128);
+    //
+        
+    product->setLedBrightness(FCUEfisLed::SCREEN_BACKLIGHT, 255);
+    product->setLedBrightness(FCUEfisLed::EFISL_SCREEN_BACKLIGHT, 255);
+    product->setLedBrightness(FCUEfisLed::EFISR_SCREEN_BACKLIGHT, 255);
     product->setLedBrightness(FCUEfisLed::OVERALL_GREEN, 255);
     product->setLedBrightness(FCUEfisLed::EFISL_OVERALL_GREEN, 255);
     product->setLedBrightness(FCUEfisLed::EFISR_OVERALL_GREEN, 255);
@@ -126,35 +136,37 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &DWSimATR72FCUEfisProfile::
     static const std::unordered_map<uint16_t, FCUEfisButtonDef> buttons = {
         // FCU buttons
         {0, {"MACH", "DWSim/ATR_Series/commands/front/133vm/warnPushButton/toggle"}},
+        {1, {"LOC", "DWSim/ATR_Series/commands/front/afcs/navPushButton"}},
         {3, {"AP1",  "DWSim/ATR_Series/commands/front/afcs/apPushButton"}},
         // {4, {"AP2",  "DWSim/ATR_Series/commands/front/afcs/apPushButton"}},
         {5, {"A/THR", "DWSim/ATR_Series/commands/front/afcs/ydPushButton"}},
         {6, {"EXPED", "DWSim/ATR_Series/commands/front/afcs/bcPushButton"}},
         {7, {"METRIC", ""}},
+        {8, {"APPR", "DWSim/ATR_Series/commands/front/afcs/appPushButton"}},
 
         // Speed encoder
         {9, {"SPD DEC",  "DWSim/ATR_Series/commands/front/icp/left/spdTgtRotationKnob/rotateLeft"}},
         {10, {"SPD INC",  "DWSim/ATR_Series/commands/front/icp/left/spdTgtRotationKnob/rotateRight"}},
-        {11, {"SPD PUSH", "DWSim/ATR_Series/commands/front/afcs/iasPushButton"}},
+        {11, {"SPD PUSH", "DWSim/ATR_Series/commands/front/icp/left/autoManPushButton/toggle"}},
         {12, {"SPD PULL", "DWSim/ATR_Series/commands/front/icp/left/autoManPushButton/toggle"}},
 
         // Heading encoder
         {13, {"HDG DEC",  "DWSim/ATR_Series/commands/front/afcs/headingKnob/rotateLeft"}},
         {14, {"HDG INC",  "DWSim/ATR_Series/commands/front/afcs/headingKnob/rotateRight"}},
-        {15, {"HDG PUSH", "DWSim/ATR_Series/commands/front/afcs/hdgPushButton"}},
-        {16, {"HDG PULL", "DWSim/ATR_Series/commands/front/afcs/headingKnob/push"}},
+        {15, {"HDG PUSH", "DWSim/ATR_Series/commands/front/afcs/headingKnob/push"}},
+        {16, {"HDG PULL", "DWSim/ATR_Series/commands/front/afcs/hdgPushButton"}},
 
         // Altitude encoder
         {17, {"ALT DEC",  "DWSim/ATR_Series/commands/front/afcs/altSel/rotateLeft"}},
         {18, {"ALT INC",  "DWSim/ATR_Series/commands/front/afcs/altSel/rotateRight"}},
         {19, {"ALT PUSH", "DWSim/ATR_Series/commands/front/afcs/vnavPushButton"}},
-        {20, {"ALT PULL", "DWSim/ATR_Series/commands/front/afcs/altPushButton"}},
+        {20, {"ALT PULL", "DWSim/ATR_Series/commands/front/afcs/iasPushButton"}},
 
         // Vertical Speed encoder
         {21, {"VS DEC",  "DWSim/ATR_Series/commands/front/afcs/vsSpeed/rotateDn"}},
         {22, {"VS INC",  "DWSim/ATR_Series/commands/front/afcs/vsSpeed/rotateUp"}},
-        {23, {"VS PUSH", "DWSim/ATR_Series/commands/front/afcs/vsPushButton"}},
-        {24, {"VS PULL", ""}},
+        {23, {"VS PUSH", "DWSim/ATR_Series/commands/front/afcs/altPushButton"}},
+        {24, {"VS PULL", "DWSim/ATR_Series/commands/front/afcs/vsPushButton"}},
 
         // EFIS Left — Baro
         {39, {"L_STD PUSH", "sim/instruments/barometer_std"}},
@@ -177,19 +189,24 @@ const std::unordered_map<uint16_t, FCUEfisButtonDef> &DWSimATR72FCUEfisProfile::
 void DWSimATR72FCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.displayEnabled = true;
 
+    //DWSim/ATR_Series/afcs/spd_target_kt
     // Speed
-    float spd = readOptional<SpdSelType>(ATR_SPD_SEL);
+    float spd = readOptional<float>(ATR_SPD_SEL);
     {
         int spdInt = std::max(0, static_cast<int>(std::round(spd)));
         std::ostringstream oss;
         oss << std::setw(3) << std::setfill('0') << spdInt;
         data.speed = oss.str();
     }
+
+    //int spdMng = readOptional<int>(ATR_SPD_MODE);
+    //DWSim/ATR_Series/afcs/spd_mode_auto 1=managed, 0=unmanaged
+    
+    data.spdManaged = readOptional<int>(ATR_SPD_MODE) == 1 ? true : false;
     data.spdMach = false;
-    data.spdManaged = false;
 
     // Heading
-    float hdg = readOptional<HdgSelType>(ATR_HDG_SEL);
+    float hdg = readOptional<float>(ATR_HDG_SEL);
     {
         int hdgInt = static_cast<int>(std::round(hdg)) % 360;
         if (hdgInt < 0) {
@@ -205,7 +222,7 @@ void DWSimATR72FCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.hdgManaged = false;
 
     // Altitude
-    float alt = readOptional<AltSelType>(ATR_ALT_SEL);
+    float alt = readOptional<float>(ATR_ALT_SEL);
     {
         int altInt = std::clamp(static_cast<int>(std::round(alt)), 0, 99999);
         std::ostringstream oss;
@@ -217,28 +234,38 @@ void DWSimATR72FCUEfisProfile::updateDisplayData(FCUDisplayData &data) {
     data.lvlChange = false;
 
     // Vertical Speed
-    float vs = readOptional<VsSelType>(ATR_VS_SEL);
+    float vs = readOptional<float>(ATR_VS_SEL);
     {
-        bool negative = vs < 0;
+        bool negative = vs <= 0;
         int vsAbs = std::min(9999, static_cast<int>(std::round(std::abs(vs))));
         std::ostringstream oss;
-        oss << std::setw(4) << std::setfill('0') << vsAbs;
+        
+        // oss << std::setw(4) << std::setfill('0') << vsAbs;
+        // If VS is a multiple of 100, show last two digits as "##"
+        
+        if (vsAbs % 100 == 0) {
+            oss << std::setfill('0') << std::setw(2) << (vsAbs / 100) << "##";
+        } else {
+            // Show full value for non-multiples of 100
+            oss << std::setfill('0') << std::setw(4) << vsAbs;
+        }
         data.verticalSpeed = oss.str();
         data.vsSign = !negative;
+        data.vsHorizontalLine = vs == 0 ? false : true; // Show horizontal line for negative VS, hide when zero
     }
     data.vsMode = true;
     data.fpaMode = false;
     data.vsIndication = true;
-    data.vsHorizontalLine = false;
+    // data.vsHorizontalLine = true;
     data.vsVerticalLine = false;
 
     // EFIS Baro
-    float baro1 = readOptional<BaroType>(ATR_BARO_LEFT, 29.92f);
+    float baro1 = readOptional<float>(ATR_BARO_LEFT, 29.92f);
     data.efisLeft.displayEnabled = true;
     data.efisLeft.unitIsInHg = false;
     data.efisLeft.setBaro(baro1, false);
 
-    float baro2 = readOptional<BaroType>(ATR_BARO_RIGHT, 29.92f);
+    float baro2 = readOptional<float>(ATR_BARO_RIGHT, 29.92f);
     data.efisRight.displayEnabled = true;
     data.efisRight.unitIsInHg = false;
     data.efisRight.setBaro(baro2, false);

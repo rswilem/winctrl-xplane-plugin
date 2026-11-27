@@ -33,44 +33,44 @@ For linux, see the [Linux udev rules](#linux-udev-rules) section below to ensure
 ### Compatibility Matrix
 
 The matrix below shows device and aircraft compatibility. Aircraft are listed vertically, devices horizontally.
-| Aircraft&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | FMC (MCDU, PFP 3N/4/7) | 3N PAP MCP | 3N / 3M PDC | FCU (+ optional EFIS L+R) | 32 ECAM | 32 AGP Metal | 32 TCAS | 32 RMP | 32 NWS | Joystick (URSA MINOR Airline L+R, ORION Joystick Base II) | URSA MINOR 32 Throttle Metal (+ optional 32 PAC Metal) |
-|--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **ToLiss A3xx** | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; |
-| **Zibo / LevelUp 737** | &check; | &check; | &check; | &check; | &nbsp; | &check; | &check; | &check; | &nbsp; | &check; | &check; |
-| **X-Crafts E-Jets** | &check; | &check; | &check; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &check; |
-| **FPS E-Jets** | &check; | &check; | &check; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &check; |
-| **X-Crafts ERJ** | &check; | &check; | &check; | &check; | &nbsp; | &check; | &check; | &nbsp; | &nbsp; | &check; | &check; |
-| **FlightFactor 767** | &check; | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **FlightFactor 777** | &check; | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; | &check; |
-| **FlightFactor A350 V1** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **FlightFactor A320 ultimate (XP11)** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Rotate MD-11** | &check; | &check; | &nbsp; | &check; | &nbsp; | &check; | &check; | &nbsp; | &nbsp; | &check; | &check; |
-| **IXEG 737** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **FPS 747-800i V2 (SSG) and V3** | &check; | &check; | &check; | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **JustFlight 146** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **CIS Seneca II** | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Laminar 737** | &nbsp; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Laminar A330 (+ Aerogenesis)** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &check; |
-| **Laminar Citation X** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Laminar C172** | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Laminar Baron B58** | &nbsp; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Airfoillabs C172** | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Sparky 744** | &check; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **JarDesign A330** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Stratosphere Studios 777-300ER** | &check; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Airfoillabs King Air 350** | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Deanarica A220-300** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **JustFlight PA-28** | &check; | &nbsp; | &nbsp; | &check; | &check; | &check; | &check; | &check; | &nbsp; | &check; | &check; |
-| **FlyJSim Q4XP** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **DeltaWing ATR 72-600** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **FlyJSim 732 TwinJet** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **TorqueSim Citation CJ525** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Hot Start CL650** | &check; | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; | &nbsp; |
-| **Felis 747-200 Classic** | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; | &nbsp; |
-| **Magknight 787** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
-| **Aerobask Phenom 300** | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; | &nbsp; |
-| **Tu-154B2 CE** | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; | &nbsp; |
-| **felis742-ltn** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; |
+| Aircraft&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | FMC (MCDU, PFP 3N/4/7) | 3N PAP MCP | 3N / 3M PDC | FCU (+ optional EFIS L+R) | 32 ECAM | 32 AGP Metal | 32 TCAS | 32 RMP | 32 NWS | Joystick (URSA MINOR Airline L+R, ORION Joystick Base II) | URSA MINOR 32 Throttle Metal (+ optional 32 PAC Metal) | ORION Throttle Base II |
+|--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **ToLiss A3xx** | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; |
+| **Zibo / LevelUp 737** | &check; | &check; | &check; | &check; | &nbsp; | &check; | &check; | &check; | &nbsp; | &check; | &check; | &check; |
+| **X-Crafts E-Jets** | &check; | &check; | &check; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &check; | &check; |
+| **FPS E-Jets** | &check; | &check; | &check; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &check; | &check; |
+| **X-Crafts ERJ** | &check; | &check; | &check; | &check; | &nbsp; | &check; | &check; | &nbsp; | &nbsp; | &check; | &check; | &check; |
+| **FlightFactor 767** | &check; | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **FlightFactor 777** | &check; | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; | &check; | &check; |
+| **FlightFactor A350 V1** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **FlightFactor A320 ultimate (XP11)** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Rotate MD-11** | &check; | &check; | &nbsp; | &check; | &nbsp; | &check; | &check; | &nbsp; | &nbsp; | &check; | &check; | &check; |
+| **IXEG 737** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **FPS 747-800i V2 (SSG) and V3** | &check; | &check; | &check; | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **JustFlight 146** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **CIS Seneca II** | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Laminar 737** | &nbsp; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Laminar A330 (+ Aerogenesis)** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &check; | &check; |
+| **Laminar Citation X** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Laminar C172** | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Laminar Baron B58** | &nbsp; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Airfoillabs C172** | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Sparky 744** | &check; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **JarDesign A330** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Stratosphere Studios 777-300ER** | &check; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Airfoillabs King Air 350** | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Deanarica A220-300** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **JustFlight PA-28** | &check; | &nbsp; | &nbsp; | &check; | &check; | &check; | &check; | &check; | &nbsp; | &check; | &check; | &check; |
+| **FlyJSim Q4XP** | &check; | &check; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **DeltaWing ATR 72-600** | &check; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **FlyJSim 732 TwinJet** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **TorqueSim Citation CJ525** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Hot Start CL650** | &check; | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; | &nbsp; | &check; |
+| **Felis 747-200 Classic** | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; | &nbsp; | &check; |
+| **Magknight 787** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
+| **Aerobask Phenom 300** | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; | &nbsp; | &check; |
+| **Tu-154B2 CE** | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; | &nbsp; | &check; |
+| **felis742-ltn** | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &check; |
 
 ### Known Issues
 

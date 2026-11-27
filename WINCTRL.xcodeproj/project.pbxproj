@@ -320,6 +320,8 @@
 		7154CE000000000000000003 /* tu-154-ce-fmc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7154CE000000000000000002 /* tu-154-ce-fmc-profile.cpp */; };
 		AEB000000000000000000021 /* aerobask-phenom-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEB00000000000000000002C /* aerobask-phenom-pap3-mcp-profile.cpp */; };
 		7154CE000000000000000008 /* tu-154-ce-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7154CE000000000000000006 /* tu-154-ce-pap3-mcp-profile.cpp */; };
+		A4C4A9300000000000000003 /* q4xp-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4C4A9300000000000000002 /* q4xp-pap3-mcp-profile.cpp */; };
+		A4C4A9300000000000000004 /* q4xp-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4C4A9300000000000000002 /* q4xp-pap3-mcp-profile.cpp */; };
 		AEB000000000000000000022 /* aerobask-phenom-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEB00000000000000000002C /* aerobask-phenom-pap3-mcp-profile.cpp */; };
 		7154CE000000000000000007 /* tu-154-ce-pap3-mcp-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7154CE000000000000000006 /* tu-154-ce-pap3-mcp-profile.cpp */; };
 		AEB000000000000000000031 /* aerobask-phenom-pdc-profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEB00000000000000000003C /* aerobask-phenom-pdc-profile.cpp */; };
@@ -666,6 +668,8 @@
 		7154CE000000000000000005 /* tu-154-ce-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "tu-154-ce-pap3-mcp-profile.h"; sourceTree = "<group>"; };
 		AEB00000000000000000002C /* aerobask-phenom-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "aerobask-phenom-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
 		7154CE000000000000000006 /* tu-154-ce-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "tu-154-ce-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
+		A4C4A9300000000000000001 /* q4xp-pap3-mcp-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "q4xp-pap3-mcp-profile.h"; sourceTree = "<group>"; };
+		A4C4A9300000000000000002 /* q4xp-pap3-mcp-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "q4xp-pap3-mcp-profile.cpp"; sourceTree = "<group>"; };
 		AEB00000000000000000003A /* aerobask-phenom-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "aerobask-phenom-pdc-profile.h"; sourceTree = "<group>"; };
 		7154CE000000000000000009 /* tu-154-ce-pdc-profile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "tu-154-ce-pdc-profile.h"; sourceTree = "<group>"; };
 		AEB00000000000000000003C /* aerobask-phenom-pdc-profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "aerobask-phenom-pdc-profile.cpp"; sourceTree = "<group>"; };
@@ -1157,6 +1161,8 @@
 				7154CE000000000000000005 /* tu-154-ce-pap3-mcp-profile.h */,
 				AEB00000000000000000002C /* aerobask-phenom-pap3-mcp-profile.cpp */,
 				7154CE000000000000000006 /* tu-154-ce-pap3-mcp-profile.cpp */,
+				A4C4A9300000000000000001 /* q4xp-pap3-mcp-profile.h */,
+				A4C4A9300000000000000002 /* q4xp-pap3-mcp-profile.cpp */,
 				F6BBFF042ED741B900FE9D7F /* ff777-pap3-mcp-profile.h */,
 				F6BBFF052ED741B900FE9D7F /* ff777-pap3-mcp-profile.cpp */,
 				F6496CD2C93EDBD2EE84B695 /* ff767-pap3-mcp-profile.h */,
@@ -1421,6 +1427,7 @@
 				B5800000000000000000B0F3 /* b58-pap3-mcp-profile.cpp in Sources */,
 				AEB000000000000000000021 /* aerobask-phenom-pap3-mcp-profile.cpp in Sources */,
 				7154CE000000000000000008 /* tu-154-ce-pap3-mcp-profile.cpp in Sources */,
+				A4C4A9300000000000000003 /* q4xp-pap3-mcp-profile.cpp in Sources */,
 				F6C6E0352E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp in Sources */,
 				E3A625EEF44C777DFD93443F /* toliss-pap3-mcp-profile.cpp in Sources */,
 				F60ABAEA2FBE134D001C91EF /* jar330-fmc-profile.cpp in Sources */,
@@ -1682,6 +1689,7 @@
 				B5800000000000000000B0F4 /* b58-pap3-mcp-profile.cpp in Sources */,
 				AEB000000000000000000022 /* aerobask-phenom-pap3-mcp-profile.cpp in Sources */,
 				7154CE000000000000000007 /* tu-154-ce-pap3-mcp-profile.cpp in Sources */,
+				A4C4A9300000000000000004 /* q4xp-pap3-mcp-profile.cpp in Sources */,
 				F6C2086B2FC9702A006973EE /* rotatemd11-fcu-efis-profile.cpp in Sources */,
 				F6C6E0322E8D5DAA00558F46 /* zibo-pap3-mcp-profile.cpp in Sources */,
 				98EC64D8A3396AA09FD9638E /* toliss-pap3-mcp-profile.cpp in Sources */,

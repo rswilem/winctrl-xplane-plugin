@@ -13,6 +13,7 @@
 #include "profiles/ff777-pap3-mcp-profile.h"
 #include "profiles/fps748-pap3-mcp-profile.h"
 #include "profiles/laminar-737-pap3-mcp-profile.h"
+#include "profiles/q4xp-pap3-mcp-profile.h"
 #include "profiles/rotatemd11-pap3-mcp-profile.h"
 #include "profiles/sparky744-pap3-mcp-profile.h"
 #include "profiles/stratosphere77w-pap3-mcp-profile.h"
@@ -106,6 +107,9 @@ void ProductPAP3MCP::setProfileForCurrentAircraft() {
         profileReady = true;
     } else if (CL650PAP3MCPProfile::IsEligible()) {
         profile = new CL650PAP3MCPProfile(this);
+        profileReady = true;
+    } else if (Q4XPPAP3MCPProfile::IsEligible()) {
+        profile = new Q4XPPAP3MCPProfile(this);
         profileReady = true;
     } else if (TolissPAP3MCPProfile::IsEligible()) {
         profile = new TolissPAP3MCPProfile(this);
